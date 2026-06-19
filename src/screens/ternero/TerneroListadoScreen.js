@@ -4,6 +4,7 @@ import {
     StyleSheet, ActivityIndicator, RefreshControl, Modal, ScrollView,
 } from 'react-native';
 import { useSelector } from 'react-redux';
+import { useNavigation } from '@react-navigation/native';
 import { useBussinesMicroservicio } from '../../hooks/bussines';
 import { format, parseISO } from 'date-fns';
 import { es } from 'date-fns/locale';
@@ -27,6 +28,7 @@ const formatFecha = (fecha) => {
 };
 
 export default function TerneroListadoScreen() {
+    const navigation = useNavigation();
     const { userPayload, establecimientoActual } = useSelector(state => state.auth);
     const { obtenerTerneroHook, patchTerneroHook, agregarPesoDiarioHook } = useBussinesMicroservicio();
 
@@ -223,6 +225,11 @@ export default function TerneroListadoScreen() {
                 />
             )}
 
+            {/* FAB nuevo ternero */}
+            <TouchableOpacity style={styles.fab} onPress={() => navigation.navigate('TerneroForm')}>
+                <Text style={styles.fabText}>+ Nuevo</Text>
+            </TouchableOpacity>
+
             {/* Modal Editar */}
             <Modal visible={modalEditar.isOpen} animationType="slide" transparent>
                 <View style={styles.modalOverlay}>
@@ -364,4 +371,6 @@ const styles = StyleSheet.create({
     btnCancelarText: { color: '#374151', fontWeight: '600' },
     btnGuardar: { flex: 1, backgroundColor: '#6366f1', borderRadius: 10, padding: 12, alignItems: 'center' },
     btnGuardarText: { color: '#fff', fontWeight: '700' },
+    fab: { position: 'absolute', bottom: 20, right: 20, backgroundColor: '#6366f1', borderRadius: 30, paddingHorizontal: 20, paddingVertical: 12, elevation: 6, shadowColor: '#000', shadowOpacity: 0.2, shadowRadius: 6 },
+    fabText: { color: '#fff', fontWeight: '700', fontSize: 15 },
 });
