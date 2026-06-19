@@ -3,8 +3,11 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import TerneroListadoScreen from '../screens/ternero/TerneroListadoScreen';
 import TerneroFormScreen from '../screens/ternero/TerneroFormScreen';
 import MadreListadoScreen from '../screens/madre/MadreListadoScreen';
+import MadreFormScreen from '../screens/madre/MadreFormScreen';
 import TratamientoListadoScreen from '../screens/tratamiento/TratamientoListadoScreen';
+import TratamientoFormScreen from '../screens/tratamiento/TratamientoFormScreen';
 import EventoListadoScreen from '../screens/evento/EventoListadoScreen';
+import EventoFormScreen from '../screens/evento/EventoFormScreen';
 import PerfilScreen from '../screens/auth/PerfilScreen';
 
 const Tab = createBottomTabNavigator();
@@ -26,6 +29,7 @@ function MadreNavigator() {
     return (
         <MadreStack.Navigator screenOptions={{ headerShown: false }}>
             <MadreStack.Screen name="MadreListado" component={MadreListadoScreen} />
+            <MadreStack.Screen name="MadreForm" component={MadreFormScreen} />
         </MadreStack.Navigator>
     );
 }
@@ -34,6 +38,7 @@ function TratamientoNavigator() {
     return (
         <TratamientoStack.Navigator screenOptions={{ headerShown: false }}>
             <TratamientoStack.Screen name="TratamientoListado" component={TratamientoListadoScreen} />
+            <TratamientoStack.Screen name="TratamientoForm" component={TratamientoFormScreen} />
         </TratamientoStack.Navigator>
     );
 }
@@ -42,6 +47,7 @@ function EventoNavigator() {
     return (
         <EventoStack.Navigator screenOptions={{ headerShown: false }}>
             <EventoStack.Screen name="EventoListado" component={EventoListadoScreen} />
+            <EventoStack.Screen name="EventoForm" component={EventoFormScreen} />
         </EventoStack.Navigator>
     );
 }

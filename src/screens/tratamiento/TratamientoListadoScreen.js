@@ -4,6 +4,7 @@ import {
     StyleSheet, ActivityIndicator, RefreshControl, ScrollView,
 } from 'react-native';
 import { useSelector } from 'react-redux';
+import { useNavigation } from '@react-navigation/native';
 import { useBussinesMicroservicio } from '../../hooks/bussines';
 import { format, parseISO } from 'date-fns';
 import { es } from 'date-fns/locale';
@@ -25,6 +26,7 @@ const tipoColor = (tipo) => {
 };
 
 export default function TratamientoListadoScreen() {
+    const navigation = useNavigation();
     const { userPayload, establecimientoActual } = useSelector(state => state.auth);
     const { obtenerTratamientoHook } = useBussinesMicroservicio();
 
@@ -123,6 +125,10 @@ export default function TratamientoListadoScreen() {
                 ))}
             </ScrollView>
 
+            <TouchableOpacity style={styles.fab} onPress={() => navigation.navigate('TratamientoForm')}>
+                <Text style={styles.fabText}>+ Nuevo</Text>
+            </TouchableOpacity>
+
             {loading ? <ActivityIndicator size="large" color="#f59e0b" style={styles.loader} /> : (
                 <FlatList
                     data={tratamientos}
@@ -165,4 +171,6 @@ const styles = StyleSheet.create({
     cardLabel: { fontSize: 12, color: '#6b7280', fontWeight: '600' },
     cardValue: { fontSize: 12, color: '#111827', marginLeft: 4 },
     observaciones: { fontSize: 11, color: '#9ca3af', marginTop: 4, fontStyle: 'italic' },
+    fab: { position: 'absolute', bottom: 20, right: 20, backgroundColor: '#f59e0b', borderRadius: 30, paddingHorizontal: 20, paddingVertical: 12, elevation: 6, shadowColor: '#000', shadowOpacity: 0.2, shadowRadius: 6 },
+    fabText: { color: '#fff', fontWeight: '700', fontSize: 15 },
 });
