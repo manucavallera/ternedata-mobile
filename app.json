@@ -19,6 +19,13 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "ENTORNO": "produccion",
+      "MS_BUSINESS_API_URL_PRODUCCION": "https://manu-bussines.gygo4l.easypanel.host",
+      "MS_SECURITY_API_URL_PRODUCCION": "https://manu-security.gygo4l.easypanel.host",
+      "MS_BUSINESS_API_URL_DESARROLLO": "http://localhost:3001",
+      "MS_SECURITY_API_URL_DESARROLLO": "http://localhost:3000"
     }
   }
 }
