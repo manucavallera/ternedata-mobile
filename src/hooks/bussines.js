@@ -502,6 +502,16 @@ export const useBussinesMicroservicio = () => {
         }
     };
 
+    const asignarEstablecimientoUsuarioHook = async (userId, establecimientoId) => {
+        try {
+            const { data, config, headers, status, statusText, request } = await businessApi.post('/users/assign-establishment', { userId, establecimientoId });
+            return { data, config, headers, status, statusText, request };
+        } catch (error) {
+            if (error?.response?.status === 401) await on401();
+            return { status: error?.response?.status || 500, data: error?.response?.data || { message: error.message }, error: true };
+        }
+    };
+
     // EQUIPO / INVITACIONES
     const obtenerEquipoHook = async (establecimientoId) => {
         try {
@@ -578,7 +588,7 @@ export const useBussinesMicroservicio = () => {
         obtenerUsuariosHook, obtenerEstadisticasUsuariosHook, crearUsuarioHook,
         actualizarUsuarioHook, eliminarUsuarioHook, toggleEstadoUsuarioHook, obtenerUsuariosPendientesHook,
         obtenerEstablecimientosHook, crearEstablecimientoHook, actualizarEstablecimientoHook,
-        eliminarEstablecimientoHook, toggleEstadoEstablecimientoHook,
+        eliminarEstablecimientoHook, toggleEstadoEstablecimientoHook, asignarEstablecimientoUsuarioHook,
         obtenerRodeosHook, crearRodeoHook, actualizarRodeoHook, toggleEstadoRodeoHook,
         obtenerEstadisticasRodeoHook, asignarTernerosRodeoHook, desasignarTernerosRodeoHook,
         asignarMadresRodeoHook, desasignarMadresRodeoHook,

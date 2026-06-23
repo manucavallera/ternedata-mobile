@@ -1,22 +1,26 @@
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { useSelector } from 'react-redux';
 
 const OPCIONES = [
     { screen: 'DiarreaListado', icon: '🥼', label: 'Diarrea', desc: 'Episodios y seguimiento', color: '#06b6d4' },
     { screen: 'ResumenSalud', icon: '❤️', label: 'Resumen de Salud', desc: 'Estado sanitario del rodeo', color: '#be123c' },
     { screen: 'Equipo', icon: '👥', label: 'Equipo', desc: 'Miembros e invitaciones', color: '#7c3aed' },
+    { screen: 'Admin', icon: '🛠️', label: 'Administración', desc: 'Gestión de establecimientos', color: '#1d4ed8', soloAdmin: true },
     { screen: 'Perfil', icon: '👤', label: 'Perfil', desc: 'Tu cuenta y establecimiento', color: '#10b981' },
 ];
 
 export default function MasScreen() {
     const navigation = useNavigation();
+    const { userPayload } = useSelector(state => state.auth);
+    const opciones = OPCIONES.filter(op => !op.soloAdmin || userPayload?.rol === 'admin');
     return (
         <View style={styles.container}>
             <View style={styles.header}>
                 <Text style={styles.headerTitle}>☰ Más</Text>
             </View>
             <ScrollView contentContainerStyle={styles.list}>
-                {OPCIONES.map(op => (
+                {opciones.map(op => (
                     <TouchableOpacity key={op.screen} style={styles.item} onPress={() => navigation.navigate(op.screen)}>
                         <View style={[styles.iconBox, { backgroundColor: op.color }]}>
                             <Text style={styles.icon}>{op.icon}</Text>
