@@ -12,6 +12,9 @@ import DiarreaListadoScreen from '../screens/diarrea/DiarreaListadoScreen';
 import DiarreaFormScreen from '../screens/diarrea/DiarreaFormScreen';
 import RodeoListadoScreen from '../screens/rodeo/RodeoListadoScreen';
 import RodeoAsignarScreen from '../screens/rodeo/RodeoAsignarScreen';
+import ResumenSaludScreen from '../screens/resumen/ResumenSaludScreen';
+import EquipoScreen from '../screens/equipo/EquipoScreen';
+import MasScreen from '../screens/mas/MasScreen';
 import PerfilScreen from '../screens/auth/PerfilScreen';
 
 const Tab = createBottomTabNavigator();
@@ -19,8 +22,8 @@ const TerneroStack = createNativeStackNavigator();
 const MadreStack = createNativeStackNavigator();
 const TratamientoStack = createNativeStackNavigator();
 const EventoStack = createNativeStackNavigator();
-const DiarreaStack = createNativeStackNavigator();
 const RodeoStack = createNativeStackNavigator();
+const MasStack = createNativeStackNavigator();
 
 function TerneroNavigator() {
     return (
@@ -58,21 +61,25 @@ function EventoNavigator() {
     );
 }
 
-function DiarreaNavigator() {
-    return (
-        <DiarreaStack.Navigator screenOptions={{ headerShown: false }}>
-            <DiarreaStack.Screen name="DiarreaListado" component={DiarreaListadoScreen} />
-            <DiarreaStack.Screen name="DiarreaForm" component={DiarreaFormScreen} />
-        </DiarreaStack.Navigator>
-    );
-}
-
 function RodeoNavigator() {
     return (
         <RodeoStack.Navigator screenOptions={{ headerShown: false }}>
             <RodeoStack.Screen name="RodeoListado" component={RodeoListadoScreen} />
             <RodeoStack.Screen name="RodeoAsignar" component={RodeoAsignarScreen} />
         </RodeoStack.Navigator>
+    );
+}
+
+function MasNavigator() {
+    return (
+        <MasStack.Navigator screenOptions={{ headerShown: false }}>
+            <MasStack.Screen name="MasMenu" component={MasScreen} />
+            <MasStack.Screen name="DiarreaListado" component={DiarreaListadoScreen} />
+            <MasStack.Screen name="DiarreaForm" component={DiarreaFormScreen} />
+            <MasStack.Screen name="ResumenSalud" component={ResumenSaludScreen} />
+            <MasStack.Screen name="Equipo" component={EquipoScreen} />
+            <MasStack.Screen name="Perfil" component={PerfilScreen} />
+        </MasStack.Navigator>
     );
 }
 
@@ -83,9 +90,8 @@ export default function AppNavigator() {
             <Tab.Screen name="Madres" component={MadreNavigator} />
             <Tab.Screen name="Tratamientos" component={TratamientoNavigator} />
             <Tab.Screen name="Eventos" component={EventoNavigator} />
-            <Tab.Screen name="Diarrea" component={DiarreaNavigator} />
             <Tab.Screen name="Rodeos" component={RodeoNavigator} />
-            <Tab.Screen name="Perfil" component={PerfilScreen} />
+            <Tab.Screen name="Más" component={MasNavigator} />
         </Tab.Navigator>
     );
 }

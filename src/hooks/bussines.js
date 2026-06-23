@@ -502,6 +502,57 @@ export const useBussinesMicroservicio = () => {
         }
     };
 
+    // EQUIPO / INVITACIONES
+    const obtenerEquipoHook = async (establecimientoId) => {
+        try {
+            const { data, config, headers, status, statusText, request } = await businessApi.get(`/establecimientos/${establecimientoId}/equipo`);
+            return { data, config, headers, status, statusText, request };
+        } catch (error) {
+            if (error?.response?.status === 401) await on401();
+            return { status: error?.response?.status || 500, data: error?.response?.data || { message: error.message }, error: true };
+        }
+    };
+
+    const obtenerInvitacionesPendientesHook = async (establecimientoId) => {
+        try {
+            const { data, config, headers, status, statusText, request } = await businessApi.get(`/invitaciones/pendientes/${establecimientoId}`);
+            return { data, config, headers, status, statusText, request };
+        } catch (error) {
+            if (error?.response?.status === 401) await on401();
+            return { status: error?.response?.status || 500, data: error?.response?.data || { message: error.message }, error: true };
+        }
+    };
+
+    const crearInvitacionHook = async (establecimientoId, payload) => {
+        try {
+            const { data, config, headers, status, statusText, request } = await businessApi.post(`/invitaciones/crear/${establecimientoId}`, payload);
+            return { data, config, headers, status, statusText, request };
+        } catch (error) {
+            if (error?.response?.status === 401) await on401();
+            return { status: error?.response?.status || 500, data: error?.response?.data || { message: error.message }, error: true };
+        }
+    };
+
+    const revocarInvitacionHook = async (invitacionId) => {
+        try {
+            const { data, config, headers, status, statusText, request } = await businessApi.delete(`/invitaciones/revocar/${invitacionId}`);
+            return { data, config, headers, status, statusText, request };
+        } catch (error) {
+            if (error?.response?.status === 401) await on401();
+            return { status: error?.response?.status || 500, data: error?.response?.data || { message: error.message }, error: true };
+        }
+    };
+
+    const eliminarMiembroHook = async (establecimientoId, userId) => {
+        try {
+            const { data, config, headers, status, statusText, request } = await businessApi.delete(`/establecimientos/${establecimientoId}/equipo/${userId}`);
+            return { data, config, headers, status, statusText, request };
+        } catch (error) {
+            if (error?.response?.status === 401) await on401();
+            return { status: error?.response?.status || 500, data: error?.response?.data || { message: error.message }, error: true };
+        }
+    };
+
     // DASHBOARD
     const obtenerResumenDashboardHook = async (queryParams = '') => {
         try {
@@ -531,6 +582,8 @@ export const useBussinesMicroservicio = () => {
         obtenerRodeosHook, crearRodeoHook, actualizarRodeoHook, toggleEstadoRodeoHook,
         obtenerEstadisticasRodeoHook, asignarTernerosRodeoHook, desasignarTernerosRodeoHook,
         asignarMadresRodeoHook, desasignarMadresRodeoHook,
+        obtenerEquipoHook, obtenerInvitacionesPendientesHook, crearInvitacionHook,
+        revocarInvitacionHook, eliminarMiembroHook,
         obtenerResumenDashboardHook,
     };
 };
