@@ -10,6 +10,8 @@ import EventoListadoScreen from '../screens/evento/EventoListadoScreen';
 import EventoFormScreen from '../screens/evento/EventoFormScreen';
 import DiarreaListadoScreen from '../screens/diarrea/DiarreaListadoScreen';
 import DiarreaFormScreen from '../screens/diarrea/DiarreaFormScreen';
+import RodeoListadoScreen from '../screens/rodeo/RodeoListadoScreen';
+import RodeoAsignarScreen from '../screens/rodeo/RodeoAsignarScreen';
 import PerfilScreen from '../screens/auth/PerfilScreen';
 
 const Tab = createBottomTabNavigator();
@@ -18,6 +20,7 @@ const MadreStack = createNativeStackNavigator();
 const TratamientoStack = createNativeStackNavigator();
 const EventoStack = createNativeStackNavigator();
 const DiarreaStack = createNativeStackNavigator();
+const RodeoStack = createNativeStackNavigator();
 
 function TerneroNavigator() {
     return (
@@ -64,6 +67,15 @@ function DiarreaNavigator() {
     );
 }
 
+function RodeoNavigator() {
+    return (
+        <RodeoStack.Navigator screenOptions={{ headerShown: false }}>
+            <RodeoStack.Screen name="RodeoListado" component={RodeoListadoScreen} />
+            <RodeoStack.Screen name="RodeoAsignar" component={RodeoAsignarScreen} />
+        </RodeoStack.Navigator>
+    );
+}
+
 export default function AppNavigator() {
     return (
         <Tab.Navigator screenOptions={{ headerShown: false }}>
@@ -72,6 +84,7 @@ export default function AppNavigator() {
             <Tab.Screen name="Tratamientos" component={TratamientoNavigator} />
             <Tab.Screen name="Eventos" component={EventoNavigator} />
             <Tab.Screen name="Diarrea" component={DiarreaNavigator} />
+            <Tab.Screen name="Rodeos" component={RodeoNavigator} />
             <Tab.Screen name="Perfil" component={PerfilScreen} />
         </Tab.Navigator>
     );
