@@ -8,6 +8,8 @@ import TratamientoListadoScreen from '../screens/tratamiento/TratamientoListadoS
 import TratamientoFormScreen from '../screens/tratamiento/TratamientoFormScreen';
 import EventoListadoScreen from '../screens/evento/EventoListadoScreen';
 import EventoFormScreen from '../screens/evento/EventoFormScreen';
+import DiarreaListadoScreen from '../screens/diarrea/DiarreaListadoScreen';
+import DiarreaFormScreen from '../screens/diarrea/DiarreaFormScreen';
 import PerfilScreen from '../screens/auth/PerfilScreen';
 
 const Tab = createBottomTabNavigator();
@@ -15,6 +17,7 @@ const TerneroStack = createNativeStackNavigator();
 const MadreStack = createNativeStackNavigator();
 const TratamientoStack = createNativeStackNavigator();
 const EventoStack = createNativeStackNavigator();
+const DiarreaStack = createNativeStackNavigator();
 
 function TerneroNavigator() {
     return (
@@ -52,6 +55,15 @@ function EventoNavigator() {
     );
 }
 
+function DiarreaNavigator() {
+    return (
+        <DiarreaStack.Navigator screenOptions={{ headerShown: false }}>
+            <DiarreaStack.Screen name="DiarreaListado" component={DiarreaListadoScreen} />
+            <DiarreaStack.Screen name="DiarreaForm" component={DiarreaFormScreen} />
+        </DiarreaStack.Navigator>
+    );
+}
+
 export default function AppNavigator() {
     return (
         <Tab.Navigator screenOptions={{ headerShown: false }}>
@@ -59,6 +71,7 @@ export default function AppNavigator() {
             <Tab.Screen name="Madres" component={MadreNavigator} />
             <Tab.Screen name="Tratamientos" component={TratamientoNavigator} />
             <Tab.Screen name="Eventos" component={EventoNavigator} />
+            <Tab.Screen name="Diarrea" component={DiarreaNavigator} />
             <Tab.Screen name="Perfil" component={PerfilScreen} />
         </Tab.Navigator>
     );
