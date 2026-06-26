@@ -7,17 +7,15 @@ import { useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 import { useBussinesMicroservicio } from '../../hooks/bussines';
 
-const TIPOS_EVENTO = ['Vacunación', 'Destete', 'Pesaje', 'Sanitación', 'Caravana', 'Otro'];
-
 export default function EventoFormScreen() {
     const navigation = useNavigation();
     const { userPayload, establecimientoActual } = useSelector(state => state.auth);
     const { crearEventoHook, obtenerTerneroHook, obtenerMadreHook } = useBussinesMicroservicio();
 
+    // El evento NO tiene tipo: solo fecha + observación + animales relacionados (ver entity)
     const [formData, setFormData] = useState({
-        tipo_evento: 'Vacunación',
         fecha_evento: new Date().toISOString().split('T')[0],
-        descripcion: '',
+        observacion: '',
         id_ternero: '',
         id_madre: '',
     });
@@ -60,15 +58,16 @@ export default function EventoFormScreen() {
     };
 
     const handleSubmit = async () => {
+        if (!formData.observacion?.trim()) { showAlert('La observación es requerida', false); return; }
         if (!formData.id_ternero && !formData.id_madre) { showAlert('Seleccioná al menos un ternero o madre', false); return; }
 
         setSubmitting(true);
+        // El backend espera observacion (requerida) e id_ternero/id_madre como ARRAYS de int
         const payload = {
-            tipo_evento: formData.tipo_evento,
             fecha_evento: formData.fecha_evento,
-            descripcion: formData.descripcion || undefined,
-            id_ternero: formData.id_ternero ? parseInt(formData.id_ternero) : undefined,
-            id_madre: formData.id_madre ? parseInt(formData.id_madre) : undefined,
+            observacion: formData.observacion.trim(),
+            id_ternero: formData.id_ternero ? [parseInt(formData.id_ternero)] : undefined,
+            id_madre: formData.id_madre ? [parseInt(formData.id_madre)] : undefined,
         };
 
         const res = await crearEventoHook(payload);
@@ -102,20 +101,13 @@ export default function EventoFormScreen() {
             )}
 
             <View style={styles.card}>
-                <Text style={styles.sectionTitle}>Tipo de evento</Text>
-                <View style={styles.optionRow}>
-                    {TIPOS_EVENTO.map(t => (
-                        <TouchableOpacity key={t} style={[styles.optionBtn, formData.tipo_evento === t && styles.optionBtnActive]} onPress={() => set('tipo_evento', t)}>
-                            <Text style={[styles.optionBtnText, formData.tipo_evento === t && styles.optionBtnTextActive]}>{t}</Text>
-                        </TouchableOpacity>
-                    ))}
-                </View>
+                <Text style={styles.sectionTitle}>Datos del evento</Text>
 
                 <Text style={styles.label}>Fecha</Text>
                 <TextInput style={styles.input} value={formData.fecha_evento} onChangeText={v => set('fecha_evento', v)} placeholder="YYYY-MM-DD" />
 
-                <Text style={styles.label}>Descripción</Text>
-                <TextInput style={[styles.input, styles.inputMulti]} value={formData.descripcion} onChangeText={v => set('descripcion', v)} placeholder="Descripción del evento" multiline numberOfLines={3} />
+                <Text style={styles.label}>Observación *</Text>
+                <TextInput style={[styles.input, styles.inputMulti]} value={formData.observacion} onChangeText={v => set('observacion', v)} placeholder="Ej: Vacunación contra fiebre aftosa" multiline numberOfLines={3} />
             </View>
 
             <View style={styles.card}>

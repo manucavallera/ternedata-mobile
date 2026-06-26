@@ -8,7 +8,8 @@ import { useNavigation } from '@react-navigation/native';
 import { useBussinesMicroservicio } from '../../hooks/bussines';
 
 const TIPOS = ['Diarrea', 'Respiratorio', 'Umbilical', 'Oftalmico', 'Otro'];
-const TURNOS = ['Mañana', 'Tarde'];
+// Enum real del backend (minúscula con ñ), igual que la web
+const TURNOS = [['mañana', '🌅 Mañana'], ['tarde', '🌆 Tarde']];
 
 export default function TratamientoFormScreen() {
     const navigation = useNavigation();
@@ -17,7 +18,7 @@ export default function TratamientoFormScreen() {
 
     const [formData, setFormData] = useState({
         tipo_enfermedad: 'Diarrea',
-        turno: 'Mañana',
+        turno: 'mañana',
         medicamento: '',
         dosis: '',
         dias_tratamiento: '',
@@ -118,9 +119,9 @@ export default function TratamientoFormScreen() {
 
                 <Text style={styles.label}>Turno</Text>
                 <View style={styles.optionRow}>
-                    {TURNOS.map(t => (
-                        <TouchableOpacity key={t} style={[styles.optionBtn, formData.turno === t && styles.optionBtnActive]} onPress={() => set('turno', t)}>
-                            <Text style={[styles.optionBtnText, formData.turno === t && styles.optionBtnTextActive]}>{t}</Text>
+                    {TURNOS.map(([val, lbl]) => (
+                        <TouchableOpacity key={val} style={[styles.optionBtn, formData.turno === val && styles.optionBtnActive]} onPress={() => set('turno', val)}>
+                            <Text style={[styles.optionBtnText, formData.turno === val && styles.optionBtnTextActive]}>{lbl}</Text>
                         </TouchableOpacity>
                     ))}
                 </View>

@@ -1,5 +1,8 @@
+import { Text } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { colors } from '../theme';
 import TerneroListadoScreen from '../screens/ternero/TerneroListadoScreen';
 import TerneroFormScreen from '../screens/ternero/TerneroFormScreen';
 import MadreListadoScreen from '../screens/madre/MadreListadoScreen';
@@ -85,15 +88,50 @@ function MasNavigator() {
     );
 }
 
+const TABS = [
+    { name: 'Terneros', label: 'Terneros', icon: '🐮', component: TerneroNavigator },
+    { name: 'Madres', label: 'Madres', icon: '🐄', component: MadreNavigator },
+    { name: 'Tratamientos', label: 'Tratam.', icon: '💉', component: TratamientoNavigator },
+    { name: 'Eventos', label: 'Eventos', icon: '📅', component: EventoNavigator },
+    { name: 'Rodeos', label: 'Rodeos', icon: '🐂', component: RodeoNavigator },
+    { name: 'Más', label: 'Más', icon: '•••', component: MasNavigator },
+];
+
+const tabIcon = (icon) => ({ focused }) => (
+    <Text style={{ fontSize: icon === '•••' ? 18 : 19, opacity: focused ? 1 : 0.55,
+        color: colors.campo, marginTop: 2, fontWeight: '900' }}>
+        {icon}
+    </Text>
+);
+
 export default function AppNavigator() {
+    const insets = useSafeAreaInsets();
+    const bottom = Math.max(insets.bottom, 8); // respeta barra de nav / gestos del celu
     return (
-        <Tab.Navigator screenOptions={{ headerShown: false }}>
-            <Tab.Screen name="Terneros" component={TerneroNavigator} />
-            <Tab.Screen name="Madres" component={MadreNavigator} />
-            <Tab.Screen name="Tratamientos" component={TratamientoNavigator} />
-            <Tab.Screen name="Eventos" component={EventoNavigator} />
-            <Tab.Screen name="Rodeos" component={RodeoNavigator} />
-            <Tab.Screen name="Más" component={MasNavigator} />
+        <Tab.Navigator
+            screenOptions={{
+                headerShown: false,
+                tabBarActiveTintColor: colors.campo,
+                tabBarInactiveTintColor: colors.inkFaint,
+                tabBarLabelStyle: { fontSize: 10.5, fontWeight: '700', marginTop: -2 },
+                tabBarStyle: {
+                    backgroundColor: colors.surface,
+                    borderTopColor: colors.line,
+                    borderTopWidth: 1,
+                    height: 58 + bottom,
+                    paddingTop: 6,
+                    paddingBottom: bottom,
+                },
+            }}
+        >
+            {TABS.map(t => (
+                <Tab.Screen
+                    key={t.name}
+                    name={t.name}
+                    component={t.component}
+                    options={{ tabBarLabel: t.label, tabBarIcon: tabIcon(t.icon) }}
+                />
+            ))}
         </Tab.Navigator>
     );
 }

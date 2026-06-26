@@ -9,7 +9,8 @@ import { useBussinesMicroservicio } from '../../hooks/bussines';
 
 const SEXOS = ['Macho', 'Hembra'];
 const ESTADOS = ['Vivo', 'Muerto', 'Vendido'];
-const METODOS_CALOSTRADO = ['Natural', 'Biberón', 'Sonda', 'No calostrado'];
+// Enum real del backend (minúscula), igual que la web
+const METODOS_CALOSTRADO = [['mamadera', '🍼 Mamadera'], ['sonda', '🩺 Sonda']];
 
 export default function TerneroFormScreen() {
     const navigation = useNavigation();
@@ -79,13 +80,24 @@ export default function TerneroFormScreen() {
     };
 
     const handleSubmit = async () => {
+        if (!formData.rp_ternero || isNaN(formData.rp_ternero) || Number(formData.rp_ternero) <= 0) {
+            showAlert('RP del ternero es requerido (número positivo)', false); return;
+        }
+        if (!formData.peso_nacer || Number(formData.peso_nacer) <= 0) {
+            showAlert('Peso al nacer es requerido', false); return;
+        }
         if (!formData.fecha_nacimiento) { showAlert('Fecha de nacimiento es requerida', false); return; }
 
         setSubmitting(true);
+        const pesoNacer = parseFloat(formData.peso_nacer);
         const payload = {
             ...formData,
-            peso_nacer: formData.peso_nacer ? parseFloat(formData.peso_nacer) : undefined,
-            peso_ideal: formData.peso_ideal ? parseFloat(formData.peso_ideal) : undefined,
+            rp_ternero: parseInt(formData.rp_ternero),
+            peso_nacer: pesoNacer,
+            // peso_ideal: el ingresado o el doble del peso al nacer (igual que la web)
+            peso_ideal: formData.peso_ideal ? parseFloat(formData.peso_ideal) : pesoNacer * 2,
+            // peso_largado lo deriva la web como nacer×15
+            peso_largado: pesoNacer * 15,
             litros_calostrado: formData.litros_calostrado ? parseFloat(formData.litros_calostrado) : undefined,
             grado_brix: formData.grado_brix ? parseFloat(formData.grado_brix) : undefined,
             id_madre: formData.id_madre ? parseInt(formData.id_madre) : undefined,
@@ -196,9 +208,9 @@ export default function TerneroFormScreen() {
 
                     <Text style={styles.label}>Método</Text>
                     <View style={styles.optionRow}>
-                        {METODOS_CALOSTRADO.map(m => (
-                            <TouchableOpacity key={m} style={[styles.optionBtn, formData.metodo_calostrado === m && styles.optionBtnActive]} onPress={() => set('metodo_calostrado', m)}>
-                                <Text style={[styles.optionBtnText, formData.metodo_calostrado === m && styles.optionBtnTextActive]}>{m}</Text>
+                        {METODOS_CALOSTRADO.map(([val, lbl]) => (
+                            <TouchableOpacity key={val} style={[styles.optionBtn, formData.metodo_calostrado === val && styles.optionBtnActive]} onPress={() => set('metodo_calostrado', val)}>
+                                <Text style={[styles.optionBtnText, formData.metodo_calostrado === val && styles.optionBtnTextActive]}>{lbl}</Text>
                             </TouchableOpacity>
                         ))}
                     </View>
