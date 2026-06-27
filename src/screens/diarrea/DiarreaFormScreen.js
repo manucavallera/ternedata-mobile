@@ -9,10 +9,10 @@ import { useBussinesMicroservicio } from '../../hooks/bussines';
 import { colors, shadow, radius, space } from '../../theme';
 
 const SEVERIDADES = [
-    { value: 'Leve', label: 'Leve', desc: 'Heces blandas ocasionales' },
-    { value: 'Moderada', label: 'Moderada', desc: 'Diarrea frecuente, hidratación normal' },
-    { value: 'Severa', label: 'Severa', desc: 'Persistente, signos de deshidratación' },
-    { value: 'Crítica', label: 'Crítica', desc: 'Severa, deshidratación grave' },
+    { value: 'Leve', label: 'Leve', desc: 'Heces blandas ocasionales', color: colors.vivo, icon: '🟢' },
+    { value: 'Moderada', label: 'Moderada', desc: 'Diarrea frecuente, hidratación normal', color: colors.vendido, icon: '🟡' },
+    { value: 'Severa', label: 'Severa', desc: 'Persistente, signos de deshidratación', color: '#E0962F', icon: '🟠' },
+    { value: 'Crítica', label: 'Crítica', desc: 'Severa, deshidratación grave', color: colors.muerto, icon: '🔴' },
 ];
 
 export default function DiarreaFormScreen() {
@@ -147,12 +147,23 @@ export default function DiarreaFormScreen() {
                 <TextInput style={styles.input} value={formData.fecha_diarrea_ternero} onChangeText={v => set('fecha_diarrea_ternero', v)} placeholder="YYYY-MM-DD" />
 
                 <Text style={styles.label}>Severidad</Text>
-                {SEVERIDADES.map(s => (
-                    <TouchableOpacity key={s.value} style={[styles.sevBtn, formData.severidad === s.value && styles.sevBtnActive]} onPress={() => set('severidad', s.value)}>
-                        <Text style={[styles.sevLabel, formData.severidad === s.value && styles.sevLabelActive]}>{s.label}</Text>
-                        <Text style={[styles.sevDesc, formData.severidad === s.value && styles.sevDescActive]}>{s.desc}</Text>
-                    </TouchableOpacity>
-                ))}
+                {SEVERIDADES.map(s => {
+                    const activa = formData.severidad === s.value;
+                    return (
+                        <TouchableOpacity
+                            key={s.value}
+                            style={[styles.sevBtn, { borderLeftColor: s.color, borderLeftWidth: 5 }, activa && { backgroundColor: s.color, borderColor: s.color }]}
+                            onPress={() => set('severidad', s.value)}
+                        >
+                            <Text style={styles.sevIcon}>{s.icon}</Text>
+                            <View style={{ flex: 1 }}>
+                                <Text style={[styles.sevLabel, activa && styles.sevLabelActive]}>{s.label}</Text>
+                                <Text style={[styles.sevDesc, activa && styles.sevDescActive]}>{s.desc}</Text>
+                            </View>
+                            {activa ? <Text style={styles.sevCheck}>✓</Text> : null}
+                        </TouchableOpacity>
+                    );
+                })}
 
                 <Text style={styles.label}>Observaciones (opcional)</Text>
                 <TextInput style={[styles.input, styles.inputMulti]} value={formData.observaciones} onChangeText={v => set('observaciones', v)} placeholder="Síntomas, tratamientos aplicados, estado general..." multiline numberOfLines={4} />
@@ -213,12 +224,13 @@ const styles = StyleSheet.create({
     numAmarillo: { color: colors.vendido },
     numRojo: { color: colors.muerto },
     historialHint: { fontSize: 12, color: colors.campo, marginTop: 6, fontWeight: '600' },
-    sevBtn: { borderWidth: 1, borderColor: colors.line, borderRadius: radius.sm, padding: 12, marginTop: 8 },
-    sevBtnActive: { backgroundColor: colors.campo, borderColor: colors.campo },
+    sevBtn: { flexDirection: 'row', alignItems: 'center', borderWidth: 1, borderColor: colors.line, borderRadius: radius.sm, padding: 12, marginTop: 8, backgroundColor: colors.surface },
+    sevIcon: { fontSize: 16, marginRight: 10 },
     sevLabel: { fontSize: 14, fontWeight: '700', color: colors.ink },
     sevLabelActive: { color: colors.white },
     sevDesc: { fontSize: 11, color: colors.inkSoft, marginTop: 2 },
-    sevDescActive: { color: colors.campoSoft },
+    sevDescActive: { color: 'rgba(255,255,255,0.85)' },
+    sevCheck: { fontSize: 18, fontWeight: '900', color: colors.white, marginLeft: 8 },
     btnSubmit: { backgroundColor: colors.campo, margin: space.md, borderRadius: radius.md, padding: 16, alignItems: 'center', marginTop: 16 },
     btnSubmitText: { color: colors.white, fontWeight: '700', fontSize: 16 },
     modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },

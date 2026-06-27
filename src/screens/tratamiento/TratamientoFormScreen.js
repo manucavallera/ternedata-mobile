@@ -115,9 +115,9 @@ export default function TratamientoFormScreen() {
                 </View>
 
                 <Text style={styles.label}>Turno</Text>
-                <View style={styles.optionRow}>
+                <View style={styles.turnoRow}>
                     {TURNOS.map(([val, lbl]) => (
-                        <TouchableOpacity key={val} style={[styles.optionBtn, formData.turno === val && styles.optionBtnActive]} onPress={() => set('turno', val)}>
+                        <TouchableOpacity key={val} style={[styles.turnoBtn, formData.turno === val && styles.optionBtnActive]} onPress={() => set('turno', val)}>
                             <Text style={[styles.optionBtnText, formData.turno === val && styles.optionBtnTextActive]}>{lbl}</Text>
                         </TouchableOpacity>
                     ))}
@@ -185,6 +185,8 @@ const styles = StyleSheet.create({
     inputMulti: { height: 80, textAlignVertical: 'top' },
     optionRow: { flexDirection: 'row', gap: 8, flexWrap: 'wrap', marginTop: 4 },
     optionBtn: { borderWidth: 1, borderColor: colors.line, borderRadius: radius.sm, paddingHorizontal: 14, paddingVertical: 8 },
+    turnoRow: { flexDirection: 'row', gap: 10, marginTop: 4 },
+    turnoBtn: { flex: 1, borderWidth: 1, borderColor: colors.line, borderRadius: radius.sm, paddingVertical: 12, alignItems: 'center' },
     optionBtnActive: { backgroundColor: colors.campo, borderColor: colors.campo },
     optionBtnText: { fontSize: 13, color: colors.ink },
     optionBtnTextActive: { color: colors.white, fontWeight: '700' },
