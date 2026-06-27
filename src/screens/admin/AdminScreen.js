@@ -5,6 +5,7 @@ import {
 } from 'react-native';
 import { useSelector } from 'react-redux';
 import { useBussinesMicroservicio } from '../../hooks/bussines';
+import { colors, shadow, radius, space } from '../../theme';
 
 export default function AdminScreen() {
     const { userPayload } = useSelector(state => state.auth);
@@ -130,7 +131,7 @@ export default function AdminScreen() {
     if (userPayload?.rol !== 'admin') {
         return (
             <View style={styles.container}>
-                <View style={styles.header}><Text style={styles.headerTitle}>🛠️ Administración</Text></View>
+                <View style={styles.header}><Text style={styles.headerTitle}>🛠️ Admin</Text></View>
                 <Text style={styles.empty}>Solo disponible para administradores.</Text>
             </View>
         );
@@ -149,7 +150,7 @@ export default function AdminScreen() {
                 </View>
             )}
 
-            {loading ? <ActivityIndicator size="large" color="#1d4ed8" style={styles.loader} /> : (
+            {loading ? <ActivityIndicator size="large" color={colors.campo} style={styles.loader} /> : (
                 <FlatList
                     data={establecimientos}
                     keyExtractor={item => String(item.id_establecimiento)}
@@ -200,42 +201,42 @@ export default function AdminScreen() {
 }
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: '#f3f4f6' },
-    header: { backgroundColor: '#1d4ed8', paddingTop: 50, paddingBottom: 16, paddingHorizontal: 16, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' },
-    headerTitle: { fontSize: 22, fontWeight: 'bold', color: '#fff' },
-    headerSub: { fontSize: 13, color: '#bfdbfe' },
-    alert: { margin: 12, borderRadius: 8, padding: 10 },
-    alertSuccess: { backgroundColor: '#22c55e' },
-    alertError: { backgroundColor: '#ef4444' },
-    alertText: { color: '#fff', fontWeight: '600', textAlign: 'center' },
+    container: { flex: 1, backgroundColor: colors.bg },
+    header: { backgroundColor: colors.campoDark, paddingTop: 50, paddingBottom: 16, paddingHorizontal: 16, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' },
+    headerTitle: { fontSize: 22, fontWeight: '800', color: colors.white },
+    headerSub: { fontSize: 13, color: colors.campoSoft },
+    alert: { margin: space.md, borderRadius: radius.sm, padding: 10 },
+    alertSuccess: { backgroundColor: colors.vivo },
+    alertError: { backgroundColor: colors.muerto },
+    alertText: { color: colors.white, fontWeight: '600', textAlign: 'center' },
     loader: { marginTop: 40 },
-    list: { paddingHorizontal: 12, paddingTop: 12, paddingBottom: 20 },
-    empty: { textAlign: 'center', color: '#9ca3af', marginTop: 40, fontSize: 15 },
-    card: { backgroundColor: '#fff', borderRadius: 12, padding: 14, marginBottom: 10, shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 4, elevation: 2 },
-    cardInactivo: { opacity: 0.6 },
+    list: { paddingHorizontal: space.md, paddingTop: space.md, paddingBottom: 20 },
+    empty: { textAlign: 'center', color: colors.inkFaint, marginTop: 40, fontSize: 15 },
+    card: { backgroundColor: colors.surface, borderRadius: radius.md, padding: 14, marginBottom: 10, ...shadow.card },
+    cardInactivo: { opacity: 0.5 },
     cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 },
-    cardTitle: { fontSize: 16, fontWeight: '700', color: '#1f2937', flex: 1 },
-    badge: { borderRadius: 12, paddingHorizontal: 10, paddingVertical: 3 },
-    badgeText: { color: '#fff', fontSize: 11, fontWeight: '700' },
-    row: { fontSize: 13, color: '#374151', marginBottom: 3 },
-    notas: { fontSize: 12, color: '#9ca3af', marginTop: 4, fontStyle: 'italic' },
+    cardTitle: { fontSize: 16, fontWeight: '700', color: colors.ink, flex: 1 },
+    badge: { borderRadius: radius.pill, paddingHorizontal: 10, paddingVertical: 3 },
+    badgeText: { color: colors.white, fontSize: 11, fontWeight: '700' },
+    row: { fontSize: 13, color: colors.inkSoft, marginBottom: 3 },
+    notas: { fontSize: 12, color: colors.inkFaint, marginTop: 4, fontStyle: 'italic' },
     actions: { flexDirection: 'row', gap: 8, flexWrap: 'wrap', marginTop: 8 },
-    btnAccion: { borderWidth: 1, borderColor: '#d1d5db', borderRadius: 8, paddingHorizontal: 12, paddingVertical: 8, backgroundColor: '#f9fafb' },
-    btnAccionText: { fontSize: 12, color: '#374151', fontWeight: '600' },
-    btnWarn: { backgroundColor: '#f59e0b', borderColor: '#f59e0b' },
-    btnSuccess: { backgroundColor: '#22c55e', borderColor: '#22c55e' },
-    btnDanger: { backgroundColor: '#ef4444', borderColor: '#ef4444' },
-    fab: { position: 'absolute', bottom: 20, right: 20, backgroundColor: '#1d4ed8', borderRadius: 30, paddingHorizontal: 20, paddingVertical: 12, elevation: 6, shadowColor: '#000', shadowOpacity: 0.2, shadowRadius: 6 },
-    fabText: { color: '#fff', fontWeight: '700', fontSize: 15 },
+    btnAccion: { borderWidth: 1, borderColor: colors.line, borderRadius: radius.sm, paddingHorizontal: 12, paddingVertical: 8, backgroundColor: colors.bg },
+    btnAccionText: { fontSize: 12, color: colors.ink, fontWeight: '600' },
+    btnWarn: { backgroundColor: colors.vendido, borderColor: colors.vendido },
+    btnSuccess: { backgroundColor: colors.vivo, borderColor: colors.vivo },
+    btnDanger: { backgroundColor: colors.muerto, borderColor: colors.muerto },
+    fab: { position: 'absolute', bottom: 20, right: 20, backgroundColor: colors.campo, borderRadius: 30, paddingHorizontal: 20, paddingVertical: 12, ...shadow.float },
+    fabText: { color: colors.white, fontWeight: '700', fontSize: 15 },
     modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
-    modalCard: { backgroundColor: '#fff', borderTopLeftRadius: 20, borderTopRightRadius: 20, padding: 24, maxHeight: '88%' },
-    modalTitle: { fontSize: 18, fontWeight: '700', color: '#1f2937', marginBottom: 12 },
-    label: { fontSize: 13, fontWeight: '600', color: '#374151', marginBottom: 4, marginTop: 8 },
-    input: { borderWidth: 1, borderColor: '#d1d5db', borderRadius: 8, padding: 10, fontSize: 14, color: '#111827' },
+    modalCard: { backgroundColor: colors.surface, borderTopLeftRadius: radius.lg, borderTopRightRadius: radius.lg, padding: space.xl, maxHeight: '88%' },
+    modalTitle: { fontSize: 18, fontWeight: '700', color: colors.ink, marginBottom: 12 },
+    label: { fontSize: 13, fontWeight: '600', color: colors.ink, marginBottom: 4, marginTop: 8 },
+    input: { borderWidth: 1, borderColor: colors.line, borderRadius: radius.sm, padding: 10, fontSize: 14, color: colors.ink },
     inputMulti: { height: 56, textAlignVertical: 'top' },
     modalActions: { flexDirection: 'row', gap: 10, marginTop: 18 },
-    btnCancelar: { flex: 1, borderWidth: 1, borderColor: '#d1d5db', borderRadius: 10, padding: 12, alignItems: 'center' },
-    btnCancelarText: { color: '#374151', fontWeight: '600' },
-    btnGuardar: { flex: 1, backgroundColor: '#1d4ed8', borderRadius: 10, padding: 12, alignItems: 'center' },
-    btnGuardarText: { color: '#fff', fontWeight: '700' },
+    btnCancelar: { flex: 1, borderWidth: 1, borderColor: colors.line, borderRadius: radius.sm, padding: 12, alignItems: 'center' },
+    btnCancelarText: { color: colors.ink, fontWeight: '600' },
+    btnGuardar: { flex: 1, backgroundColor: colors.campo, borderRadius: radius.sm, padding: 12, alignItems: 'center' },
+    btnGuardarText: { color: colors.white, fontWeight: '700' },
 });
