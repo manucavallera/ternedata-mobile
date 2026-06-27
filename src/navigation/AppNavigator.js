@@ -3,6 +3,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { colors } from '../theme';
+import DashboardScreen from '../screens/dashboard/DashboardScreen';
 import TerneroListadoScreen from '../screens/ternero/TerneroListadoScreen';
 import TerneroFormScreen from '../screens/ternero/TerneroFormScreen';
 import MadreListadoScreen from '../screens/madre/MadreListadoScreen';
@@ -89,6 +90,7 @@ function MasNavigator() {
 }
 
 const TABS = [
+    { name: 'Dashboard', label: 'Inicio', icon: '📊', component: DashboardScreen },
     { name: 'Terneros', label: 'Terneros', icon: '🐮', component: TerneroNavigator },
     { name: 'Madres', label: 'Madres', icon: '🐄', component: MadreNavigator },
     { name: 'Tratamientos', label: 'Tratam.', icon: '💉', component: TratamientoNavigator },
