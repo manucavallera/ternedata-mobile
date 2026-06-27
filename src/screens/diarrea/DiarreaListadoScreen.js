@@ -149,7 +149,7 @@ export default function DiarreaListadoScreen() {
                 </TouchableOpacity>
             </View>
 
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filtroRow}>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filtroRow} contentContainerStyle={styles.filtroContent}>
                 {SEVERIDADES.map(s => (
                     <TouchableOpacity key={s || 'todas'} style={[styles.filtroBtn, filtroSeveridad === s && styles.filtroBtnActive]} onPress={() => { setFiltroSeveridad(s); cargarDiarreas(searchInput, s); }}>
                         <Text style={[styles.filtroBtnText, filtroSeveridad === s && styles.filtroBtnTextActive]}>{s || 'Todas'}</Text>
@@ -228,8 +228,9 @@ const styles = StyleSheet.create({
     searchInput: { flex: 1, backgroundColor: colors.surface, borderRadius: radius.sm, borderWidth: 1, borderColor: colors.line, paddingHorizontal: 12, paddingVertical: 8, fontSize: 14 },
     searchBtn: { backgroundColor: colors.campo, borderRadius: radius.sm, paddingHorizontal: 14, justifyContent: 'center' },
     searchBtnText: { color: colors.white, fontWeight: '700', fontSize: 13 },
-    filtroRow: { paddingHorizontal: space.md, marginBottom: 8, flexGrow: 0 },
-    filtroBtn: { borderWidth: 1, borderColor: colors.line, borderRadius: radius.pill, paddingHorizontal: 14, paddingVertical: 6, marginRight: 8, backgroundColor: colors.surface },
+    filtroRow: { marginBottom: 8, flexGrow: 0, maxHeight: 44 },
+    filtroContent: { paddingHorizontal: space.md, alignItems: 'center', gap: 8 },
+    filtroBtn: { borderWidth: 1, borderColor: colors.line, borderRadius: radius.pill, paddingHorizontal: 14, paddingVertical: 6, backgroundColor: colors.surface },
     filtroBtnActive: { backgroundColor: colors.campo, borderColor: colors.campo },
     filtroBtnText: { fontSize: 13, color: colors.ink },
     filtroBtnTextActive: { color: colors.white, fontWeight: '700' },

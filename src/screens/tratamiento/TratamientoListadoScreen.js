@@ -204,7 +204,7 @@ export default function TratamientoListadoScreen() {
                 </TouchableOpacity>
             </View>
 
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filtroRow}>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filtroRow} contentContainerStyle={styles.filtroContent}>
                 {TURNOS.map(t => (
                     <TouchableOpacity key={t.val || 'all'} style={[styles.filtroBtn, filtroTurno === t.val && styles.filtroBtnActive]} onPress={() => { setFiltroTurno(t.val); cargarTratamientos(busquedaEnf, t.val); }}>
                         <Text style={[styles.filtroBtnText, filtroTurno === t.val && styles.filtroBtnTextActive]}>{t.label}</Text>
@@ -300,8 +300,9 @@ const styles = StyleSheet.create({
     searchBtn: { backgroundColor: colors.campo, borderRadius: radius.sm, paddingHorizontal: 16, justifyContent: 'center' },
     searchBtnText: { color: colors.white, fontWeight: '800', fontSize: 13 },
 
-    filtroRow: { paddingHorizontal: space.md, paddingVertical: space.md, flexGrow: 0 },
-    filtroBtn: { borderWidth: 1, borderColor: colors.line, borderRadius: radius.pill, paddingHorizontal: 16, paddingVertical: 7, marginRight: space.sm, backgroundColor: colors.surface },
+    filtroRow: { paddingVertical: space.md, flexGrow: 0 },
+    filtroContent: { paddingHorizontal: space.md, alignItems: 'center', gap: space.sm },
+    filtroBtn: { borderWidth: 1, borderColor: colors.line, borderRadius: radius.pill, paddingHorizontal: 16, paddingVertical: 7, backgroundColor: colors.surface },
     filtroBtnActive: { backgroundColor: colors.campo, borderColor: colors.campo },
     filtroBtnText: { fontSize: 13, color: colors.inkSoft, fontWeight: '600' },
     filtroBtnTextActive: { color: colors.white, fontWeight: '800' },
