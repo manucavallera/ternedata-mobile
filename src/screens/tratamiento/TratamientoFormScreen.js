@@ -6,9 +6,10 @@ import {
 import { useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 import { useBussinesMicroservicio } from '../../hooks/bussines';
+import { colors, shadow, radius, space } from '../../theme';
 
 const TIPOS = ['Diarrea', 'Respiratorio', 'Umbilical', 'Oftalmico', 'Otro'];
-// Enum real del backend (minúscula con ñ), igual que la web
+// Enum real del backend (minúscula con ñ)
 const TURNOS = [['mañana', '🌅 Mañana'], ['tarde', '🌆 Tarde']];
 
 export default function TratamientoFormScreen() {
@@ -19,11 +20,9 @@ export default function TratamientoFormScreen() {
     const [formData, setFormData] = useState({
         tipo_enfermedad: 'Diarrea',
         turno: 'mañana',
-        medicamento: '',
-        dosis: '',
-        dias_tratamiento: '',
+        nombre: '',           // campo real (era "medicamento" — fantasma)
+        descripcion: '',      // campo real (era "observaciones")
         fecha_tratamiento: new Date().toISOString().split('T')[0],
-        observaciones: '',
         id_ternero: '',
     });
 
@@ -52,17 +51,15 @@ export default function TratamientoFormScreen() {
 
     const handleSubmit = async () => {
         if (!formData.id_ternero) { showAlert('Seleccioná un ternero', false); return; }
-        if (!formData.medicamento) { showAlert('Medicamento es requerido', false); return; }
+        if (!formData.nombre.trim()) { showAlert('Nombre del tratamiento es requerido', false); return; }
 
         setSubmitting(true);
         const payload = {
             tipo_enfermedad: formData.tipo_enfermedad,
             turno: formData.turno,
-            medicamento: formData.medicamento,
-            dosis: formData.dosis || undefined,
-            dias_tratamiento: formData.dias_tratamiento ? parseInt(formData.dias_tratamiento) : undefined,
+            nombre: formData.nombre.trim(),
+            descripcion: formData.descripcion || undefined,
             fecha_tratamiento: formData.fecha_tratamiento,
-            observaciones: formData.observaciones || undefined,
             id_ternero: parseInt(formData.id_ternero),
         };
 
@@ -131,23 +128,17 @@ export default function TratamientoFormScreen() {
             </View>
 
             <View style={styles.card}>
-                <Text style={styles.sectionTitle}>Medicación</Text>
+                <Text style={styles.sectionTitle}>Tratamiento</Text>
 
-                <Text style={styles.label}>Medicamento *</Text>
-                <TextInput style={styles.input} value={formData.medicamento} onChangeText={v => set('medicamento', v)} placeholder="Nombre del medicamento" />
+                <Text style={styles.label}>Nombre *</Text>
+                <TextInput style={styles.input} value={formData.nombre} onChangeText={v => set('nombre', v)} placeholder="Ej: Ivermectina, Oxitetraciclina" />
 
-                <Text style={styles.label}>Dosis</Text>
-                <TextInput style={styles.input} value={formData.dosis} onChangeText={v => set('dosis', v)} placeholder="Ej: 5ml, 2 comprimidos" />
-
-                <Text style={styles.label}>Días de tratamiento</Text>
-                <TextInput style={styles.input} value={formData.dias_tratamiento} onChangeText={v => set('dias_tratamiento', v)} placeholder="Ej: 5" keyboardType="numeric" />
-
-                <Text style={styles.label}>Observaciones</Text>
-                <TextInput style={[styles.input, styles.inputMulti]} value={formData.observaciones} onChangeText={v => set('observaciones', v)} placeholder="Observaciones del tratamiento" multiline numberOfLines={3} />
+                <Text style={styles.label}>Descripción</Text>
+                <TextInput style={[styles.input, styles.inputMulti]} value={formData.descripcion} onChangeText={v => set('descripcion', v)} placeholder="Dosis, observaciones, etc." multiline numberOfLines={3} />
             </View>
 
             <TouchableOpacity style={styles.btnSubmit} onPress={handleSubmit} disabled={submitting}>
-                {submitting ? <ActivityIndicator color="#fff" /> : <Text style={styles.btnSubmitText}>Registrar tratamiento</Text>}
+                {submitting ? <ActivityIndicator color={colors.white} /> : <Text style={styles.btnSubmitText}>Registrar tratamiento</Text>}
             </TouchableOpacity>
 
             <Modal visible={modalTernero} animationType="slide" transparent>
@@ -178,36 +169,36 @@ export default function TratamientoFormScreen() {
 }
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: '#f3f4f6' },
+    container: { flex: 1, backgroundColor: colors.bg },
     content: { paddingBottom: 40 },
-    header: { backgroundColor: '#f59e0b', paddingTop: 50, paddingBottom: 16, paddingHorizontal: 16 },
-    backBtn: { color: '#fef3c7', fontSize: 14, marginBottom: 4 },
-    headerTitle: { fontSize: 22, fontWeight: 'bold', color: '#fff' },
-    alert: { margin: 12, borderRadius: 8, padding: 10 },
-    alertSuccess: { backgroundColor: '#22c55e' },
-    alertError: { backgroundColor: '#ef4444' },
-    alertText: { color: '#fff', fontWeight: '600', textAlign: 'center', fontSize: 13 },
-    card: { backgroundColor: '#fff', borderRadius: 12, padding: 16, margin: 12, marginBottom: 0, shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 4, elevation: 2 },
-    sectionTitle: { fontSize: 15, fontWeight: '700', color: '#1f2937', marginBottom: 8 },
-    label: { fontSize: 13, fontWeight: '600', color: '#374151', marginBottom: 4, marginTop: 10 },
-    input: { borderWidth: 1, borderColor: '#d1d5db', borderRadius: 8, padding: 10, fontSize: 14, color: '#111827' },
+    header: { backgroundColor: colors.campoDark, paddingTop: 50, paddingBottom: 16, paddingHorizontal: 16 },
+    backBtn: { color: colors.campoSoft, fontSize: 14, marginBottom: 4 },
+    headerTitle: { fontSize: 22, fontWeight: '800', color: colors.white },
+    alert: { margin: space.md, borderRadius: radius.sm, padding: 10 },
+    alertSuccess: { backgroundColor: colors.vivo },
+    alertError: { backgroundColor: colors.muerto },
+    alertText: { color: colors.white, fontWeight: '600', textAlign: 'center', fontSize: 13 },
+    card: { backgroundColor: colors.surface, borderRadius: radius.md, padding: 16, margin: space.md, marginBottom: 0, ...shadow.card },
+    sectionTitle: { fontSize: 15, fontWeight: '700', color: colors.ink, marginBottom: 8 },
+    label: { fontSize: 13, fontWeight: '600', color: colors.ink, marginBottom: 4, marginTop: 10 },
+    input: { borderWidth: 1, borderColor: colors.line, borderRadius: radius.sm, padding: 10, fontSize: 14, color: colors.ink },
     inputMulti: { height: 80, textAlignVertical: 'top' },
     optionRow: { flexDirection: 'row', gap: 8, flexWrap: 'wrap', marginTop: 4 },
-    optionBtn: { borderWidth: 1, borderColor: '#d1d5db', borderRadius: 8, paddingHorizontal: 14, paddingVertical: 8 },
-    optionBtnActive: { backgroundColor: '#f59e0b', borderColor: '#f59e0b' },
-    optionBtnText: { fontSize: 13, color: '#374151' },
-    optionBtnTextActive: { color: '#fff', fontWeight: '700' },
-    selectBtn: { borderWidth: 1, borderColor: '#d1d5db', borderRadius: 8, padding: 12, marginTop: 4, backgroundColor: '#f9fafb' },
-    selectBtnText: { fontSize: 14, color: '#374151' },
-    btnSubmit: { backgroundColor: '#f59e0b', margin: 12, borderRadius: 12, padding: 16, alignItems: 'center', marginTop: 16 },
-    btnSubmitText: { color: '#fff', fontWeight: '700', fontSize: 16 },
+    optionBtn: { borderWidth: 1, borderColor: colors.line, borderRadius: radius.sm, paddingHorizontal: 14, paddingVertical: 8 },
+    optionBtnActive: { backgroundColor: colors.campo, borderColor: colors.campo },
+    optionBtnText: { fontSize: 13, color: colors.ink },
+    optionBtnTextActive: { color: colors.white, fontWeight: '700' },
+    selectBtn: { borderWidth: 1, borderColor: colors.line, borderRadius: radius.sm, padding: 12, marginTop: 4, backgroundColor: colors.bg },
+    selectBtnText: { fontSize: 14, color: colors.ink },
+    btnSubmit: { backgroundColor: colors.campo, margin: space.md, borderRadius: radius.md, padding: 16, alignItems: 'center', marginTop: 16 },
+    btnSubmitText: { color: colors.white, fontWeight: '700', fontSize: 16 },
     modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
-    modalCard: { backgroundColor: '#fff', borderTopLeftRadius: 20, borderTopRightRadius: 20, padding: 24, maxHeight: '75%' },
-    modalTitle: { fontSize: 18, fontWeight: '700', color: '#1f2937', marginBottom: 12 },
-    modalItem: { paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: '#f3f4f6' },
-    modalItemText: { fontSize: 14, color: '#111827', fontWeight: '600' },
-    modalItemSub: { fontSize: 12, color: '#9ca3af', marginTop: 2 },
-    modalEmpty: { textAlign: 'center', color: '#9ca3af', padding: 20 },
-    modalCerrar: { marginTop: 12, padding: 12, alignItems: 'center', borderWidth: 1, borderColor: '#d1d5db', borderRadius: 10 },
-    modalCerrarText: { color: '#374151', fontWeight: '600' },
+    modalCard: { backgroundColor: colors.surface, borderTopLeftRadius: radius.lg, borderTopRightRadius: radius.lg, padding: space.xl, maxHeight: '75%' },
+    modalTitle: { fontSize: 18, fontWeight: '700', color: colors.ink, marginBottom: 12 },
+    modalItem: { paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: colors.bg },
+    modalItemText: { fontSize: 14, color: colors.ink, fontWeight: '600' },
+    modalItemSub: { fontSize: 12, color: colors.inkFaint, marginTop: 2 },
+    modalEmpty: { textAlign: 'center', color: colors.inkFaint, padding: 20 },
+    modalCerrar: { marginTop: 12, padding: 12, alignItems: 'center', borderWidth: 1, borderColor: colors.line, borderRadius: radius.sm },
+    modalCerrarText: { color: colors.ink, fontWeight: '600' },
 });

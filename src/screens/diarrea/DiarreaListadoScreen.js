@@ -8,6 +8,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useBussinesMicroservicio } from '../../hooks/bussines';
 import { format, parseISO } from 'date-fns';
 import { es } from 'date-fns/locale';
+import { colors, shadow, radius, space } from '../../theme';
 
 const SEVERIDADES = ['', 'Leve', 'Moderada', 'Severa', 'Crítica'];
 
@@ -156,7 +157,7 @@ export default function DiarreaListadoScreen() {
                 ))}
             </ScrollView>
 
-            {loading ? <ActivityIndicator size="large" color="#06b6d4" style={styles.loader} /> : (
+            {loading ? <ActivityIndicator size="large" color={colors.campo} style={styles.loader} /> : (
                 <FlatList
                     data={diarreas}
                     keyExtractor={item => String(item.id_diarrea_ternero)}
@@ -207,53 +208,53 @@ export default function DiarreaListadoScreen() {
 }
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: '#f3f4f6' },
-    header: { backgroundColor: '#06b6d4', paddingTop: 50, paddingBottom: 16, paddingHorizontal: 16, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' },
-    headerTitle: { fontSize: 22, fontWeight: 'bold', color: '#fff' },
-    headerSub: { fontSize: 13, color: '#cffafe' },
-    alert: { margin: 12, borderRadius: 8, padding: 10 },
-    alertSuccess: { backgroundColor: '#22c55e' },
-    alertError: { backgroundColor: '#ef4444' },
-    alertText: { color: '#fff', fontWeight: '600', textAlign: 'center' },
-    searchRow: { flexDirection: 'row', margin: 12, gap: 8 },
-    searchInput: { flex: 1, backgroundColor: '#fff', borderRadius: 8, borderWidth: 1, borderColor: '#d1d5db', paddingHorizontal: 12, paddingVertical: 8, fontSize: 14 },
-    searchBtn: { backgroundColor: '#06b6d4', borderRadius: 8, paddingHorizontal: 14, justifyContent: 'center' },
-    searchBtnText: { color: '#fff', fontWeight: '700', fontSize: 13 },
-    filtroRow: { paddingHorizontal: 12, marginBottom: 8, flexGrow: 0 },
-    filtroBtn: { borderWidth: 1, borderColor: '#d1d5db', borderRadius: 20, paddingHorizontal: 14, paddingVertical: 6, marginRight: 8, backgroundColor: '#fff' },
-    filtroBtnActive: { backgroundColor: '#06b6d4', borderColor: '#06b6d4' },
-    filtroBtnText: { fontSize: 13, color: '#374151' },
-    filtroBtnTextActive: { color: '#fff', fontWeight: '700' },
+    container: { flex: 1, backgroundColor: colors.bg },
+    header: { backgroundColor: colors.campoDark, paddingTop: 50, paddingBottom: 16, paddingHorizontal: 16, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' },
+    headerTitle: { fontSize: 22, fontWeight: '800', color: colors.white },
+    headerSub: { fontSize: 13, color: colors.campoSoft },
+    alert: { margin: space.md, borderRadius: radius.sm, padding: 10 },
+    alertSuccess: { backgroundColor: colors.vivo },
+    alertError: { backgroundColor: colors.muerto },
+    alertText: { color: colors.white, fontWeight: '600', textAlign: 'center' },
+    searchRow: { flexDirection: 'row', margin: space.md, gap: space.sm },
+    searchInput: { flex: 1, backgroundColor: colors.surface, borderRadius: radius.sm, borderWidth: 1, borderColor: colors.line, paddingHorizontal: 12, paddingVertical: 8, fontSize: 14 },
+    searchBtn: { backgroundColor: colors.campo, borderRadius: radius.sm, paddingHorizontal: 14, justifyContent: 'center' },
+    searchBtnText: { color: colors.white, fontWeight: '700', fontSize: 13 },
+    filtroRow: { paddingHorizontal: space.md, marginBottom: 8, flexGrow: 0 },
+    filtroBtn: { borderWidth: 1, borderColor: colors.line, borderRadius: radius.pill, paddingHorizontal: 14, paddingVertical: 6, marginRight: 8, backgroundColor: colors.surface },
+    filtroBtnActive: { backgroundColor: colors.campo, borderColor: colors.campo },
+    filtroBtnText: { fontSize: 13, color: colors.ink },
+    filtroBtnTextActive: { color: colors.white, fontWeight: '700' },
     loader: { marginTop: 40 },
-    list: { paddingHorizontal: 12, paddingBottom: 20 },
-    empty: { textAlign: 'center', color: '#9ca3af', marginTop: 40, fontSize: 15 },
-    card: { backgroundColor: '#fff', borderRadius: 12, padding: 14, marginBottom: 10, shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 4, elevation: 2 },
+    list: { paddingHorizontal: space.md, paddingBottom: 20 },
+    empty: { textAlign: 'center', color: colors.inkFaint, marginTop: 40, fontSize: 15 },
+    card: { backgroundColor: colors.surface, borderRadius: radius.md, padding: 14, marginBottom: 10, ...shadow.card },
     cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
-    cardTitle: { fontSize: 15, fontWeight: '700', color: '#1f2937', flex: 1 },
-    badge: { borderRadius: 12, paddingHorizontal: 10, paddingVertical: 3 },
-    badgeText: { color: '#fff', fontSize: 11, fontWeight: '700' },
+    cardTitle: { fontSize: 15, fontWeight: '700', color: colors.ink, flex: 1 },
+    badge: { borderRadius: radius.pill, paddingHorizontal: 10, paddingVertical: 3 },
+    badgeText: { color: colors.white, fontSize: 11, fontWeight: '700' },
     cardRow: { flexDirection: 'row', marginBottom: 4, flexWrap: 'wrap' },
-    cardLabel: { fontSize: 12, color: '#6b7280', fontWeight: '600' },
-    cardValue: { fontSize: 12, color: '#111827', marginLeft: 4 },
-    observaciones: { fontSize: 11, color: '#9ca3af', marginTop: 4, fontStyle: 'italic' },
-    btnEditar: { backgroundColor: '#06b6d4', borderRadius: 8, padding: 8, alignItems: 'center', marginTop: 10 },
-    btnText: { color: '#fff', fontWeight: '700', fontSize: 13 },
+    cardLabel: { fontSize: 12, color: colors.inkSoft, fontWeight: '600' },
+    cardValue: { fontSize: 12, color: colors.ink, marginLeft: 4 },
+    observaciones: { fontSize: 11, color: colors.inkFaint, marginTop: 4, fontStyle: 'italic' },
+    btnEditar: { backgroundColor: colors.campo, borderRadius: radius.sm, padding: 8, alignItems: 'center', marginTop: 10 },
+    btnText: { color: colors.white, fontWeight: '700', fontSize: 13 },
     modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
-    modalCard: { backgroundColor: '#fff', borderTopLeftRadius: 20, borderTopRightRadius: 20, padding: 24, maxHeight: '85%' },
-    modalTitle: { fontSize: 18, fontWeight: '700', color: '#1f2937', marginBottom: 16 },
-    label: { fontSize: 13, fontWeight: '600', color: '#374151', marginBottom: 6, marginTop: 10 },
-    input: { borderWidth: 1, borderColor: '#d1d5db', borderRadius: 8, padding: 10, fontSize: 14, color: '#111827' },
+    modalCard: { backgroundColor: colors.surface, borderTopLeftRadius: radius.lg, borderTopRightRadius: radius.lg, padding: space.xl, maxHeight: '85%' },
+    modalTitle: { fontSize: 18, fontWeight: '700', color: colors.ink, marginBottom: 16 },
+    label: { fontSize: 13, fontWeight: '600', color: colors.ink, marginBottom: 6, marginTop: 10 },
+    input: { borderWidth: 1, borderColor: colors.line, borderRadius: radius.sm, padding: 10, fontSize: 14, color: colors.ink },
     inputMulti: { height: 80, textAlignVertical: 'top' },
     optionRow: { flexDirection: 'row', gap: 8, flexWrap: 'wrap' },
-    optionBtn: { borderWidth: 1, borderColor: '#d1d5db', borderRadius: 8, paddingHorizontal: 14, paddingVertical: 8 },
-    optionBtnActive: { backgroundColor: '#06b6d4', borderColor: '#06b6d4' },
-    optionBtnText: { fontSize: 13, color: '#374151' },
-    optionBtnTextActive: { color: '#fff', fontWeight: '700' },
+    optionBtn: { borderWidth: 1, borderColor: colors.line, borderRadius: radius.sm, paddingHorizontal: 14, paddingVertical: 8 },
+    optionBtnActive: { backgroundColor: colors.campo, borderColor: colors.campo },
+    optionBtnText: { fontSize: 13, color: colors.ink },
+    optionBtnTextActive: { color: colors.white, fontWeight: '700' },
     modalActions: { flexDirection: 'row', gap: 10, marginTop: 20 },
-    btnCancelar: { flex: 1, borderWidth: 1, borderColor: '#d1d5db', borderRadius: 10, padding: 12, alignItems: 'center' },
-    btnCancelarText: { color: '#374151', fontWeight: '600' },
-    btnGuardar: { flex: 1, backgroundColor: '#06b6d4', borderRadius: 10, padding: 12, alignItems: 'center' },
-    btnGuardarText: { color: '#fff', fontWeight: '700' },
-    fab: { position: 'absolute', bottom: 20, right: 20, backgroundColor: '#06b6d4', borderRadius: 30, paddingHorizontal: 20, paddingVertical: 12, elevation: 6, shadowColor: '#000', shadowOpacity: 0.2, shadowRadius: 6 },
-    fabText: { color: '#fff', fontWeight: '700', fontSize: 15 },
+    btnCancelar: { flex: 1, borderWidth: 1, borderColor: colors.line, borderRadius: radius.sm, padding: 12, alignItems: 'center' },
+    btnCancelarText: { color: colors.ink, fontWeight: '600' },
+    btnGuardar: { flex: 1, backgroundColor: colors.campo, borderRadius: radius.sm, padding: 12, alignItems: 'center' },
+    btnGuardarText: { color: colors.white, fontWeight: '700' },
+    fab: { position: 'absolute', bottom: 20, right: 20, backgroundColor: colors.campo, borderRadius: 30, paddingHorizontal: 20, paddingVertical: 12, ...shadow.float },
+    fabText: { color: colors.white, fontWeight: '700', fontSize: 15 },
 });

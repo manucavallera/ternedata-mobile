@@ -5,6 +5,7 @@ import {
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useAuthSession } from '../../hooks/auth';
+import { colors, shadow, radius, space } from '../../theme';
 
 export default function VerifyEmailScreen() {
     const navigation = useNavigation();
@@ -48,7 +49,7 @@ export default function VerifyEmailScreen() {
 
                     {estado === 'verificando' && (
                         <View style={styles.center}>
-                            <ActivityIndicator size="large" color="#6366f1" />
+                            <ActivityIndicator size="large" color={colors.campo} />
                             <Text style={styles.subtitle}>Verificando tu cuenta...</Text>
                         </View>
                     )}
@@ -96,21 +97,21 @@ export default function VerifyEmailScreen() {
 }
 
 const styles = StyleSheet.create({
-    flex: { flex: 1, backgroundColor: '#f3f4f6' },
-    container: { flexGrow: 1, justifyContent: 'center', padding: 20 },
-    card: { backgroundColor: '#fff', borderRadius: 16, padding: 24, shadowColor: '#000', shadowOpacity: 0.08, shadowRadius: 8, elevation: 4 },
-    title: { fontSize: 24, fontWeight: 'bold', color: '#374151', marginBottom: 16, textAlign: 'center' },
-    subtitle: { fontSize: 13, color: '#6b7280', marginTop: 12, textAlign: 'center' },
+    flex: { flex: 1, backgroundColor: colors.bg },
+    container: { flexGrow: 1, justifyContent: 'center', padding: space.xl },
+    card: { backgroundColor: colors.surface, borderRadius: radius.lg, padding: space.xl, ...shadow.card },
+    title: { fontSize: 24, fontWeight: '800', color: colors.ink, marginBottom: 16, textAlign: 'center' },
+    subtitle: { fontSize: 13, color: colors.inkSoft, marginTop: 12, textAlign: 'center' },
     center: { alignItems: 'center', paddingVertical: 12 },
-    label: { fontSize: 14, fontWeight: '600', color: '#374151', marginBottom: 4, marginTop: 14 },
-    input: { borderWidth: 1, borderColor: '#d1d5db', borderRadius: 8, padding: 10, marginBottom: 4, fontSize: 15, color: '#111827' },
-    button: { backgroundColor: '#6366f1', borderRadius: 10, padding: 14, alignItems: 'center', marginTop: 16 },
-    buttonText: { color: '#fff', fontWeight: '700', fontSize: 16 },
-    alertBox: { borderRadius: 8, padding: 12, marginTop: 4 },
-    alertSuccess: { backgroundColor: '#22c55e' },
-    alertError: { backgroundColor: '#ef4444' },
-    alertText: { color: '#fff', fontWeight: '600', textAlign: 'center', fontSize: 13 },
-    successMsg: { fontSize: 13, color: '#15803d', marginTop: 12, textAlign: 'center', lineHeight: 20 },
+    label: { fontSize: 14, fontWeight: '600', color: colors.ink, marginBottom: 4, marginTop: 14 },
+    input: { borderWidth: 1, borderColor: colors.line, borderRadius: radius.sm, padding: 10, marginBottom: 4, fontSize: 15, color: colors.ink },
+    button: { backgroundColor: colors.campo, borderRadius: radius.sm, padding: 14, alignItems: 'center', marginTop: 16 },
+    buttonText: { color: colors.white, fontWeight: '700', fontSize: 16 },
+    alertBox: { borderRadius: radius.sm, padding: 12, marginTop: 4 },
+    alertSuccess: { backgroundColor: colors.vivo },
+    alertError: { backgroundColor: colors.muerto },
+    alertText: { color: colors.white, fontWeight: '600', textAlign: 'center', fontSize: 13 },
+    successMsg: { fontSize: 13, color: colors.vivo, marginTop: 12, textAlign: 'center', lineHeight: 20 },
     backLink: { marginTop: 16, alignItems: 'center' },
-    backText: { fontSize: 13, color: '#6366f1', fontWeight: '600' },
+    backText: { fontSize: 13, color: colors.campo, fontWeight: '600' },
 });

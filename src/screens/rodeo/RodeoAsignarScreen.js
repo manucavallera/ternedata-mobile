@@ -6,6 +6,7 @@ import {
 import { useSelector } from 'react-redux';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useBussinesMicroservicio } from '../../hooks/bussines';
+import { colors, shadow, radius, space } from '../../theme';
 
 export default function RodeoAsignarScreen() {
     const navigation = useNavigation();
@@ -121,7 +122,7 @@ export default function RodeoAsignarScreen() {
 
             <TextInput style={styles.search} placeholder="Buscar..." value={search} onChangeText={setSearch} />
 
-            {loading ? <ActivityIndicator size="large" color="#15803d" style={styles.loader} /> : (
+            {loading ? <ActivityIndicator size="large" color={colors.campo} style={styles.loader} /> : (
                 <FlatList
                     data={listaFiltrada}
                     keyExtractor={item => String(item[idKey])}
@@ -147,37 +148,37 @@ export default function RodeoAsignarScreen() {
 }
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: '#f3f4f6' },
-    header: { backgroundColor: '#15803d', paddingTop: 50, paddingBottom: 16, paddingHorizontal: 16 },
-    backBtn: { color: '#bbf7d0', fontSize: 14, marginBottom: 4 },
-    headerTitle: { fontSize: 20, fontWeight: 'bold', color: '#fff' },
-    headerSub: { fontSize: 13, color: '#bbf7d0' },
-    alert: { margin: 12, borderRadius: 8, padding: 10 },
-    alertSuccess: { backgroundColor: '#22c55e' },
-    alertError: { backgroundColor: '#ef4444' },
-    alertText: { color: '#fff', fontWeight: '600', textAlign: 'center' },
-    tabs: { flexDirection: 'row', margin: 12, gap: 8 },
-    tab: { flex: 1, borderRadius: 8, padding: 10, alignItems: 'center', backgroundColor: '#fff', borderWidth: 1, borderColor: '#d1d5db' },
-    tabActive: { backgroundColor: '#15803d', borderColor: '#15803d' },
-    tabText: { fontSize: 14, color: '#374151', fontWeight: '600' },
-    tabTextActive: { color: '#fff' },
-    search: { backgroundColor: '#fff', borderRadius: 8, borderWidth: 1, borderColor: '#d1d5db', paddingHorizontal: 12, paddingVertical: 8, fontSize: 14, marginHorizontal: 12, marginBottom: 8 },
+    container: { flex: 1, backgroundColor: colors.bg },
+    header: { backgroundColor: colors.campoDark, paddingTop: 50, paddingBottom: 16, paddingHorizontal: 16 },
+    backBtn: { color: colors.campoSoft, fontSize: 14, marginBottom: 4 },
+    headerTitle: { fontSize: 20, fontWeight: '800', color: colors.white },
+    headerSub: { fontSize: 13, color: colors.campoSoft },
+    alert: { margin: space.md, borderRadius: radius.sm, padding: 10 },
+    alertSuccess: { backgroundColor: colors.vivo },
+    alertError: { backgroundColor: colors.muerto },
+    alertText: { color: colors.white, fontWeight: '600', textAlign: 'center' },
+    tabs: { flexDirection: 'row', margin: space.md, gap: space.sm },
+    tab: { flex: 1, borderRadius: radius.sm, padding: 10, alignItems: 'center', backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.line },
+    tabActive: { backgroundColor: colors.campo, borderColor: colors.campo },
+    tabText: { fontSize: 14, color: colors.ink, fontWeight: '600' },
+    tabTextActive: { color: colors.white },
+    search: { backgroundColor: colors.surface, borderRadius: radius.sm, borderWidth: 1, borderColor: colors.line, paddingHorizontal: 12, paddingVertical: 8, fontSize: 14, marginHorizontal: space.md, marginBottom: 8 },
     loader: { marginTop: 40 },
-    list: { paddingHorizontal: 12, paddingBottom: 20 },
-    empty: { textAlign: 'center', color: '#9ca3af', marginTop: 40, fontSize: 15 },
-    item: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#fff', borderRadius: 10, padding: 12, marginBottom: 8, borderWidth: 1, borderColor: '#fff' },
-    itemSel: { borderColor: '#15803d', backgroundColor: '#f0fdf4' },
-    checkbox: { width: 24, height: 24, borderRadius: 6, borderWidth: 2, borderColor: '#d1d5db', marginRight: 12, alignItems: 'center', justifyContent: 'center' },
-    checkboxSel: { backgroundColor: '#15803d', borderColor: '#15803d' },
-    checkmark: { color: '#fff', fontWeight: '800', fontSize: 14 },
-    itemTitle: { fontSize: 14, color: '#111827', fontWeight: '600' },
-    enRodeo: { fontSize: 11, color: '#15803d', marginTop: 2, fontWeight: '600' },
-    footer: { backgroundColor: '#fff', padding: 12, borderTopWidth: 1, borderTopColor: '#e5e7eb' },
-    selCount: { fontSize: 12, color: '#6b7280', marginBottom: 8, textAlign: 'center' },
+    list: { paddingHorizontal: space.md, paddingBottom: 20 },
+    empty: { textAlign: 'center', color: colors.inkFaint, marginTop: 40, fontSize: 15 },
+    item: { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.surface, borderRadius: radius.sm, padding: 12, marginBottom: 8, borderWidth: 1, borderColor: colors.surface },
+    itemSel: { borderColor: colors.campo, backgroundColor: colors.campoSoft },
+    checkbox: { width: 24, height: 24, borderRadius: 6, borderWidth: 2, borderColor: colors.line, marginRight: 12, alignItems: 'center', justifyContent: 'center' },
+    checkboxSel: { backgroundColor: colors.campo, borderColor: colors.campo },
+    checkmark: { color: colors.white, fontWeight: '800', fontSize: 14 },
+    itemTitle: { fontSize: 14, color: colors.ink, fontWeight: '600' },
+    enRodeo: { fontSize: 11, color: colors.campo, marginTop: 2, fontWeight: '600' },
+    footer: { backgroundColor: colors.surface, padding: space.md, borderTopWidth: 1, borderTopColor: colors.line },
+    selCount: { fontSize: 12, color: colors.inkSoft, marginBottom: 8, textAlign: 'center' },
     footerBtns: { flexDirection: 'row', gap: 10 },
-    btnDesasignar: { flex: 1, borderWidth: 1, borderColor: '#ef4444', borderRadius: 10, padding: 14, alignItems: 'center' },
-    btnDesasignarText: { color: '#ef4444', fontWeight: '700' },
-    btnAsignar: { flex: 1, backgroundColor: '#15803d', borderRadius: 10, padding: 14, alignItems: 'center' },
-    btnAsignarText: { color: '#fff', fontWeight: '700' },
+    btnDesasignar: { flex: 1, borderWidth: 1, borderColor: colors.muerto, borderRadius: radius.sm, padding: 14, alignItems: 'center' },
+    btnDesasignarText: { color: colors.muerto, fontWeight: '700' },
+    btnAsignar: { flex: 1, backgroundColor: colors.campo, borderRadius: radius.sm, padding: 14, alignItems: 'center' },
+    btnAsignarText: { color: colors.white, fontWeight: '700' },
     btnDisabled: { opacity: 0.6 },
 });

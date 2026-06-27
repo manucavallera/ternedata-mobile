@@ -1,13 +1,14 @@
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
+import { colors, shadow, radius, space } from '../../theme';
 
 const OPCIONES = [
-    { screen: 'DiarreaListado', icon: '🥼', label: 'Diarrea', desc: 'Episodios y seguimiento', color: '#06b6d4' },
-    { screen: 'ResumenSalud', icon: '❤️', label: 'Resumen de Salud', desc: 'Estado sanitario del rodeo', color: '#be123c' },
-    { screen: 'Equipo', icon: '👥', label: 'Equipo', desc: 'Miembros e invitaciones', color: '#7c3aed' },
-    { screen: 'Admin', icon: '🛠️', label: 'Administración', desc: 'Gestión de establecimientos', color: '#1d4ed8', soloAdmin: true },
-    { screen: 'Perfil', icon: '👤', label: 'Perfil', desc: 'Tu cuenta y establecimiento', color: '#10b981' },
+    { screen: 'DiarreaListado', icon: '🥼', label: 'Diarrea', desc: 'Episodios y seguimiento', color: colors.muerto },
+    { screen: 'ResumenSalud', icon: '❤️', label: 'Resumen de Salud', desc: 'Estado sanitario del rodeo', color: colors.vendido },
+    { screen: 'Equipo', icon: '👥', label: 'Equipo', desc: 'Miembros e invitaciones', color: colors.campo },
+    { screen: 'Admin', icon: '🛠️', label: 'Administración', desc: 'Gestión de establecimientos', color: colors.campoDark, soloAdmin: true },
+    { screen: 'Perfil', icon: '👤', label: 'Perfil', desc: 'Tu cuenta y establecimiento', color: colors.caravana },
 ];
 
 export default function MasScreen() {
@@ -38,14 +39,14 @@ export default function MasScreen() {
 }
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: '#f3f4f6' },
-    header: { backgroundColor: '#374151', paddingTop: 50, paddingBottom: 16, paddingHorizontal: 16 },
-    headerTitle: { fontSize: 22, fontWeight: 'bold', color: '#fff' },
-    list: { padding: 12 },
-    item: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#fff', borderRadius: 12, padding: 14, marginBottom: 10, shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 4, elevation: 2 },
+    container: { flex: 1, backgroundColor: colors.bg },
+    header: { backgroundColor: colors.campoDark, paddingTop: 50, paddingBottom: 16, paddingHorizontal: 16 },
+    headerTitle: { fontSize: 22, fontWeight: '800', color: colors.white },
+    list: { padding: space.md },
+    item: { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.surface, borderRadius: radius.md, padding: 14, marginBottom: 10, ...shadow.card },
     iconBox: { width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center', marginRight: 14 },
     icon: { fontSize: 22 },
-    itemLabel: { fontSize: 16, fontWeight: '700', color: '#1f2937' },
-    itemDesc: { fontSize: 12, color: '#6b7280', marginTop: 2 },
-    chevron: { fontSize: 26, color: '#d1d5db', fontWeight: '300' },
+    itemLabel: { fontSize: 16, fontWeight: '700', color: colors.ink },
+    itemDesc: { fontSize: 12, color: colors.inkSoft, marginTop: 2 },
+    chevron: { fontSize: 26, color: colors.line, fontWeight: '300' },
 });

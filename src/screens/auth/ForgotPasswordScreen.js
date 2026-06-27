@@ -7,6 +7,7 @@ import {
 import { useForm, Controller } from 'react-hook-form';
 import { useNavigation } from '@react-navigation/native';
 import { useAuthSession } from '../../hooks/auth';
+import { colors, shadow, radius, space } from '../../theme';
 
 export default function ForgotPasswordScreen() {
     const navigation = useNavigation();
@@ -64,7 +65,7 @@ export default function ForgotPasswordScreen() {
 
                     <TouchableOpacity style={styles.button} onPress={onSubmit} disabled={loading}>
                         {loading
-                            ? <ActivityIndicator color="#fff" />
+                            ? <ActivityIndicator color={colors.white} />
                             : <Text style={styles.buttonText}>Enviar link</Text>
                         }
                     </TouchableOpacity>
@@ -85,43 +86,35 @@ export default function ForgotPasswordScreen() {
 }
 
 const styles = StyleSheet.create({
-    flex: { flex: 1, backgroundColor: '#f3f4f6' },
-    container: { flexGrow: 1, justifyContent: 'center', padding: 20 },
-    card: {
-        backgroundColor: '#fff',
-        borderRadius: 16,
-        padding: 24,
-        shadowColor: '#000',
-        shadowOpacity: 0.08,
-        shadowRadius: 8,
-        elevation: 4,
-    },
-    title: { fontSize: 24, fontWeight: 'bold', color: '#374151', marginBottom: 8 },
-    subtitle: { fontSize: 13, color: '#6b7280', marginBottom: 20, lineHeight: 20 },
-    label: { fontSize: 14, fontWeight: '600', color: '#374151', marginBottom: 4 },
+    flex: { flex: 1, backgroundColor: colors.bg },
+    container: { flexGrow: 1, justifyContent: 'center', padding: space.xl },
+    card: { backgroundColor: colors.surface, borderRadius: radius.lg, padding: space.xl, ...shadow.card },
+    title: { fontSize: 24, fontWeight: '800', color: colors.ink, marginBottom: 8 },
+    subtitle: { fontSize: 13, color: colors.inkSoft, marginBottom: 20, lineHeight: 20 },
+    label: { fontSize: 14, fontWeight: '600', color: colors.ink, marginBottom: 4 },
     input: {
         borderWidth: 1,
-        borderColor: '#d1d5db',
-        borderRadius: 8,
+        borderColor: colors.line,
+        borderRadius: radius.sm,
         padding: 10,
         marginBottom: 4,
         fontSize: 15,
-        color: '#111827',
+        color: colors.ink,
     },
-    inputError: { borderColor: '#ef4444' },
-    errorText: { fontSize: 12, color: '#ef4444', marginBottom: 8 },
+    inputError: { borderColor: colors.muerto },
+    errorText: { fontSize: 12, color: colors.muerto, marginBottom: 8 },
     button: {
-        backgroundColor: '#6366f1',
-        borderRadius: 10,
+        backgroundColor: colors.campo,
+        borderRadius: radius.sm,
         padding: 14,
         alignItems: 'center',
         marginTop: 16,
     },
-    buttonText: { color: '#fff', fontWeight: '700', fontSize: 16 },
-    alertBox: { borderRadius: 8, padding: 10, marginTop: 12 },
-    alertSuccess: { backgroundColor: '#22c55e' },
-    alertError: { backgroundColor: '#ef4444' },
-    alertText: { color: '#fff', fontWeight: '600', textAlign: 'center', fontSize: 13 },
+    buttonText: { color: colors.white, fontWeight: '700', fontSize: 16 },
+    alertBox: { borderRadius: radius.sm, padding: 10, marginTop: 12 },
+    alertSuccess: { backgroundColor: colors.vivo },
+    alertError: { backgroundColor: colors.muerto },
+    alertText: { color: colors.white, fontWeight: '600', textAlign: 'center', fontSize: 13 },
     backLink: { marginTop: 16, alignItems: 'center' },
-    backText: { fontSize: 13, color: '#6366f1', fontWeight: '600' },
+    backText: { fontSize: 13, color: colors.campo, fontWeight: '600' },
 });

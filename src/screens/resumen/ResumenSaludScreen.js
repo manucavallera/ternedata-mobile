@@ -5,6 +5,7 @@ import {
 } from 'react-native';
 import { useSelector } from 'react-redux';
 import { useBussinesMicroservicio } from '../../hooks/bussines';
+import { colors, shadow, radius, space } from '../../theme';
 
 const SEVERIDADES = [
     { key: 'leve', label: 'Leve', color: '#22c55e' },
@@ -60,7 +61,7 @@ export default function ResumenSaludScreen() {
                 <Text style={styles.headerSub}>Estado sanitario del rodeo</Text>
             </View>
 
-            {loading ? <ActivityIndicator size="large" color="#be123c" style={styles.loader} /> : error ? (
+            {loading ? <ActivityIndicator size="large" color={colors.muerto} style={styles.loader} /> : error ? (
                 <View style={styles.errorBox}>
                     <Text style={styles.errorText}>{error}</Text>
                     <TouchableOpacity style={styles.retryBtn} onPress={() => { setLoading(true); cargar(); }}>
@@ -122,7 +123,7 @@ export default function ResumenSaludScreen() {
                         {Array.isArray(resumen.desgloseTratamientos) && resumen.desgloseTratamientos.length > 0 ? (
                             resumen.desgloseTratamientos.map((item, i) => (
                                 <View key={i} style={styles.barRow}>
-                                    <View style={[styles.dot, { backgroundColor: '#3b82f6' }]} />
+                                    <View style={[styles.dot, { backgroundColor: colors.campo }]} />
                                     <Text style={styles.barLabel}>{item.tipo_enfermedad}</Text>
                                     <Text style={[styles.barValue, { color: '#3b82f6' }]}>{num(item.cantidad)}</Text>
                                 </View>
@@ -147,31 +148,31 @@ function Stat({ label, value, color }) {
 }
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: '#f3f4f6' },
+    container: { flex: 1, backgroundColor: colors.bg },
     content: { paddingBottom: 40 },
-    header: { backgroundColor: '#be123c', paddingTop: 50, paddingBottom: 16, paddingHorizontal: 16 },
-    headerTitle: { fontSize: 22, fontWeight: 'bold', color: '#fff' },
-    headerSub: { fontSize: 13, color: '#fecdd3' },
+    header: { backgroundColor: colors.campoDark, paddingTop: 50, paddingBottom: 16, paddingHorizontal: 16 },
+    headerTitle: { fontSize: 22, fontWeight: '800', color: colors.white },
+    headerSub: { fontSize: 13, color: colors.campoSoft },
     loader: { marginTop: 60 },
-    empty: { textAlign: 'center', color: '#9ca3af', marginTop: 60, fontSize: 15 },
-    errorBox: { margin: 20, padding: 20, backgroundColor: '#fef2f2', borderRadius: 12, alignItems: 'center' },
-    errorText: { color: '#dc2626', fontSize: 14, marginBottom: 12, textAlign: 'center' },
-    retryBtn: { backgroundColor: '#be123c', borderRadius: 8, paddingHorizontal: 20, paddingVertical: 10 },
-    retryText: { color: '#fff', fontWeight: '700' },
-    body: { padding: 12 },
-    indicadores: { flexDirection: 'row', gap: 12, marginBottom: 12 },
-    indicador: { flex: 1, backgroundColor: '#fff', borderRadius: 12, padding: 16, alignItems: 'center', borderLeftWidth: 4, shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 4, elevation: 2 },
-    indLabel: { fontSize: 13, color: '#6b7280', fontWeight: '600', marginBottom: 6 },
+    empty: { textAlign: 'center', color: colors.inkFaint, marginTop: 60, fontSize: 15 },
+    errorBox: { margin: 20, padding: 20, backgroundColor: '#fef2f2', borderRadius: radius.md, alignItems: 'center' },
+    errorText: { color: colors.muerto, fontSize: 14, marginBottom: 12, textAlign: 'center' },
+    retryBtn: { backgroundColor: colors.muerto, borderRadius: radius.sm, paddingHorizontal: 20, paddingVertical: 10 },
+    retryText: { color: colors.white, fontWeight: '700' },
+    body: { padding: space.md },
+    indicadores: { flexDirection: 'row', gap: space.md, marginBottom: space.md },
+    indicador: { flex: 1, backgroundColor: colors.surface, borderRadius: radius.md, padding: 16, alignItems: 'center', borderLeftWidth: 4, ...shadow.card },
+    indLabel: { fontSize: 13, color: colors.inkSoft, fontWeight: '600', marginBottom: 6 },
     indValue: { fontSize: 28, fontWeight: '800' },
-    card: { backgroundColor: '#fff', borderRadius: 12, padding: 16, marginBottom: 12, shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 4, elevation: 2 },
-    cardTitle: { fontSize: 15, fontWeight: '700', color: '#1f2937', marginBottom: 12 },
+    card: { backgroundColor: colors.surface, borderRadius: radius.md, padding: 16, marginBottom: space.md, ...shadow.card },
+    cardTitle: { fontSize: 15, fontWeight: '700', color: colors.ink, marginBottom: 12 },
     statsGrid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-around' },
     stat: { alignItems: 'center', minWidth: '24%', marginBottom: 8 },
     statValue: { fontSize: 24, fontWeight: '800' },
-    statLabel: { fontSize: 11, color: '#6b7280', marginTop: 2 },
-    barRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: '#f3f4f6' },
+    statLabel: { fontSize: 11, color: colors.inkSoft, marginTop: 2 },
+    barRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: colors.bg },
     dot: { width: 10, height: 10, borderRadius: 5, marginRight: 10 },
-    barLabel: { flex: 1, fontSize: 14, color: '#374151' },
+    barLabel: { flex: 1, fontSize: 14, color: colors.ink },
     barValue: { fontSize: 16, fontWeight: '800' },
-    sinDatos: { textAlign: 'center', color: '#9ca3af', fontSize: 13, paddingVertical: 8 },
+    sinDatos: { textAlign: 'center', color: colors.inkFaint, fontSize: 13, paddingVertical: 8 },
 });
