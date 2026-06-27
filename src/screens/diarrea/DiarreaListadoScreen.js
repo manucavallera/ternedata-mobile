@@ -179,11 +179,19 @@ export default function DiarreaListadoScreen() {
 
                         <Text style={styles.label}>Severidad</Text>
                         <View style={styles.optionRow}>
-                            {['Leve', 'Moderada', 'Severa', 'Crítica'].map(s => (
-                                <TouchableOpacity key={s} style={[styles.optionBtn, formEditar.severidad === s && styles.optionBtnActive]} onPress={() => setFormEditar(f => ({ ...f, severidad: s }))}>
-                                    <Text style={[styles.optionBtnText, formEditar.severidad === s && styles.optionBtnTextActive]}>{s}</Text>
-                                </TouchableOpacity>
-                            ))}
+                            {['Leve', 'Moderada', 'Severa', 'Crítica'].map(s => {
+                                const activa = formEditar.severidad === s;
+                                const col = severidadColor(s);
+                                return (
+                                    <TouchableOpacity
+                                        key={s}
+                                        style={[styles.optionBtn, { borderLeftColor: col, borderLeftWidth: 4 }, activa && { backgroundColor: col, borderColor: col }]}
+                                        onPress={() => setFormEditar(f => ({ ...f, severidad: s }))}
+                                    >
+                                        <Text style={[styles.optionBtnText, activa && styles.optionBtnTextActive]}>{s}</Text>
+                                    </TouchableOpacity>
+                                );
+                            })}
                         </View>
 
                         <Text style={styles.label}>Fecha</Text>
@@ -246,7 +254,7 @@ const styles = StyleSheet.create({
     input: { borderWidth: 1, borderColor: colors.line, borderRadius: radius.sm, padding: 10, fontSize: 14, color: colors.ink },
     inputMulti: { height: 80, textAlignVertical: 'top' },
     optionRow: { flexDirection: 'row', gap: 8, flexWrap: 'wrap' },
-    optionBtn: { borderWidth: 1, borderColor: colors.line, borderRadius: radius.sm, paddingHorizontal: 14, paddingVertical: 8 },
+    optionBtn: { flexGrow: 1, flexBasis: '47%', borderWidth: 1, borderColor: colors.line, borderRadius: radius.sm, paddingVertical: 10, alignItems: 'center', backgroundColor: colors.surface },
     optionBtnActive: { backgroundColor: colors.campo, borderColor: colors.campo },
     optionBtnText: { fontSize: 13, color: colors.ink },
     optionBtnTextActive: { color: colors.white, fontWeight: '700' },
