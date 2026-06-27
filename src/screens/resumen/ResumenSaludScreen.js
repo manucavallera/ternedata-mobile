@@ -99,7 +99,7 @@ export default function ResumenSaludScreen() {
                         <Text style={styles.cardTitle}>🩺 Estado de salud</Text>
                         <View style={styles.statsGrid}>
                             <Stat label="Sanos" value={num(resumen.ternerosCompletamenteSanos)} color="#16a34a" />
-                            <Stat label="Con diarrea" value={num(resumen.ternerosConDiarreas)} color="#06b6d4" />
+                            <Stat label="Con diarrea" value={num(resumen.ternerosConDiarreas)} color={colors.campo} />
                             <Stat label="Con tratam." value={num(resumen.ternerosConTratamientos)} color="#f59e0b" />
                             <Stat label="Ambos" value={num(resumen.ternerosConAmbosProblemas)} color="#ef4444" />
                         </View>

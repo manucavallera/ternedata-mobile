@@ -102,7 +102,7 @@ export default function PerfilScreen() {
         ]);
     };
 
-    if (loading) return <ActivityIndicator size="large" color="#6366f1" style={{ marginTop: 80 }} />;
+    if (loading) return <ActivityIndicator size="large" color={colors.campo} style={{ marginTop: 80 }} />;
 
     return (
         <ScrollView style={styles.container} contentContainerStyle={styles.content}>
