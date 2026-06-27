@@ -39,9 +39,20 @@ export default function LoginScreen() {
             style={styles.flex}
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         >
+            {/* Círculos decorativos de fondo */}
+            <View style={styles.blobTop} pointerEvents="none" />
+            <View style={styles.blobBottom} pointerEvents="none" />
+            <View style={styles.blobChip} pointerEvents="none" />
+
             <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
+                {/* Hero / marca */}
+                <View style={styles.hero}>
+                    <Text style={styles.brand}>🐄 TerneData</Text>
+                    <Text style={styles.tagline}>Gestión de tu rodeo, en el bolsillo</Text>
+                </View>
+
                 <View style={styles.card}>
-                    <Text style={styles.title}>🐮 Ingresar</Text>
+                    <Text style={styles.title}>Ingresar</Text>
 
                     <Text style={styles.label}>Email</Text>
                     <Controller
@@ -116,8 +127,16 @@ export default function LoginScreen() {
 }
 
 const styles = StyleSheet.create({
-    flex: { flex: 1, backgroundColor: colors.bg },
+    flex: { flex: 1, backgroundColor: colors.campoDark, overflow: 'hidden' },
     container: { flexGrow: 1, justifyContent: 'center', padding: space.xl },
+    // Blobs decorativos
+    blobTop: { position: 'absolute', top: -90, right: -70, width: 240, height: 240, borderRadius: 120, backgroundColor: colors.campo, opacity: 0.45 },
+    blobBottom: { position: 'absolute', bottom: -110, left: -80, width: 260, height: 260, borderRadius: 130, backgroundColor: colors.campo, opacity: 0.35 },
+    blobChip: { position: 'absolute', top: 80, left: -40, width: 120, height: 120, borderRadius: 60, backgroundColor: colors.caravana, opacity: 0.18 },
+    // Hero
+    hero: { alignItems: 'center', marginBottom: 28 },
+    brand: { fontSize: 34, fontWeight: '900', color: colors.white, letterSpacing: 0.5 },
+    tagline: { fontSize: 14, color: colors.campoSoft, marginTop: 6, fontWeight: '500' },
     card: { backgroundColor: colors.surface, borderRadius: radius.lg, padding: space.xl, ...shadow.card },
     title: { fontSize: 26, fontWeight: '800', color: colors.ink, marginBottom: 20 },
     label: { fontSize: 14, fontWeight: '600', color: colors.ink, marginBottom: 4 },
