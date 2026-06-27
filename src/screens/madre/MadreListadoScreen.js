@@ -177,13 +177,13 @@ export default function MadreListadoScreen() {
                 </TouchableOpacity>
             </View>
 
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filtroRow} contentContainerStyle={styles.filtroContent}>
+            <View style={styles.filtroWrap}>
                 {ESTADOS.map(e => (
                     <TouchableOpacity key={e || 'todos'} style={[styles.filtroBtn, filtroEstado === e && styles.filtroBtnActive]} onPress={() => { setFiltroEstado(e); cargarMadres(searchInput, e); }}>
                         <Text style={[styles.filtroBtnText, filtroEstado === e && styles.filtroBtnTextActive]}>{e || 'Todas'}</Text>
                     </TouchableOpacity>
                 ))}
-            </ScrollView>
+            </View>
 
             {loading ? <ActivityIndicator size="large" color={colors.campo} style={styles.loader} /> : (
                 <FlatList
@@ -261,8 +261,7 @@ const styles = StyleSheet.create({
     searchBtn: { backgroundColor: colors.campo, borderRadius: radius.sm, paddingHorizontal: 16, justifyContent: 'center' },
     searchBtnText: { color: colors.white, fontWeight: '800', fontSize: 13 },
 
-    filtroRow: { paddingVertical: space.md, flexGrow: 0 },
-    filtroContent: { paddingHorizontal: space.md, alignItems: 'center', gap: space.sm },
+    filtroWrap: { flexDirection: 'row', flexWrap: 'wrap', gap: space.sm, paddingHorizontal: space.md, paddingVertical: space.md },
     filtroBtn: { borderWidth: 1, borderColor: colors.line, borderRadius: radius.pill, paddingHorizontal: 16, paddingVertical: 7, backgroundColor: colors.surface },
     filtroBtnActive: { backgroundColor: colors.campo, borderColor: colors.campo },
     filtroBtnText: { fontSize: 13, color: colors.inkSoft, fontWeight: '600' },
