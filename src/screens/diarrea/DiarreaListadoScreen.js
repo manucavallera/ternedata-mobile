@@ -13,11 +13,11 @@ import { colors, shadow, radius, space } from '../../theme';
 const SEVERIDADES = ['', 'Leve', 'Moderada', 'Severa', 'Crítica'];
 
 const severidadColor = (s) => {
-    if (s === 'Leve') return '#22c55e';
-    if (s === 'Moderada') return '#f59e0b';
-    if (s === 'Severa') return '#f97316';
-    if (s === 'Crítica') return '#ef4444';
-    return '#9ca3af';
+    if (s === 'Leve') return colors.vivo;
+    if (s === 'Moderada') return colors.vendido;
+    if (s === 'Severa') return '#E0962F';
+    if (s === 'Crítica') return colors.muerto;
+    return colors.neutro;
 };
 
 const formatFecha = (fecha) => {

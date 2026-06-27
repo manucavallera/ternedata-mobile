@@ -105,7 +105,7 @@ export default function AdminScreen() {
             <View style={[styles.card, !activo && styles.cardInactivo]}>
                 <View style={styles.cardHeader}>
                     <Text style={styles.cardTitle}>{item.nombre}</Text>
-                    <View style={[styles.badge, { backgroundColor: activo ? '#22c55e' : '#9ca3af' }]}>
+                    <View style={[styles.badge, { backgroundColor: activo ? colors.vivo : colors.neutro }]}>
                         <Text style={styles.badgeText}>{activo ? 'Activo' : 'Inactivo'}</Text>
                     </View>
                 </View>

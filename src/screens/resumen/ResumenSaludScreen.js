@@ -8,10 +8,10 @@ import { useBussinesMicroservicio } from '../../hooks/bussines';
 import { colors, shadow, radius, space } from '../../theme';
 
 const SEVERIDADES = [
-    { key: 'leve', label: 'Leve', color: '#22c55e' },
-    { key: 'moderada', label: 'Moderada', color: '#f59e0b' },
-    { key: 'severa', label: 'Severa', color: '#f97316' },
-    { key: 'critica', label: 'Crítica', color: '#ef4444' },
+    { key: 'leve', label: 'Leve', color: colors.vivo },
+    { key: 'moderada', label: 'Moderada', color: colors.vendido },
+    { key: 'severa', label: 'Severa', color: '#E0962F' },
+    { key: 'critica', label: 'Crítica', color: colors.muerto },
 ];
 
 const num = (v) => (v ?? 0);
@@ -47,8 +47,8 @@ export default function ResumenSaludScreen() {
 
     const morbilidad = Number(resumen?.porcentajeMorbilidad ?? 0);
     const mortalidad = Number(resumen?.porcentajeMortalidad ?? 0);
-    const morbColor = morbilidad >= 30 ? '#ef4444' : morbilidad >= 15 ? '#f59e0b' : '#22c55e';
-    const mortColor = mortalidad >= 10 ? '#ef4444' : mortalidad >= 3 ? '#f59e0b' : '#22c55e';
+    const morbColor = morbilidad >= 30 ? colors.muerto : morbilidad >= 15 ? colors.vendido : colors.vivo;
+    const mortColor = mortalidad >= 10 ? colors.muerto : mortalidad >= 3 ? colors.vendido : colors.vivo;
 
     return (
         <ScrollView
@@ -88,9 +88,9 @@ export default function ResumenSaludScreen() {
                     <View style={styles.card}>
                         <Text style={styles.cardTitle}>🐄 Población</Text>
                         <View style={styles.statsGrid}>
-                            <Stat label="Total" value={num(resumen.totalTerneros)} color="#1f2937" />
-                            <Stat label="Vivos" value={num(resumen.ternerosVivos)} color="#16a34a" />
-                            <Stat label="Muertos" value={num(resumen.ternerosMuertos)} color="#dc2626" />
+                            <Stat label="Total" value={num(resumen.totalTerneros)} color={colors.ink} />
+                            <Stat label="Vivos" value={num(resumen.ternerosVivos)} color={colors.vivo} />
+                            <Stat label="Muertos" value={num(resumen.ternerosMuertos)} color={colors.muerto} />
                         </View>
                     </View>
 
@@ -98,10 +98,10 @@ export default function ResumenSaludScreen() {
                     <View style={styles.card}>
                         <Text style={styles.cardTitle}>🩺 Estado de salud</Text>
                         <View style={styles.statsGrid}>
-                            <Stat label="Sanos" value={num(resumen.ternerosCompletamenteSanos)} color="#16a34a" />
+                            <Stat label="Sanos" value={num(resumen.ternerosCompletamenteSanos)} color={colors.vivo} />
                             <Stat label="Con diarrea" value={num(resumen.ternerosConDiarreas)} color={colors.campo} />
-                            <Stat label="Con tratam." value={num(resumen.ternerosConTratamientos)} color="#f59e0b" />
-                            <Stat label="Ambos" value={num(resumen.ternerosConAmbosProblemas)} color="#ef4444" />
+                            <Stat label="Con tratam." value={num(resumen.ternerosConTratamientos)} color={colors.vendido} />
+                            <Stat label="Ambos" value={num(resumen.ternerosConAmbosProblemas)} color={colors.muerto} />
                         </View>
                     </View>
 

@@ -13,7 +13,7 @@ const TIPOS = [
     { value: 'destete', label: '🐄 Destete', color: '#3b82f6' },
     { value: 'engorde', label: '🥩 Engorde', color: '#f97316' },
     { value: 'reproduccion', label: '💕 Reproducción', color: '#a855f7' },
-    { value: 'otro', label: '📋 Otro', color: '#9ca3af' },
+    { value: 'otro', label: '📋 Otro', color: colors.neutro },
 ];
 
 const tipoInfo = (t) => TIPOS.find(x => x.value === t) || TIPOS[4];
@@ -113,7 +113,7 @@ export default function RodeoListadoScreen() {
                     <Text style={styles.cardLabel}>Terneros:</Text>
                     <Text style={styles.cardValue}>{item.cantidad_terneros ?? 0}</Text>
                     <Text style={styles.cardLabel}>  Estado:</Text>
-                    <Text style={[styles.cardValue, { color: activo ? '#16a34a' : '#dc2626', fontWeight: '700' }]}>{activo ? 'Activo' : 'Inactivo'}</Text>
+                    <Text style={[styles.cardValue, { color: activo ? colors.vivo : colors.muerto, fontWeight: '700' }]}>{activo ? 'Activo' : 'Inactivo'}</Text>
                 </View>
                 <View style={styles.actions}>
                     <TouchableOpacity style={styles.btnAccion} onPress={() => navigation.navigate('RodeoAsignar', { rodeo: item })}>
