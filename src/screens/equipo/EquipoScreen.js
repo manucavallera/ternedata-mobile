@@ -20,9 +20,15 @@ export default function EquipoScreen() {
     const {
         obtenerEquipoHook, obtenerInvitacionesPendientesHook,
         crearInvitacionHook, revocarInvitacionHook, eliminarMiembroHook,
+        obtenerEstablecimientosHook,
     } = useBussinesMicroservicio();
 
-    const idEst = userPayload?.id_establecimiento || establecimientoActual;
+    // userPayload.id_establecimiento viene del JWT emitido en el login y puede
+    // venir null (cuenta sin establecimiento "primario" asignado, solo
+    // vinculada vía userEstablecimientos). Si falta, resolvemos por API
+    // (mismo endpoint que usa AdminScreen) en vez de mostrar "sin establecimiento".
+    const [idEstResuelto, setIdEstResuelto] = useState(null);
+    const idEst = userPayload?.id_establecimiento || establecimientoActual || idEstResuelto;
 
     const [tab, setTab] = useState('equipo');
     const [miembros, setMiembros] = useState([]);
@@ -43,11 +49,18 @@ export default function EquipoScreen() {
     };
 
     const cargar = useCallback(async () => {
-        if (!idEst) { setLoading(false); return; }
+        let est = idEst;
+        if (!est) {
+            const resList = await obtenerEstablecimientosHook();
+            const lista = Array.isArray(resList?.data) ? resList.data : (resList?.data?.data || []);
+            est = lista[0]?.id_establecimiento || null;
+            if (est) setIdEstResuelto(est);
+        }
+        if (!est) { setLoading(false); return; }
         try {
             const [resEq, resPend] = await Promise.all([
-                obtenerEquipoHook(idEst),
-                obtenerInvitacionesPendientesHook(idEst),
+                obtenerEquipoHook(est),
+                obtenerInvitacionesPendientesHook(est),
             ]);
             setMiembros(Array.isArray(resEq?.data) ? resEq.data : (resEq?.data?.data || []));
             setPendientes(Array.isArray(resPend?.data) ? resPend.data : (resPend?.data?.data || []));
