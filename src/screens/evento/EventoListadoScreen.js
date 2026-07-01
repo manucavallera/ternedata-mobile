@@ -138,6 +138,21 @@ export default function EventoListadoScreen() {
                     </View>
                 </View>
 
+                {(item.terneros?.length > 0 || item.madres?.length > 0) && (
+                    <View style={styles.rpWrap}>
+                        {(item.terneros || []).map(t => (
+                            <View key={`t-${t.id_ternero}`} style={styles.rpChip}>
+                                <Text style={styles.rpChipText}>🐮 RP {t.rp_ternero}</Text>
+                            </View>
+                        ))}
+                        {(item.madres || []).map(m => (
+                            <View key={`m-${m.id_madre}`} style={[styles.rpChip, styles.rpChipMadre]}>
+                                <Text style={[styles.rpChipText, styles.rpChipTextMadre]}>🐄 RP {m.rp_madre}</Text>
+                            </View>
+                        ))}
+                    </View>
+                )}
+
                 <View style={styles.cardActions}>
                     <TouchableOpacity style={styles.btnEditar} onPress={() => abrirEditar(item)}>
                         <Text style={styles.btnEditarText}>Editar</Text>
@@ -260,6 +275,12 @@ const styles = StyleSheet.create({
     countPill: { flex: 1, flexDirection: 'row', alignItems: 'baseline', justifyContent: 'center', gap: 5, borderRadius: radius.sm, paddingVertical: 8 },
     countPillNum: { fontWeight: '900', fontSize: 15 },
     countPillLbl: { fontSize: 11, color: colors.inkSoft, fontWeight: '600' },
+
+    rpWrap: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginTop: 10 },
+    rpChip: { backgroundColor: colors.campoSoft, borderRadius: radius.pill, paddingHorizontal: 10, paddingVertical: 4 },
+    rpChipMadre: { backgroundColor: '#E7EEF7' },
+    rpChipText: { fontSize: 12, fontWeight: '700', color: colors.campoDark },
+    rpChipTextMadre: { color: '#2C5282' },
 
     cardActions: { flexDirection: 'row', gap: space.sm, marginTop: 12 },
     btnEditar: { flex: 1, backgroundColor: colors.campo, borderRadius: radius.sm, paddingVertical: 11, alignItems: 'center' },

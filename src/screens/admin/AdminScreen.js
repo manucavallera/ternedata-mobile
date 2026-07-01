@@ -210,7 +210,7 @@ const styles = StyleSheet.create({
     alertError: { backgroundColor: colors.muerto },
     alertText: { color: colors.white, fontWeight: '600', textAlign: 'center' },
     loader: { marginTop: 40 },
-    list: { paddingHorizontal: space.md, paddingTop: space.md, paddingBottom: 20 },
+    list: { paddingHorizontal: space.md, paddingTop: space.md, paddingBottom: 96 },
     empty: { textAlign: 'center', color: colors.inkFaint, marginTop: 40, fontSize: 15 },
     card: { backgroundColor: colors.surface, borderRadius: radius.md, padding: 14, marginBottom: 10, ...shadow.card },
     cardInactivo: { opacity: 0.5 },

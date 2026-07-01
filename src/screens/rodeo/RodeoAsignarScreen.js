@@ -164,7 +164,7 @@ const styles = StyleSheet.create({
     tabTextActive: { color: colors.white },
     search: { backgroundColor: colors.surface, borderRadius: radius.sm, borderWidth: 1, borderColor: colors.line, paddingHorizontal: 12, paddingVertical: 8, fontSize: 14, marginHorizontal: space.md, marginBottom: 8 },
     loader: { marginTop: 40 },
-    list: { paddingHorizontal: space.md, paddingBottom: 20 },
+    list: { paddingHorizontal: space.md, paddingBottom: 96 },
     empty: { textAlign: 'center', color: colors.inkFaint, marginTop: 40, fontSize: 15 },
     item: { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.surface, borderRadius: radius.sm, padding: 12, marginBottom: 8, borderWidth: 1, borderColor: colors.surface },
     itemSel: { borderColor: colors.campo, backgroundColor: colors.campoSoft },

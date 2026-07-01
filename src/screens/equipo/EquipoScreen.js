@@ -265,7 +265,7 @@ const styles = StyleSheet.create({
     tabText: { fontSize: 13, color: colors.ink, fontWeight: '600' },
     tabTextActive: { color: colors.white },
     loader: { marginTop: 40 },
-    list: { paddingHorizontal: space.md, paddingBottom: 20 },
+    list: { paddingHorizontal: space.md, paddingBottom: 96 },
     empty: { textAlign: 'center', color: colors.inkFaint, marginTop: 40, fontSize: 15 },
     card: { backgroundColor: colors.surface, borderRadius: radius.md, padding: 14, marginBottom: 10, ...shadow.card },
     cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 },

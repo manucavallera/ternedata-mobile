@@ -3,6 +3,7 @@ import {
     View, Text, FlatList, TextInput, TouchableOpacity,
     StyleSheet, ActivityIndicator, RefreshControl, Modal, ScrollView,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 import { useBussinesMicroservicio } from '../../hooks/bussines';
@@ -28,6 +29,7 @@ const formatFecha = (fecha) => {
 
 export default function DiarreaListadoScreen() {
     const navigation = useNavigation();
+    const insets = useSafeAreaInsets();
     const { userPayload, establecimientoActual } = useSelector(state => state.auth);
     const { obtenerDiarreaTerneroHook, patchDiarreaHook } = useBussinesMicroservicio();
 
@@ -131,7 +133,7 @@ export default function DiarreaListadoScreen() {
 
     return (
         <View style={styles.container}>
-            <View style={styles.header}>
+            <View style={[styles.header, { paddingTop: insets.top + 12 }]}>
                 <Text style={styles.headerTitle}>🥼 Diarrea</Text>
                 <Text style={styles.headerSub}>{total} episodios</Text>
             </View>
@@ -217,7 +219,7 @@ export default function DiarreaListadoScreen() {
 
 const styles = StyleSheet.create({
     container: { flex: 1, backgroundColor: colors.bg },
-    header: { backgroundColor: colors.campoDark, paddingTop: 50, paddingBottom: 16, paddingHorizontal: 16, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' },
+    header: { backgroundColor: colors.campoDark, paddingBottom: 16, paddingHorizontal: 16, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' },
     headerTitle: { fontSize: 22, fontWeight: '800', color: colors.white },
     headerSub: { fontSize: 13, color: colors.campoSoft },
     alert: { margin: space.md, borderRadius: radius.sm, padding: 10 },
@@ -234,7 +236,7 @@ const styles = StyleSheet.create({
     filtroBtnText: { fontSize: 13, color: colors.ink },
     filtroBtnTextActive: { color: colors.white, fontWeight: '700' },
     loader: { marginTop: 40 },
-    list: { paddingHorizontal: space.md, paddingBottom: 20 },
+    list: { paddingHorizontal: space.md, paddingBottom: 96 },
     empty: { textAlign: 'center', color: colors.inkFaint, marginTop: 40, fontSize: 15 },
     card: { backgroundColor: colors.surface, borderRadius: radius.md, padding: 14, marginBottom: 10, ...shadow.card },
     cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
