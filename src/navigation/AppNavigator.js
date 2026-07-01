@@ -20,6 +20,7 @@ import ResumenSaludScreen from '../screens/resumen/ResumenSaludScreen';
 import EquipoScreen from '../screens/equipo/EquipoScreen';
 import AdminScreen from '../screens/admin/AdminScreen';
 import MasScreen from '../screens/mas/MasScreen';
+import AyudaScreen from '../screens/ayuda/AyudaScreen';
 import PerfilScreen from '../screens/auth/PerfilScreen';
 
 const Tab = createBottomTabNavigator();
@@ -84,6 +85,7 @@ function MasNavigator() {
             <MasStack.Screen name="ResumenSalud" component={ResumenSaludScreen} />
             <MasStack.Screen name="Equipo" component={EquipoScreen} />
             <MasStack.Screen name="Admin" component={AdminScreen} />
+            <MasStack.Screen name="Ayuda" component={AyudaScreen} />
             <MasStack.Screen name="Perfil" component={PerfilScreen} />
         </MasStack.Navigator>
     );

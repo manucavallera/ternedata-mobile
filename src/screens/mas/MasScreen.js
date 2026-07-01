@@ -8,6 +8,7 @@ const OPCIONES = [
     { screen: 'ResumenSalud', icon: '❤️', label: 'Resumen de Salud', desc: 'Estado sanitario del rodeo', color: colors.vendido },
     { screen: 'Equipo', icon: '👥', label: 'Equipo', desc: 'Miembros e invitaciones', color: colors.campo },
     { screen: 'Admin', icon: '🛠️', label: 'Administración', desc: 'Gestión de establecimientos', color: colors.campoDark, soloAdmin: true },
+    { screen: 'Ayuda', icon: '❓', label: 'Ayuda', desc: 'Guía rápida y cómo usar el bot', color: '#2C5282' },
     { screen: 'Perfil', icon: '👤', label: 'Perfil', desc: 'Tu cuenta y establecimiento', color: colors.caravana },
 ];
 
