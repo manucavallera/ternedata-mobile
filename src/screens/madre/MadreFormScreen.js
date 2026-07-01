@@ -8,7 +8,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useBussinesMicroservicio } from '../../hooks/bussines';
 import { colors, shadow, radius, space } from '../../theme';
 
-const ESTADOS = ['Seca', 'En Tambo', 'Activa', 'Vendida', 'Muerta'];
+const ESTADOS = ['Seca', 'En Tambo'];
 
 export default function MadreFormScreen() {
     const navigation = useNavigation();

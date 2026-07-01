@@ -12,13 +12,11 @@ import { es } from 'date-fns/locale';
 import { colors, space, radius, shadow, type, estadoColor } from '../../theme';
 import Caravana from '../../components/Caravana';
 
-const ESTADOS = ['', 'Activa', 'Seca', 'Vendida', 'Muerta'];
+const ESTADOS = ['', 'Seca', 'En Tambo'];
 
 const estadoColorMadre = (estado) => ({
-    Activa: colors.vivo,
     Seca: colors.vendido,
-    Vendida: '#3B82F6',
-    Muerta: colors.muerto,
+    'En Tambo': colors.vivo,
 }[estado] || colors.neutro);
 
 const formatFecha = (fecha) => {
@@ -213,7 +211,7 @@ export default function MadreListadoScreen() {
 
                         <Text style={styles.label}>Estado</Text>
                         <View style={styles.optionRow}>
-                            {['Activa', 'Seca', 'Vendida', 'Muerta'].map(e => (
+                            {['Seca', 'En Tambo'].map(e => (
                                 <TouchableOpacity key={e} style={[styles.optionBtn, formEditar.estado === e && styles.optionBtnActive]} onPress={() => setFormEditar(f => ({ ...f, estado: e }))}>
                                     <Text style={[styles.optionBtnText, formEditar.estado === e && styles.optionBtnTextActive]}>{e}</Text>
                                 </TouchableOpacity>
