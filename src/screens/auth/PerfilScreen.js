@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import {
     View, Text, TextInput, TouchableOpacity,
-    StyleSheet, ActivityIndicator, ScrollView, Alert,
+    StyleSheet, ActivityIndicator, ScrollView, Alert, Linking,
 } from 'react-native';
 import { useSelector } from 'react-redux';
 import { useAuthSession } from '../../hooks/auth';
@@ -150,6 +150,9 @@ export default function PerfilScreen() {
                                 Expira a las {tokenExpires.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' })}
                             </Text>
                         )}
+                        <TouchableOpacity style={styles.btnPrimary} onPress={() => Linking.openURL('https://t.me/tutorial_botcavallerabot')}>
+                            <Text style={styles.btnPrimaryText}>Abrir Telegram</Text>
+                        </TouchableOpacity>
                         <TouchableOpacity style={styles.btnSecondary} onPress={handleGenerarTokenBot} disabled={generandoToken}>
                             {generandoToken ? <ActivityIndicator color={colors.campo} /> : <Text style={styles.btnSecondaryText}>Generar nuevo código</Text>}
                         </TouchableOpacity>
