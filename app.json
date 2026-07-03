@@ -18,7 +18,12 @@
       }
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/favicon.png",
+      "name": "TerneData",
+      "shortName": "TerneData",
+      "themeColor": "#176B43",
+      "backgroundColor": "#176B43",
+      "display": "standalone"
     },
     "extra": {
       "ENTORNO": "produccion",
