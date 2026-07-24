@@ -19,6 +19,9 @@ import RodeoAsignarScreen from '../screens/rodeo/RodeoAsignarScreen';
 import ResumenSaludScreen from '../screens/resumen/ResumenSaludScreen';
 import EquipoScreen from '../screens/equipo/EquipoScreen';
 import AdminScreen from '../screens/admin/AdminScreen';
+import LitrosScreen from '../screens/litros/LitrosScreen';
+import SustitutoScreen from '../screens/sustituto/SustitutoScreen';
+import CalendarioScreen from '../screens/calendario/CalendarioScreen';
 import MasScreen from '../screens/mas/MasScreen';
 import AyudaScreen from '../screens/ayuda/AyudaScreen';
 import PerfilScreen from '../screens/auth/PerfilScreen';
@@ -83,6 +86,9 @@ function MasNavigator() {
             <MasStack.Screen name="DiarreaListado" component={DiarreaListadoScreen} />
             <MasStack.Screen name="DiarreaForm" component={DiarreaFormScreen} />
             <MasStack.Screen name="ResumenSalud" component={ResumenSaludScreen} />
+            <MasStack.Screen name="Litros" component={LitrosScreen} />
+            <MasStack.Screen name="Sustituto" component={SustitutoScreen} />
+            <MasStack.Screen name="Calendario" component={CalendarioScreen} />
             <MasStack.Screen name="Equipo" component={EquipoScreen} />
             <MasStack.Screen name="Admin" component={AdminScreen} />
             <MasStack.Screen name="Ayuda" component={AyudaScreen} />

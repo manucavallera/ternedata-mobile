@@ -1,12 +1,13 @@
 import { useState, useEffect, useCallback } from 'react';
 import {
     View, Text, FlatList, TextInput, TouchableOpacity,
-    StyleSheet, ActivityIndicator, RefreshControl, Modal, ScrollView,
+    StyleSheet, ActivityIndicator, RefreshControl, Modal, ScrollView, Alert,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 import { useBussinesMicroservicio } from '../../hooks/bussines';
+import businessApi from '../../api/bussines-api';
 import { format, parseISO } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { colors, space, radius, shadow, type, estadoColor } from '../../theme';
@@ -74,8 +75,33 @@ export default function MadreListadoScreen() {
     };
 
     const abrirEditar = (madre) => {
-        setFormEditar({ nombre: madre.nombre || '', rp_madre: madre.rp_madre || '', estado: madre.estado || 'Activa', observaciones: madre.observaciones || '' });
+        setFormEditar({ nombre: madre.nombre || '', rp_madre: madre.rp_madre || '', estado: madre.estado || 'Seca', observaciones: madre.observaciones || '' });
         setModalEditar({ isOpen: true, madre });
+    };
+
+    const confirmarEliminar = (madre) => {
+        Alert.alert(
+            'Eliminar madre',
+            `¿Eliminar la vaca RP ${madre.rp_madre ?? madre.id_madre}? No se puede deshacer.`,
+            [
+                { text: 'Cancelar', style: 'cancel' },
+                { text: 'Eliminar', style: 'destructive', onPress: () => eliminarMadre(madre) },
+            ]
+        );
+    };
+
+    const eliminarMadre = async (madre) => {
+        try {
+            const res = await businessApi.delete(`/madres/delete-madre-by-id/${madre.id_madre}`);
+            if (res?.status >= 200 && res?.status < 300) {
+                showAlert('Madre eliminada');
+                await cargarMadres(searchInput, filtroEstado);
+            } else {
+                showAlert('No se pudo eliminar', false);
+            }
+        } catch {
+            showAlert('No se pudo eliminar (tiene crías o eventos asociados)', false);
+        }
     };
 
     const guardarEdicion = async () => {
@@ -118,6 +144,15 @@ export default function MadreListadoScreen() {
                     <Text style={styles.metaLabel}>EVENTOS</Text>
                     <Text style={styles.metaValue}>{item.eventos?.length ?? 0}</Text>
                 </View>
+                {item.dias_en_leche != null && (
+                    <>
+                        <View style={styles.metaSep} />
+                        <View style={styles.metaItem}>
+                            <Text style={styles.metaLabel}>🥛 DEL</Text>
+                            <Text style={[styles.metaValue, { color: colors.campo }]}>{item.dias_en_leche}</Text>
+                        </View>
+                    </>
+                )}
             </View>
 
             {/* Crías */}
@@ -143,9 +178,14 @@ export default function MadreListadoScreen() {
 
             {item.observaciones ? <Text style={styles.observaciones} numberOfLines={2}>“{item.observaciones}”</Text> : null}
 
-            <TouchableOpacity style={styles.btnEditar} onPress={() => abrirEditar(item)}>
-                <Text style={styles.btnEditarText}>Editar</Text>
-            </TouchableOpacity>
+            <View style={styles.cardActions}>
+                <TouchableOpacity style={styles.btnEditar} onPress={() => abrirEditar(item)}>
+                    <Text style={styles.btnEditarText}>Editar</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.btnEliminar} onPress={() => confirmarEliminar(item)}>
+                    <Text style={styles.btnEliminarText}>Eliminar</Text>
+                </TouchableOpacity>
+            </View>
         </View>
     );
 
@@ -294,8 +334,11 @@ const styles = StyleSheet.create({
     criaDot: { width: 8, height: 8, borderRadius: 4 },
     criasEmpty: { fontSize: 12, color: colors.inkFaint, fontStyle: 'italic' },
 
-    btnEditar: { backgroundColor: colors.campo, borderRadius: radius.sm, paddingVertical: 11, alignItems: 'center', marginTop: 14 },
+    cardActions: { flexDirection: 'row', gap: 8, marginTop: 14 },
+    btnEditar: { flex: 1, backgroundColor: colors.campo, borderRadius: radius.sm, paddingVertical: 11, alignItems: 'center' },
     btnEditarText: { color: colors.white, fontWeight: '800', fontSize: 13 },
+    btnEliminar: { flex: 1, backgroundColor: '#FCEBEA', borderRadius: radius.sm, paddingVertical: 11, alignItems: 'center' },
+    btnEliminarText: { color: colors.muerto, fontWeight: '800', fontSize: 13 },
 
     modalOverlay: { flex: 1, backgroundColor: 'rgba(15,30,20,0.55)', justifyContent: 'flex-end' },
     modalCard: { backgroundColor: colors.surface, borderTopLeftRadius: radius.lg, borderTopRightRadius: radius.lg, padding: space.xl, maxHeight: '85%' },

@@ -58,12 +58,15 @@ export default function MadreFormScreen() {
     };
 
     const handleSubmit = async () => {
-        if (!formData.nombre) { showAlert('Nombre o RP es requerido', false); return; }
+        // El RP es el identificador con el que la buscan en la app y la reconoce el bot.
+        const rp = parseInt(formData.rp_madre, 10);
+        if (!Number.isInteger(rp) || rp <= 0) { showAlert('Poné el número de caravana (RP)', false); return; }
 
         setSubmitting(true);
         const payload = {
-            nombre: formData.nombre,
-            rp_madre: formData.rp_madre || undefined,
+            // El nombre es opcional: si no lo ponen, la vaca se identifica por su RP.
+            nombre: formData.nombre?.trim() || `Vaca ${rp}`,
+            rp_madre: rp,
             estado: formData.estado,
             observaciones: formData.observaciones || undefined,
             fecha_nacimiento: formData.fecha_nacimiento || undefined,
@@ -103,11 +106,12 @@ export default function MadreFormScreen() {
             <View style={styles.card}>
                 <Text style={styles.sectionTitle}>Datos básicos</Text>
 
-                <Text style={styles.label}>Nombre / RP Madre *</Text>
-                <TextInput style={styles.input} value={formData.nombre} onChangeText={v => set('nombre', v)} placeholder="Ej: Vaca María o RP 1023" />
+                <Text style={styles.label}>RP / Caravana *</Text>
+                <TextInput style={styles.input} value={formData.rp_madre} onChangeText={v => set('rp_madre', v)} placeholder="Ej: 717" keyboardType="numeric" />
+                <Text style={styles.hint}>Con este número la vas a buscar y la reconoce el bot.</Text>
 
-                <Text style={styles.label}>RP Madre</Text>
-                <TextInput style={styles.input} value={formData.rp_madre} onChangeText={v => set('rp_madre', v)} placeholder="Número de RP" keyboardType="numeric" />
+                <Text style={styles.label}>Nombre (opcional)</Text>
+                <TextInput style={styles.input} value={formData.nombre} onChangeText={v => set('nombre', v)} placeholder="Ej: Vaca María" />
 
                 <Text style={styles.label}>Estado</Text>
                 <View style={styles.optionRow}>
@@ -181,6 +185,7 @@ const styles = StyleSheet.create({
     card: { backgroundColor: colors.surface, borderRadius: radius.md, padding: 16, margin: space.md, marginBottom: 0, ...shadow.card },
     sectionTitle: { fontSize: 15, fontWeight: '700', color: colors.ink, marginBottom: 8 },
     label: { fontSize: 13, fontWeight: '600', color: colors.ink, marginBottom: 4, marginTop: 10 },
+    hint: { fontSize: 11, color: colors.inkFaint, marginTop: 4 },
     input: { borderWidth: 1, borderColor: colors.line, borderRadius: radius.sm, padding: 10, fontSize: 14, color: colors.ink },
     inputMulti: { height: 80, textAlignVertical: 'top' },
     optionRow: { flexDirection: 'row', gap: 8, flexWrap: 'wrap', marginTop: 4 },

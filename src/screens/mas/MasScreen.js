@@ -6,6 +6,9 @@ import { colors, shadow, radius, space } from '../../theme';
 const OPCIONES = [
     { screen: 'DiarreaListado', icon: '🥼', label: 'Diarrea', desc: 'Episodios y seguimiento', color: colors.muerto },
     { screen: 'ResumenSalud', icon: '❤️', label: 'Resumen de Salud', desc: 'Estado sanitario del rodeo', color: colors.vendido },
+    { screen: 'Litros', icon: '🥛', label: 'Litros de leche', desc: 'Producción diaria y vacas en ordeñe', color: '#0E7490' },
+    { screen: 'Sustituto', icon: '🍼', label: 'Sustituto lácteo', desc: 'Cuánto necesitás y si conviene', color: '#B45309' },
+    { screen: 'Calendario', icon: '📅', label: 'Calendario histórico', desc: 'Cómo estaba el rodeo cualquier día', color: colors.campo },
     { screen: 'Equipo', icon: '👥', label: 'Equipo', desc: 'Miembros e invitaciones', color: colors.campo },
     { screen: 'Admin', icon: '🛠️', label: 'Administración', desc: 'Gestión de establecimientos', color: colors.campoDark, soloAdmin: true },
     { screen: 'Ayuda', icon: '❓', label: 'Ayuda', desc: 'Guía rápida y cómo usar el bot', color: '#2C5282' },
