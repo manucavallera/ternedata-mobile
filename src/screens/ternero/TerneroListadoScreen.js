@@ -1,12 +1,13 @@
 import { useState, useEffect, useCallback } from 'react';
 import {
     View, Text, FlatList, TextInput, TouchableOpacity,
-    StyleSheet, ActivityIndicator, RefreshControl, Modal, ScrollView,
+    StyleSheet, ActivityIndicator, RefreshControl, Modal, ScrollView, Alert,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 import { useBussinesMicroservicio } from '../../hooks/bussines';
+import businessApi from '../../api/bussines-api';
 import { format, parseISO } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { colors, space, radius, shadow, type, estadoColor } from '../../theme';
@@ -138,6 +139,31 @@ export default function TerneroListadoScreen() {
             showAlert('Error al actualizar', false);
         }
         setSaving(false);
+    };
+
+    const confirmarEliminar = (ternero) => {
+        Alert.alert(
+            'Eliminar ternero',
+            `¿Eliminar el ternero RP ${ternero.rp_ternero ?? ternero.id_ternero}? No se puede deshacer.`,
+            [
+                { text: 'Cancelar', style: 'cancel' },
+                { text: 'Eliminar', style: 'destructive', onPress: () => eliminarTernero(ternero) },
+            ]
+        );
+    };
+
+    const eliminarTernero = async (ternero) => {
+        try {
+            const res = await businessApi.delete(`/terneros/delete-ternero-by-id/${ternero.id_ternero}`);
+            if (res?.status >= 200 && res?.status < 300) {
+                showAlert('Ternero eliminado');
+                await cargarTerneros(searchInput, filtroEstado);
+            } else {
+                showAlert('No se pudo eliminar', false);
+            }
+        } catch {
+            showAlert('No se pudo eliminar (tiene relaciones o error de red)', false);
+        }
     };
 
     const guardarPeso = async () => {
@@ -344,6 +370,9 @@ export default function TerneroListadoScreen() {
                     </TouchableOpacity>
                     <TouchableOpacity style={[styles.actBtn, styles.actBtnPrimary]} onPress={() => abrirEditar(item)}>
                         <Text style={[styles.actBtnText, styles.actBtnTextPrimary]}>✏️ Editar</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={[styles.actBtn, styles.actBtnDanger]} onPress={() => confirmarEliminar(item)}>
+                        <Text style={[styles.actBtnText, styles.actBtnTextDanger]}>🗑️ Eliminar</Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -768,6 +797,8 @@ const styles = StyleSheet.create({
     actBtnText: { color: colors.campoDark, fontWeight: '800', fontSize: 12 },
     actBtnPrimary: { backgroundColor: colors.campo },
     actBtnTextPrimary: { color: colors.white },
+    actBtnDanger: { backgroundColor: '#FCEBEA' },
+    actBtnTextDanger: { color: colors.muerto },
 
     modalOverlay: { flex: 1, backgroundColor: 'rgba(15,30,20,0.55)', justifyContent: 'flex-end' },
     modalScroll: { flexGrow: 1, justifyContent: 'flex-end' },

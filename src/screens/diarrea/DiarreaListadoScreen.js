@@ -1,12 +1,13 @@
 import { useState, useEffect, useCallback } from 'react';
 import {
     View, Text, FlatList, TextInput, TouchableOpacity,
-    StyleSheet, ActivityIndicator, RefreshControl, Modal, ScrollView,
+    StyleSheet, ActivityIndicator, RefreshControl, Modal, ScrollView, Alert,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 import { useBussinesMicroservicio } from '../../hooks/bussines';
+import businessApi from '../../api/bussines-api';
 import { format, parseISO } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { colors, shadow, radius, space } from '../../theme';
@@ -106,6 +107,31 @@ export default function DiarreaListadoScreen() {
         setSaving(false);
     };
 
+    const confirmarEliminar = (diarrea) => {
+        Alert.alert(
+            'Eliminar episodio',
+            `¿Eliminar el episodio de diarrea del ternero RP ${diarrea.ternero?.rp_ternero ?? '—'}? No se puede deshacer.`,
+            [
+                { text: 'Cancelar', style: 'cancel' },
+                { text: 'Eliminar', style: 'destructive', onPress: () => eliminarDiarrea(diarrea) },
+            ]
+        );
+    };
+
+    const eliminarDiarrea = async (diarrea) => {
+        try {
+            const res = await businessApi.delete(`/diarrea-terneros/delete-diarrea-by-id/${diarrea.id_diarrea_ternero}`);
+            if (res?.status >= 200 && res?.status < 300) {
+                showAlert('Episodio eliminado');
+                await cargarDiarreas(searchInput, filtroSeveridad);
+            } else {
+                showAlert('No se pudo eliminar', false);
+            }
+        } catch {
+            showAlert('No se pudo eliminar (error de red)', false);
+        }
+    };
+
     const renderDiarrea = ({ item }) => (
         <View style={styles.card}>
             <View style={styles.cardHeader}>
@@ -125,9 +151,14 @@ export default function DiarreaListadoScreen() {
                 <Text style={styles.cardValue}>{formatFecha(item.fecha_diarrea_ternero)}</Text>
             </View>
             {item.observaciones ? <Text style={styles.observaciones} numberOfLines={3}>{item.observaciones}</Text> : null}
-            <TouchableOpacity style={styles.btnEditar} onPress={() => abrirEditar(item)}>
-                <Text style={styles.btnText}>Editar</Text>
-            </TouchableOpacity>
+            <View style={styles.cardActions}>
+                <TouchableOpacity style={styles.btnEditar} onPress={() => abrirEditar(item)}>
+                    <Text style={styles.btnText}>Editar</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.btnEliminar} onPress={() => confirmarEliminar(item)}>
+                    <Text style={styles.btnEliminarText}>Eliminar</Text>
+                </TouchableOpacity>
+            </View>
         </View>
     );
 
@@ -247,7 +278,10 @@ const styles = StyleSheet.create({
     cardLabel: { fontSize: 12, color: colors.inkSoft, fontWeight: '600' },
     cardValue: { fontSize: 12, color: colors.ink, marginLeft: 4 },
     observaciones: { fontSize: 11, color: colors.inkFaint, marginTop: 4, fontStyle: 'italic' },
-    btnEditar: { backgroundColor: colors.campo, borderRadius: radius.sm, padding: 8, alignItems: 'center', marginTop: 10 },
+    cardActions: { flexDirection: 'row', gap: 8, marginTop: 10 },
+    btnEditar: { flex: 1, backgroundColor: colors.campo, borderRadius: radius.sm, padding: 8, alignItems: 'center' },
+    btnEliminar: { flex: 1, backgroundColor: '#FCEBEA', borderRadius: radius.sm, padding: 8, alignItems: 'center' },
+    btnEliminarText: { color: colors.muerto, fontWeight: '700', fontSize: 13 },
     btnText: { color: colors.white, fontWeight: '700', fontSize: 13 },
     modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
     modalCard: { backgroundColor: colors.surface, borderTopLeftRadius: radius.lg, borderTopRightRadius: radius.lg, padding: space.xl, maxHeight: '85%' },
