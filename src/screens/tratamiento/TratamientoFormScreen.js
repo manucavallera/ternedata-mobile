@@ -15,7 +15,7 @@ const TURNOS = [['mañana', '🌅 Mañana'], ['tarde', '🌆 Tarde']];
 export default function TratamientoFormScreen() {
     const navigation = useNavigation();
     const { userPayload, establecimientoActual } = useSelector(state => state.auth);
-    const { crearTratamientoHook, obtenerTerneroHook } = useBussinesMicroservicio();
+    const { crearTratamientoHook, crearMultiplesTratamientosHook, obtenerTerneroHook } = useBussinesMicroservicio();
 
     const [formData, setFormData] = useState({
         tipo_enfermedad: 'Diarrea',
@@ -31,6 +31,8 @@ export default function TratamientoFormScreen() {
     const [searchTernero, setSearchTernero] = useState('');
     const [submitting, setSubmitting] = useState(false);
     const [alert, setAlert] = useState({ show: false, message: '', success: false });
+    // Carga en lote (como la web): se acumulan y se mandan todos juntos.
+    const [pendientes, setPendientes] = useState([]);
 
     useEffect(() => { cargarTerneros(); }, []);
 
@@ -49,21 +51,61 @@ export default function TratamientoFormScreen() {
         setTimeout(() => setAlert({ show: false, message: '', success: false }), 5000);
     };
 
+    const armarPayload = () => ({
+        tipo_enfermedad: formData.tipo_enfermedad,
+        turno: formData.turno,
+        nombre: formData.nombre.trim(),
+        descripcion: formData.descripcion || undefined,
+        fecha_tratamiento: formData.fecha_tratamiento,
+        id_ternero: parseInt(formData.id_ternero),
+    });
+
+    const validar = () => {
+        if (!formData.id_ternero) { showAlert('Seleccioná un ternero', false); return false; }
+        if (!formData.nombre.trim()) { showAlert('Nombre del tratamiento es requerido', false); return false; }
+        return true;
+    };
+
+    // Deja el tipo/turno/fecha para encadenar cargas parecidas; limpia ternero y nombre.
+    const agregarALaLista = () => {
+        if (!validar()) return;
+        const rp = terneroSeleccionado ? (terneroSeleccionado.rp_ternero ?? terneroSeleccionado.id_ternero) : formData.id_ternero;
+        setPendientes(p => [...p, { ...armarPayload(), _rp: rp }]);
+        setFormData(f => ({ ...f, id_ternero: '', nombre: '', descripcion: '' }));
+        showAlert(`Agregado a la lista (${pendientes.length + 1})`, true);
+    };
+
+    const quitarDeLaLista = (idx) => setPendientes(p => p.filter((_, i) => i !== idx));
+
     const handleSubmit = async () => {
-        if (!formData.id_ternero) { showAlert('Seleccioná un ternero', false); return; }
-        if (!formData.nombre.trim()) { showAlert('Nombre del tratamiento es requerido', false); return; }
+        // Si hay lista armada, se manda en lote; si no, el tratamiento del form solo.
+        if (pendientes.length > 0) {
+            const items = [...pendientes];
+            if (formData.id_ternero && formData.nombre.trim()) items.push(armarPayload());
+
+            setSubmitting(true);
+            const payload = { tratamientos: items.map(({ _rp, ...t }) => t) };
+            const idEst = userPayload?.id_establecimiento || establecimientoActual;
+            if (idEst) payload.id_establecimiento = parseInt(idEst);
+
+            const res = await crearMultiplesTratamientosHook(payload);
+            if (res?.status === 201 || res?.status === 200) {
+                const creados = res.data?.total_creados ?? items.length;
+                const errores = res.data?.errores?.length || 0;
+                showAlert(errores ? `Se crearon ${creados} de ${items.length}. ${errores} fallaron.` : `Se registraron ${creados} tratamientos`, true);
+                setPendientes([]);
+                setTimeout(() => navigation.goBack(), 2000);
+            } else {
+                showAlert('Error al registrar los tratamientos', false);
+            }
+            setSubmitting(false);
+            return;
+        }
+
+        if (!validar()) return;
 
         setSubmitting(true);
-        const payload = {
-            tipo_enfermedad: formData.tipo_enfermedad,
-            turno: formData.turno,
-            nombre: formData.nombre.trim(),
-            descripcion: formData.descripcion || undefined,
-            fecha_tratamiento: formData.fecha_tratamiento,
-            id_ternero: parseInt(formData.id_ternero),
-        };
-
-        const res = await crearTratamientoHook(payload);
+        const res = await crearTratamientoHook(armarPayload());
         if (res?.status === 201 || res?.status === 200) {
             showAlert('Tratamiento registrado', true);
             setTimeout(() => navigation.goBack(), 2000);
@@ -137,8 +179,33 @@ export default function TratamientoFormScreen() {
                 <TextInput style={[styles.input, styles.inputMulti]} value={formData.descripcion} onChangeText={v => set('descripcion', v)} placeholder="Dosis, observaciones, etc." multiline numberOfLines={3} />
             </View>
 
+            {pendientes.length > 0 && (
+                <View style={styles.card}>
+                    <Text style={styles.sectionTitle}>En la lista ({pendientes.length})</Text>
+                    {pendientes.map((t, idx) => (
+                        <View key={idx} style={styles.pendRow}>
+                            <View style={{ flex: 1 }}>
+                                <Text style={styles.pendTitulo}>RP {t._rp} — {t.nombre}</Text>
+                                <Text style={styles.pendSub}>{t.tipo_enfermedad} · {t.turno} · {t.fecha_tratamiento}</Text>
+                            </View>
+                            <TouchableOpacity onPress={() => quitarDeLaLista(idx)}>
+                                <Text style={styles.pendQuitar}>×</Text>
+                            </TouchableOpacity>
+                        </View>
+                    ))}
+                </View>
+            )}
+
+            <TouchableOpacity style={styles.btnAgregar} onPress={agregarALaLista} disabled={submitting}>
+                <Text style={styles.btnAgregarText}>➕ Agregar otro a la lista</Text>
+            </TouchableOpacity>
+
             <TouchableOpacity style={styles.btnSubmit} onPress={handleSubmit} disabled={submitting}>
-                {submitting ? <ActivityIndicator color={colors.white} /> : <Text style={styles.btnSubmitText}>Registrar tratamiento</Text>}
+                {submitting ? <ActivityIndicator color={colors.white} /> : (
+                    <Text style={styles.btnSubmitText}>
+                        {pendientes.length > 0 ? `Registrar ${pendientes.length + (formData.id_ternero && formData.nombre.trim() ? 1 : 0)} tratamientos` : 'Registrar tratamiento'}
+                    </Text>
+                )}
             </TouchableOpacity>
 
             <Modal visible={modalTernero} animationType="slide" transparent>
@@ -192,8 +259,14 @@ const styles = StyleSheet.create({
     optionBtnTextActive: { color: colors.white, fontWeight: '700' },
     selectBtn: { borderWidth: 1, borderColor: colors.line, borderRadius: radius.sm, padding: 12, marginTop: 4, backgroundColor: colors.bg },
     selectBtnText: { fontSize: 14, color: colors.ink },
-    btnSubmit: { backgroundColor: colors.campo, margin: space.md, borderRadius: radius.md, padding: 16, alignItems: 'center', marginTop: 16 },
+    btnSubmit: { backgroundColor: colors.campo, margin: space.md, borderRadius: radius.md, padding: 16, alignItems: 'center', marginTop: 8 },
     btnSubmitText: { color: colors.white, fontWeight: '700', fontSize: 16 },
+    btnAgregar: { borderWidth: 1, borderColor: colors.campo, backgroundColor: colors.surface, marginHorizontal: space.md, marginTop: 16, borderRadius: radius.md, padding: 14, alignItems: 'center' },
+    btnAgregarText: { color: colors.campoDark, fontWeight: '800', fontSize: 14 },
+    pendRow: { flexDirection: 'row', alignItems: 'center', gap: 10, borderTopWidth: 1, borderTopColor: colors.line, paddingVertical: 9 },
+    pendTitulo: { fontSize: 13, fontWeight: '700', color: colors.ink },
+    pendSub: { fontSize: 11, color: colors.inkSoft, marginTop: 2 },
+    pendQuitar: { fontSize: 22, color: colors.muerto, paddingHorizontal: 6 },
     modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
     modalCard: { backgroundColor: colors.surface, borderTopLeftRadius: radius.lg, borderTopRightRadius: radius.lg, padding: space.xl, maxHeight: '75%' },
     modalTitle: { fontSize: 18, fontWeight: '700', color: colors.ink, marginBottom: 12 },

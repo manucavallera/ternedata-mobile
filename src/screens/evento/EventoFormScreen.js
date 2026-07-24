@@ -17,9 +17,12 @@ export default function EventoFormScreen() {
     const [formData, setFormData] = useState({
         fecha_evento: new Date().toISOString().split('T')[0],
         observacion: '',
-        id_ternero: '',
-        id_madre: '',
     });
+
+    // Un evento agrupa VARIOS animales (id_ternero/id_madre son arrays en el DTO),
+    // igual que la web: se marcan de a uno y quedan como chips.
+    const [ternerosSel, setTernerosSel] = useState([]);
+    const [madresSel, setMadresSel] = useState([]);
 
     const [terneros, setTerneros] = useState([]);
     const [madres, setMadres] = useState([]);
@@ -58,22 +61,26 @@ export default function EventoFormScreen() {
         setTimeout(() => setAlert({ show: false, message: '', success: false }), 5000);
     };
 
+    const toggleTernero = (id) => setTernerosSel(s => s.includes(id) ? s.filter(x => x !== id) : [...s, id]);
+    const toggleMadre = (id) => setMadresSel(s => s.includes(id) ? s.filter(x => x !== id) : [...s, id]);
+
     const handleSubmit = async () => {
         if (!formData.observacion?.trim()) { showAlert('La observación es requerida', false); return; }
-        if (!formData.id_ternero && !formData.id_madre) { showAlert('Seleccioná al menos un ternero o madre', false); return; }
+        if (ternerosSel.length === 0 && madresSel.length === 0) { showAlert('Seleccioná al menos un ternero o una madre', false); return; }
 
         setSubmitting(true);
         // El backend espera observacion (requerida) e id_ternero/id_madre como ARRAYS de int
         const payload = {
             fecha_evento: formData.fecha_evento,
             observacion: formData.observacion.trim(),
-            id_ternero: formData.id_ternero ? [parseInt(formData.id_ternero)] : undefined,
-            id_madre: formData.id_madre ? [parseInt(formData.id_madre)] : undefined,
+            id_ternero: ternerosSel.length ? ternerosSel : undefined,
+            id_madre: madresSel.length ? madresSel : undefined,
         };
 
         const res = await crearEventoHook(payload);
         if (res?.status === 201 || res?.status === 200) {
-            showAlert('Evento registrado', true);
+            const total = ternerosSel.length + madresSel.length;
+            showAlert(`Evento registrado para ${total} animal${total === 1 ? '' : 'es'}`, true);
             setTimeout(() => navigation.goBack(), 2000);
         } else {
             showAlert('Error al registrar evento', false);
@@ -81,10 +88,10 @@ export default function EventoFormScreen() {
         setSubmitting(false);
     };
 
-    const terneroSel = terneros.find(t => String(t.id_ternero) === String(formData.id_ternero));
-    const madreSel = madres.find(m => String(m.id_madre) === String(formData.id_madre));
-    const ternerosFiltrados = terneros.filter(t => !searchTernero || t.nombre?.toLowerCase().includes(searchTernero.toLowerCase()) || String(t.id_ternero).includes(searchTernero));
-    const madresFiltradas = madres.filter(m => !searchMadre || m.nombre?.toLowerCase().includes(searchMadre.toLowerCase()) || String(m.id_madre).includes(searchMadre));
+    const rpTernero = (t) => t.rp_ternero ?? t.id_ternero;
+    const rpMadre = (m) => m.rp_madre ?? m.id_madre;
+    const ternerosFiltrados = terneros.filter(t => !searchTernero || t.nombre?.toLowerCase().includes(searchTernero.toLowerCase()) || String(rpTernero(t)).includes(searchTernero));
+    const madresFiltradas = madres.filter(m => !searchMadre || m.nombre?.toLowerCase().includes(searchMadre.toLowerCase()) || String(rpMadre(m)).includes(searchMadre));
 
     return (
         <ScrollView style={styles.container} contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
@@ -113,20 +120,45 @@ export default function EventoFormScreen() {
 
             <View style={styles.card}>
                 <Text style={styles.sectionTitle}>Animales</Text>
+                <Text style={styles.hint}>Un mismo evento puede abarcar varios animales.</Text>
 
-                <Text style={styles.label}>Ternero</Text>
+                <Text style={styles.label}>Terneros ({ternerosSel.length})</Text>
                 <TouchableOpacity style={styles.selectBtn} onPress={() => setModalTernero(true)}>
                     <Text style={styles.selectBtnText}>
-                        {terneroSel ? `#${terneroSel.id_ternero} — ${terneroSel.nombre || 'Sin nombre'}` : 'Seleccionar ternero...'}
+                        {ternerosSel.length ? `${ternerosSel.length} seleccionado${ternerosSel.length === 1 ? '' : 's'} — tocá para cambiar` : 'Seleccionar terneros...'}
                     </Text>
                 </TouchableOpacity>
+                {ternerosSel.length > 0 && (
+                    <View style={styles.chipsWrap}>
+                        {ternerosSel.map(id => {
+                            const t = terneros.find(x => x.id_ternero === id);
+                            return (
+                                <TouchableOpacity key={id} style={styles.chip} onPress={() => toggleTernero(id)}>
+                                    <Text style={styles.chipText}>RP {t ? rpTernero(t) : id} ×</Text>
+                                </TouchableOpacity>
+                            );
+                        })}
+                    </View>
+                )}
 
-                <Text style={styles.label}>Madre</Text>
+                <Text style={styles.label}>Madres ({madresSel.length})</Text>
                 <TouchableOpacity style={styles.selectBtn} onPress={() => setModalMadre(true)}>
                     <Text style={styles.selectBtnText}>
-                        {madreSel ? `#${madreSel.id_madre} — ${madreSel.nombre || 'Sin nombre'}` : 'Seleccionar madre...'}
+                        {madresSel.length ? `${madresSel.length} seleccionada${madresSel.length === 1 ? '' : 's'} — tocá para cambiar` : 'Seleccionar madres...'}
                     </Text>
                 </TouchableOpacity>
+                {madresSel.length > 0 && (
+                    <View style={styles.chipsWrap}>
+                        {madresSel.map(id => {
+                            const m = madres.find(x => x.id_madre === id);
+                            return (
+                                <TouchableOpacity key={id} style={styles.chip} onPress={() => toggleMadre(id)}>
+                                    <Text style={styles.chipText}>RP {m ? rpMadre(m) : id} ×</Text>
+                                </TouchableOpacity>
+                            );
+                        })}
+                    </View>
+                )}
             </View>
 
             <TouchableOpacity style={styles.btnSubmit} onPress={handleSubmit} disabled={submitting}>
@@ -137,21 +169,26 @@ export default function EventoFormScreen() {
             <Modal visible={modalTernero} animationType="slide" transparent>
                 <View style={styles.modalOverlay}>
                     <View style={styles.modalCard}>
-                        <Text style={styles.modalTitle}>Seleccionar ternero</Text>
-                        <TextInput style={[styles.input, { marginBottom: 10 }]} placeholder="Buscar..." value={searchTernero} onChangeText={setSearchTernero} />
+                        <Text style={styles.modalTitle}>Seleccionar terneros ({ternerosSel.length})</Text>
+                        <TextInput style={[styles.input, { marginBottom: 10 }]} placeholder="Buscar por RP o nombre..." value={searchTernero} onChangeText={setSearchTernero} />
                         <FlatList
                             data={ternerosFiltrados}
                             keyExtractor={item => String(item.id_ternero)}
-                            renderItem={({ item }) => (
-                                <TouchableOpacity style={styles.modalItem} onPress={() => { set('id_ternero', String(item.id_ternero)); setModalTernero(false); setSearchTernero(''); }}>
-                                    <Text style={styles.modalItemText}>#{item.id_ternero} — {item.nombre || 'Sin nombre'}</Text>
-                                </TouchableOpacity>
-                            )}
+                            renderItem={({ item }) => {
+                                const marcado = ternerosSel.includes(item.id_ternero);
+                                return (
+                                    <TouchableOpacity style={styles.modalItem} onPress={() => toggleTernero(item.id_ternero)}>
+                                        <Text style={[styles.modalItemText, marcado && styles.modalItemTextSel]}>
+                                            {marcado ? '☑' : '☐'}  RP {rpTernero(item)} — {item.nombre || 'Sin nombre'}
+                                        </Text>
+                                    </TouchableOpacity>
+                                );
+                            }}
                             ListEmptyComponent={<Text style={styles.modalEmpty}>Sin terneros</Text>}
                             style={{ maxHeight: 300 }}
                         />
-                        <TouchableOpacity style={styles.modalCerrar} onPress={() => setModalTernero(false)}>
-                            <Text style={styles.modalCerrarText}>Cancelar</Text>
+                        <TouchableOpacity style={styles.modalCerrar} onPress={() => { setModalTernero(false); setSearchTernero(''); }}>
+                            <Text style={styles.modalCerrarText}>Listo</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -161,21 +198,26 @@ export default function EventoFormScreen() {
             <Modal visible={modalMadre} animationType="slide" transparent>
                 <View style={styles.modalOverlay}>
                     <View style={styles.modalCard}>
-                        <Text style={styles.modalTitle}>Seleccionar madre</Text>
-                        <TextInput style={[styles.input, { marginBottom: 10 }]} placeholder="Buscar..." value={searchMadre} onChangeText={setSearchMadre} />
+                        <Text style={styles.modalTitle}>Seleccionar madres ({madresSel.length})</Text>
+                        <TextInput style={[styles.input, { marginBottom: 10 }]} placeholder="Buscar por RP o nombre..." value={searchMadre} onChangeText={setSearchMadre} />
                         <FlatList
                             data={madresFiltradas}
                             keyExtractor={item => String(item.id_madre)}
-                            renderItem={({ item }) => (
-                                <TouchableOpacity style={styles.modalItem} onPress={() => { set('id_madre', String(item.id_madre)); setModalMadre(false); setSearchMadre(''); }}>
-                                    <Text style={styles.modalItemText}>#{item.id_madre} — {item.nombre || 'Sin nombre'}</Text>
-                                </TouchableOpacity>
-                            )}
+                            renderItem={({ item }) => {
+                                const marcado = madresSel.includes(item.id_madre);
+                                return (
+                                    <TouchableOpacity style={styles.modalItem} onPress={() => toggleMadre(item.id_madre)}>
+                                        <Text style={[styles.modalItemText, marcado && styles.modalItemTextSel]}>
+                                            {marcado ? '☑' : '☐'}  RP {rpMadre(item)} — {item.nombre || 'Sin nombre'}
+                                        </Text>
+                                    </TouchableOpacity>
+                                );
+                            }}
                             ListEmptyComponent={<Text style={styles.modalEmpty}>Sin madres</Text>}
                             style={{ maxHeight: 300 }}
                         />
-                        <TouchableOpacity style={styles.modalCerrar} onPress={() => setModalMadre(false)}>
-                            <Text style={styles.modalCerrarText}>Cancelar</Text>
+                        <TouchableOpacity style={styles.modalCerrar} onPress={() => { setModalMadre(false); setSearchMadre(''); }}>
+                            <Text style={styles.modalCerrarText}>Listo</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -213,6 +255,11 @@ const styles = StyleSheet.create({
     modalTitle: { fontSize: 18, fontWeight: '700', color: colors.ink, marginBottom: 12 },
     modalItem: { paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: colors.bg },
     modalItemText: { fontSize: 14, color: colors.ink, fontWeight: '600' },
+    modalItemTextSel: { color: colors.campo, fontWeight: '800' },
+    hint: { fontSize: 11, color: colors.inkFaint, marginBottom: 4 },
+    chipsWrap: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginTop: 8 },
+    chip: { backgroundColor: colors.campoSoft, borderRadius: radius.pill, paddingHorizontal: 10, paddingVertical: 5 },
+    chipText: { fontSize: 12, fontWeight: '700', color: colors.campoDark },
     modalEmpty: { textAlign: 'center', color: colors.inkFaint, padding: 20 },
     modalCerrar: { marginTop: 12, padding: 12, alignItems: 'center', borderWidth: 1, borderColor: colors.line, borderRadius: radius.sm },
     modalCerrarText: { color: colors.ink, fontWeight: '600' },
