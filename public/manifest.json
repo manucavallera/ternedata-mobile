@@ -1,0 +1,28 @@
+{
+  "id": "/",
+  "name": "TerneData",
+  "short_name": "TerneData",
+  "description": "Gestión ganadera de terneros, madres, tratamientos, rodeos y producción.",
+  "lang": "es-AR",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "theme_color": "#176B43",
+  "background_color": "#176B43",
+  "prefer_related_applications": false,
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

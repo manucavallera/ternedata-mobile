@@ -21,6 +21,7 @@
       "favicon": "./assets/favicon.png",
       "name": "TerneData",
       "shortName": "TerneData",
+      "lang": "es-AR",
       "themeColor": "#176B43",
       "backgroundColor": "#176B43",
       "display": "standalone"
