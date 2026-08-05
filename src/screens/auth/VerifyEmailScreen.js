@@ -16,7 +16,6 @@ export default function VerifyEmailScreen() {
     const [estado, setEstado] = useState(tokenParam ? 'verificando' : 'error');
     const [mensaje, setMensaje] = useState('');
     const [reenviarEmail, setReenviarEmail] = useState('');
-    const [reenviado, setReenviado] = useState(false);
 
     useEffect(() => {
         if (!tokenParam) return;
@@ -37,8 +36,12 @@ export default function VerifyEmailScreen() {
 
     const handleReenviar = async () => {
         if (!reenviarEmail.trim()) return;
-        await resendVerificationHook(reenviarEmail.trim());
-        setReenviado(true);
+        const res = await resendVerificationHook(reenviarEmail.trim());
+        if (res.success) {
+            setEstado('reenviado');
+        } else {
+            setMensaje('No pudimos reenviar el email. Intentá de nuevo.');
+        }
     };
 
     return (
@@ -65,25 +68,23 @@ export default function VerifyEmailScreen() {
                         </>
                     )}
 
+                    {estado === 'reenviado' && (
+                        <View style={[styles.alertBox, styles.alertSuccess]}>
+                            <Text style={styles.alertText}>✅ Si la cuenta existe y no está verificada, te enviamos un nuevo email. Revisá tu casilla.</Text>
+                        </View>
+                    )}
+
                     {estado === 'error' && (
                         <>
                             <View style={[styles.alertBox, styles.alertError]}>
                                 <Text style={styles.alertText}>{mensaje || 'No pudimos verificar tu email.'}</Text>
                             </View>
 
-                            {reenviado ? (
-                                <Text style={styles.successMsg}>
-                                    Si la cuenta existe y no está verificada, te enviamos un nuevo email. Revisá tu casilla.
-                                </Text>
-                            ) : (
-                                <>
-                                    <Text style={styles.label}>Reenviar verificación</Text>
-                                    <TextInput style={styles.input} placeholder="tu@email.com" value={reenviarEmail} onChangeText={setReenviarEmail} keyboardType="email-address" autoCapitalize="none" />
-                                    <TouchableOpacity style={styles.button} onPress={handleReenviar}>
-                                        <Text style={styles.buttonText}>Reenviar email</Text>
-                                    </TouchableOpacity>
-                                </>
-                            )}
+                            <Text style={styles.label}>Reenviar verificación</Text>
+                            <TextInput style={styles.input} placeholder="tu@email.com" value={reenviarEmail} onChangeText={setReenviarEmail} keyboardType="email-address" autoCapitalize="none" />
+                            <TouchableOpacity style={styles.button} onPress={handleReenviar}>
+                                <Text style={styles.buttonText}>Reenviar email</Text>
+                            </TouchableOpacity>
                         </>
                     )}
 
