@@ -5,11 +5,23 @@ import { store } from './src/store/store';
 import RootNavigator from './src/navigation/RootNavigator';
 import { StatusBar } from 'expo-status-bar';
 
+const linking = {
+    prefixes: [
+        'https://manu-ternedatamobile.gygo4l.easypanel.host',
+        'ternedata://',
+    ],
+    config: {
+        screens: {
+            VerifyEmail: 'auth/verify-email',
+        },
+    },
+};
+
 export default function App() {
     return (
         <Provider store={store}>
             <SafeAreaProvider>
-                <NavigationContainer>
+                <NavigationContainer linking={linking}>
                     <RootNavigator />
                     <StatusBar style="auto" />
                 </NavigationContainer>
