@@ -36,7 +36,8 @@ export default function MasScreen() {
         return () => { activo = false; };
     }, []);
 
-    const opciones = OPCIONES.filter(op => !op.soloAdmin || userPayload?.rol === 'admin');
+    const puedeAdministrar = userPayload?.rol === 'admin' || userPayload?.rol === 'super_admin';
+    const opciones = OPCIONES.filter(op => !op.soloAdmin || puedeAdministrar);
     return (
         <View style={styles.container}>
             <View style={styles.header}>
