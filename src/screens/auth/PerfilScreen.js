@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import {
     View, Text, TextInput, TouchableOpacity,
-    StyleSheet, ActivityIndicator, ScrollView, Alert, Linking,
+    StyleSheet, ActivityIndicator, ScrollView, Alert, Linking, Platform,
 } from 'react-native';
 import { useSelector } from 'react-redux';
 import { useAuthSession } from '../../hooks/auth';
@@ -96,9 +96,13 @@ export default function PerfilScreen() {
     };
 
     const handleLogout = () => {
+        if (Platform.OS === 'web') {
+            if (window.confirm('¿Seguro que querés cerrar sesión?')) logoutHook();
+            return;
+        }
         Alert.alert('Cerrar sesión', '¿Seguro que querés salir?', [
             { text: 'Cancelar', style: 'cancel' },
-            { text: 'Salir', style: 'destructive', onPress: () => logoutHook() },
+            { text: 'Salir', style: 'destructive', onPress: logoutHook },
         ]);
     };
 

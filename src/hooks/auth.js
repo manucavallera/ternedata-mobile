@@ -2,7 +2,7 @@ import { useDispatch } from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import securityApi from '../api/security-api';
 import businessApi from '../api/bussines-api';
-import { setAuthPayload, setStatus, setUserData } from '../store/auth/authSlice';
+import { setAuthPayload, setStatus, setUserData, resetEstablecimientoActual } from '../store/auth/authSlice';
 import { setToken, removeToken } from '../utils/storage';
 
 export const useAuthSession = () => {
@@ -96,10 +96,14 @@ export const useAuthSession = () => {
     };
 
     const logoutHook = async () => {
-        await AsyncStorage.clear();
-        dispatch(setAuthPayload({}));
-        dispatch(setStatus('not-authenticated'));
-        dispatch(setUserData({}));
+        try {
+            await AsyncStorage.clear();
+        } finally {
+            dispatch(setAuthPayload({}));
+            dispatch(setStatus('not-authenticated'));
+            dispatch(setUserData({}));
+            dispatch(resetEstablecimientoActual());
+        }
     };
 
     const aceptarInvitacionesAutomatico = async () => {
