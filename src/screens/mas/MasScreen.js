@@ -1,6 +1,9 @@
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
+import { useEffect, useState } from 'react';
+import { View, Text, TouchableOpacity, ScrollView, StyleSheet, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { setEstablecimientoActual } from '../../store/auth/authSlice';
+import { useBussinesMicroservicio } from '../../hooks/bussines';
 import { colors, shadow, radius, space } from '../../theme';
 
 const OPCIONES = [
@@ -17,7 +20,22 @@ const OPCIONES = [
 
 export default function MasScreen() {
     const navigation = useNavigation();
-    const { userPayload } = useSelector(state => state.auth);
+    const dispatch = useDispatch();
+    const { userPayload, establecimientoActual } = useSelector(state => state.auth);
+    const { obtenerEstablecimientosHook } = useBussinesMicroservicio();
+    const [establecimientos, setEstablecimientos] = useState([]);
+    const [loadingEst, setLoadingEst] = useState(true);
+
+    useEffect(() => {
+        let activo = true;
+        obtenerEstablecimientosHook().then(res => {
+            if (!activo) return;
+            const lista = Array.isArray(res?.data) ? res.data : (res?.data?.data || []);
+            setEstablecimientos(lista.filter(e => e.estado === 'activo'));
+        }).finally(() => activo && setLoadingEst(false));
+        return () => { activo = false; };
+    }, []);
+
     const opciones = OPCIONES.filter(op => !op.soloAdmin || userPayload?.rol === 'admin');
     return (
         <View style={styles.container}>
@@ -25,6 +43,22 @@ export default function MasScreen() {
                 <Text style={styles.headerTitle}>☰ Más</Text>
             </View>
             <ScrollView contentContainerStyle={styles.list}>
+                <View style={styles.estCard}>
+                    <Text style={styles.estTitle}>🏡 Establecimiento activo</Text>
+                    {loadingEst ? <ActivityIndicator color={colors.campo} /> : establecimientos.length === 0 ? (
+                        <Text style={styles.estEmpty}>No se pudieron cargar tus establecimientos</Text>
+                    ) : establecimientos.map(est => {
+                        const id = est.id_establecimiento;
+                        const seleccionado = Number(establecimientoActual) === Number(id);
+                        return (
+                            <TouchableOpacity key={id} style={[styles.estOption, seleccionado && styles.estSelected]}
+                                onPress={() => dispatch(setEstablecimientoActual(id))}>
+                                <Text style={[styles.estName, seleccionado && styles.estNameSelected]}>{est.nombre}</Text>
+                                <Text style={styles.estMark}>{seleccionado ? '✓' : ''}</Text>
+                            </TouchableOpacity>
+                        );
+                    })}
+                </View>
                 {opciones.map(op => (
                     <TouchableOpacity key={op.screen} style={styles.item} onPress={() => navigation.navigate(op.screen)}>
                         <View style={[styles.iconBox, { backgroundColor: op.color }]}>
@@ -53,4 +87,12 @@ const styles = StyleSheet.create({
     itemLabel: { fontSize: 16, fontWeight: '700', color: colors.ink },
     itemDesc: { fontSize: 12, color: colors.inkSoft, marginTop: 2 },
     chevron: { fontSize: 26, color: colors.line, fontWeight: '300' },
+    estCard: { backgroundColor: colors.surface, borderRadius: radius.md, padding: 14, marginBottom: 14, ...shadow.card },
+    estTitle: { color: colors.ink, fontSize: 15, fontWeight: '800', marginBottom: 8 },
+    estEmpty: { color: colors.inkSoft, fontSize: 13 },
+    estOption: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderWidth: 1, borderColor: colors.line, borderRadius: radius.sm, padding: 10, marginTop: 7 },
+    estSelected: { borderColor: colors.campo, backgroundColor: '#E8F5EC' },
+    estName: { color: colors.ink, fontWeight: '600' },
+    estNameSelected: { color: colors.campoDark, fontWeight: '800' },
+    estMark: { color: colors.campoDark, fontWeight: '900' },
 });
