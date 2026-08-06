@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { removeToken, getToken } from '../utils/storage';
 import securityApi from '../api/security-api';
-import { setAuthPayload, setStatus, setUserData } from '../store/auth/authSlice';
+import { setAuthPayload, setStatus, setUserData, setEstablecimientoActual } from '../store/auth/authSlice';
 import AuthNavigator from './AuthNavigator';
 import AppNavigator from './AppNavigator';
 import SetupEstablecimientoScreen from '../screens/auth/SetupEstablecimientoScreen';
@@ -24,6 +24,7 @@ export default function RootNavigator() {
                 if (!activo) return;
                 dispatch(setUserData(data));
                 dispatch(setAuthPayload({ token, user: data }));
+                dispatch(setEstablecimientoActual(data?.id_establecimiento ?? null));
                 dispatch(setStatus('authenticated'));
             } catch {
                 await removeToken();

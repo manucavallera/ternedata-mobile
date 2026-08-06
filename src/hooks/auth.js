@@ -2,7 +2,7 @@ import { useDispatch } from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import securityApi from '../api/security-api';
 import businessApi from '../api/bussines-api';
-import { setAuthPayload, setStatus, setUserData, resetEstablecimientoActual } from '../store/auth/authSlice';
+import { setAuthPayload, setStatus, setUserData, setEstablecimientoActual, resetEstablecimientoActual } from '../store/auth/authSlice';
 import { setToken, removeToken } from '../utils/storage';
 
 export const useAuthSession = () => {
@@ -21,6 +21,7 @@ export const useAuthSession = () => {
             dispatch(setAuthPayload(data));
             dispatch(setStatus('authenticated'));
             dispatch(setUserData(data?.user));
+            dispatch(setEstablecimientoActual(data?.user?.id_establecimiento ?? null));
 
             return { data, config, headers, status, statusText, request };
         } catch (error) {

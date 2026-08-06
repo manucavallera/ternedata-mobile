@@ -7,7 +7,7 @@ import { useDispatch } from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useBussinesMicroservicio } from '../../hooks/bussines';
 import securityApi from '../../api/security-api';
-import { setAuthPayload, setStatus, setUserData } from '../../store/auth/authSlice';
+import { setAuthPayload, setStatus, setUserData, setEstablecimientoActual } from '../../store/auth/authSlice';
 import { setToken } from '../../utils/storage';
 import { colors, shadow, radius, space } from '../../theme';
 
@@ -50,6 +50,7 @@ export default function SetupEstablecimientoScreen() {
             await AsyncStorage.setItem('userSelected', JSON.stringify(data.user));
             dispatch(setAuthPayload(data));
             dispatch(setUserData(data.user));
+            dispatch(setEstablecimientoActual(data.user.id_establecimiento));
             dispatch(setStatus('authenticated'));
         } catch {
             setError('El establecimiento fue creado, pero no pudimos actualizar la sesión. Cerrá sesión e ingresá de nuevo.');
