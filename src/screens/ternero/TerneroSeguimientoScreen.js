@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
     ActivityIndicator, Alert, ScrollView, StyleSheet, Text, TextInput,
     TouchableOpacity, View,
@@ -72,7 +72,7 @@ export default function TerneroSeguimientoScreen() {
         setTimeout(() => setAlert({ show: false, message: '', success: false }), 4000);
     };
 
-    const cargar = useCallback(async () => {
+    const cargar = async () => {
         setLoading(true);
         const [weights, colostrum] = await Promise.all([
             obtenerPesajesSeguimientoHook(ternero.id_ternero),
@@ -88,9 +88,9 @@ export default function TerneroSeguimientoScreen() {
             setCalostrados(colostrum.data?.calostrados || []);
         }
         setLoading(false);
-    }, [obtenerPesajesSeguimientoHook, obtenerCalostradosSeguimientoHook, ternero.id_ternero]);
+    };
 
-    useEffect(() => { cargar(); }, [cargar]);
+    useEffect(() => { cargar(); }, [ternero.id_ternero]);
 
     const markers = useMemo(() => {
         const map = {};
