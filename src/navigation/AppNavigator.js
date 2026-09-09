@@ -6,6 +6,7 @@ import { colors } from '../theme';
 import DashboardScreen from '../screens/dashboard/DashboardScreen';
 import TerneroListadoScreen from '../screens/ternero/TerneroListadoScreen';
 import TerneroFormScreen from '../screens/ternero/TerneroFormScreen';
+import TerneroSeguimientoScreen from '../screens/ternero/TerneroSeguimientoScreen';
 import MadreListadoScreen from '../screens/madre/MadreListadoScreen';
 import MadreFormScreen from '../screens/madre/MadreFormScreen';
 import TratamientoListadoScreen from '../screens/tratamiento/TratamientoListadoScreen';
@@ -39,6 +40,7 @@ function TerneroNavigator() {
         <TerneroStack.Navigator screenOptions={{ headerShown: false }}>
             <TerneroStack.Screen name="TerneroListado" component={TerneroListadoScreen} />
             <TerneroStack.Screen name="TerneroForm" component={TerneroFormScreen} />
+            <TerneroStack.Screen name="TerneroSeguimiento" component={TerneroSeguimientoScreen} />
         </TerneroStack.Navigator>
     );
 }

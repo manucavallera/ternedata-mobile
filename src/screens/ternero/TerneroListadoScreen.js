@@ -362,6 +362,9 @@ export default function TerneroListadoScreen() {
                     <TouchableOpacity style={styles.actBtn} onPress={() => abrirHistorial(item)}>
                         <Text style={styles.actBtnText}>📊 Historial</Text>
                     </TouchableOpacity>
+                    <TouchableOpacity style={styles.actBtn} onPress={() => navigation.navigate('TerneroSeguimiento', { ternero: item })}>
+                        <Text style={styles.actBtnText}>📅 Seguimiento</Text>
+                    </TouchableOpacity>
                     <TouchableOpacity style={styles.actBtn} onPress={() => abrirCalostrado(item)}>
                         <Text style={styles.actBtnText}>🍼 {tieneCalostro ? 'Calostrado' : '+ Calostro'}</Text>
                     </TouchableOpacity>

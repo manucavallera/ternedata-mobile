@@ -112,6 +112,31 @@ export const useBussinesMicroservicio = () => {
         }
     };
 
+    // SEGUIMIENTO DEL TERNERO
+    const seguimientoRequest = async (method, url, data) => {
+        try {
+            const response = await businessApi.request({ method, url, data });
+            return { data: response.data, status: response.status };
+        } catch (error) {
+            if (error?.response?.status === 401) await on401();
+            return {
+                status: error?.response?.status || 500,
+                data: error?.response?.data,
+                error: true,
+                message: error?.response?.data?.message || error.message,
+            };
+        }
+    };
+
+    const obtenerPesajesSeguimientoHook = (id) => seguimientoRequest('get', `/terneros/${id}/pesajes`);
+    const crearPesajeSeguimientoHook = (id, data) => seguimientoRequest('post', `/terneros/${id}/pesajes`, data);
+    const actualizarPesajeSeguimientoHook = (id, pesajeId, data) => seguimientoRequest('patch', `/terneros/${id}/pesajes/${pesajeId}`, data);
+    const eliminarPesajeSeguimientoHook = (id, pesajeId) => seguimientoRequest('delete', `/terneros/${id}/pesajes/${pesajeId}`);
+    const obtenerCalostradosSeguimientoHook = (id) => seguimientoRequest('get', `/terneros/${id}/calostrados`);
+    const crearCalostradoSeguimientoHook = (id, data) => seguimientoRequest('post', `/terneros/${id}/calostrados`, data);
+    const actualizarCalostradoSeguimientoHook = (id, calostradoId, data) => seguimientoRequest('patch', `/terneros/${id}/calostrados/${calostradoId}`, data);
+    const eliminarCalostradoSeguimientoHook = (id, calostradoId) => seguimientoRequest('delete', `/terneros/${id}/calostrados/${calostradoId}`);
+
     // EVENTOS
     const crearEventoHook = async (objectEvento) => {
         try {
@@ -744,6 +769,10 @@ export const useBussinesMicroservicio = () => {
         crearMadreHook, obtenerMadreHook, patchMadreHook,
         crearTerneroHook, obtenerTerneroHook, patchTerneroHook,
         agregarPesoDiarioHook, obtenerHistorialCompletoHook, actualizarCalostradoHook,
+        obtenerPesajesSeguimientoHook, crearPesajeSeguimientoHook,
+        actualizarPesajeSeguimientoHook, eliminarPesajeSeguimientoHook,
+        obtenerCalostradosSeguimientoHook, crearCalostradoSeguimientoHook,
+        actualizarCalostradoSeguimientoHook, eliminarCalostradoSeguimientoHook,
         crearEventoHook, crearMultiplesEventosHook, obtenerEventoHook, patchEventoHook,
         crearTratamientoHook, crearMultiplesTratamientosHook, obtenerTratamientoHook,
         obtenerTratamientosPorTipoHook, obtenerTratamientosPorTurnoHook, obtenerTratamientosPorTipoYTurnoHook, patchTratamientoHook,
