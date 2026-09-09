@@ -92,19 +92,28 @@ export default function TerneroFormScreen() {
         setSubmitting(true);
         const pesoNacer = parseFloat(formData.peso_nacer);
         const payload = {
-            ...formData,
             rp_ternero: parseInt(formData.rp_ternero),
+            sexo: formData.sexo,
+            estado: formData.estado,
             peso_nacer: pesoNacer,
             // peso_ideal: el ingresado o el doble del peso al nacer (igual que la web)
             peso_ideal: formData.peso_ideal ? parseFloat(formData.peso_ideal) : pesoNacer * 2,
             // peso_largado lo deriva la web como nacer×15
             peso_largado: pesoNacer * 15,
-            litros_calostrado: formData.litros_calostrado ? parseFloat(formData.litros_calostrado) : undefined,
-            grado_brix: formData.grado_brix ? parseFloat(formData.grado_brix) : undefined,
-            id_madre: formData.id_madre ? parseInt(formData.id_madre) : undefined,
-            id_rodeo: formData.id_rodeo ? parseInt(formData.id_rodeo) : undefined,
-            id_establecimiento: formData.id_establecimiento ? parseInt(formData.id_establecimiento) : undefined,
+            fecha_nacimiento: formData.fecha_nacimiento,
         };
+
+        if (formData.peso_ideal) payload.peso_ideal = parseFloat(formData.peso_ideal);
+        if (formData.semen.trim()) payload.semen = formData.semen.trim();
+        if (formData.observaciones.trim()) payload.observaciones = formData.observaciones.trim();
+        if (formData.id_madre) payload.id_madre = parseInt(formData.id_madre);
+        if (formData.id_rodeo) payload.id_rodeo = parseInt(formData.id_rodeo);
+        if (formData.litros_calostrado) payload.litros_calostrado = parseFloat(formData.litros_calostrado);
+        if (formData.grado_brix) payload.grado_brix = parseFloat(formData.grado_brix);
+        if (formData.metodo_calostrado) payload.metodo_calostrado = formData.metodo_calostrado;
+        if (formData.observaciones_calostrado.trim()) {
+            payload.observaciones_calostrado = formData.observaciones_calostrado.trim();
+        }
 
         const res = await crearTerneroHook(payload);
 
@@ -112,7 +121,8 @@ export default function TerneroFormScreen() {
             showAlert('Ternero creado exitosamente', true);
             setTimeout(() => navigation.goBack(), 2000);
         } else {
-            showAlert('Error al crear ternero. Verificá los datos.', false);
+            const message = Array.isArray(res?.message) ? res.message.join(', ') : res?.message;
+            showAlert(message || 'Error al crear ternero. Verificá los datos.', false);
         }
         setSubmitting(false);
     };

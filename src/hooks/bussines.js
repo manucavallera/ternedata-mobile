@@ -53,7 +53,11 @@ export const useBussinesMicroservicio = () => {
             return { data, config, headers, status, statusText, request };
         } catch (error) {
             if (error.response?.status === 401) await on401();
-            return error.response?.status || error;
+            return {
+                status: error.response?.status,
+                error: true,
+                message: error.response?.data?.message || error.message,
+            };
         }
     };
 

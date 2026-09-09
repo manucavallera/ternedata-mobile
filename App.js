@@ -13,6 +13,7 @@ const linking = {
     config: {
         screens: {
             VerifyEmail: 'auth/verify-email',
+            ResetPassword: 'auth/reset-password',
         },
     },
 };
