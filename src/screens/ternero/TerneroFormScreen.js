@@ -62,7 +62,8 @@ export default function TerneroFormScreen() {
     };
 
     const cargarMadres = async () => {
-        let q = 'page=1&limit=500&estado=Activa';
+        // Las madres pueden estar "Seca" o "En Tambo" y ambas pueden tener crías.
+        let q = 'page=1&limit=500';
         if (formData.id_establecimiento) q += `&id_establecimiento=${formData.id_establecimiento}`;
         const res = await obtenerMadreHook(q);
         setMadres(res?.data?.data || []);
