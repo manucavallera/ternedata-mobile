@@ -99,8 +99,6 @@ export default function TerneroFormScreen() {
             peso_nacer: pesoNacer,
             // peso_ideal: el ingresado o el doble del peso al nacer (igual que la web)
             peso_ideal: formData.peso_ideal ? parseFloat(formData.peso_ideal) : pesoNacer * 2,
-            // peso_largado lo deriva la web como nacer×15
-            peso_largado: pesoNacer * 15,
             fecha_nacimiento: formData.fecha_nacimiento,
         };
 
