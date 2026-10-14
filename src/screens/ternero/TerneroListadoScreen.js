@@ -283,6 +283,7 @@ export default function TerneroListadoScreen() {
                     <View style={styles.metaItem}>
                         <Text style={styles.metaLabel}>ÚLTIMO PESO</Text>
                         <Text style={styles.metaValue}>{item.ultimo_peso ?? item.peso_nacer ?? '—'} kg</Text>
+                        <Text style={styles.metaFecha}>{item.ultimo_pesaje_fecha ? formatFecha(item.ultimo_pesaje_fecha) : 'Nacimiento'}</Text>
                     </View>
                     <View style={styles.metaSep} />
                     <View style={styles.metaItem}>
@@ -779,6 +780,7 @@ const styles = StyleSheet.create({
     metaItem: { flex: 1 },
     metaSep: { width: 1, height: 26, backgroundColor: colors.line, marginHorizontal: 10 },
     metaLabel: { fontSize: 9.5, fontWeight: '800', letterSpacing: 1, color: colors.inkFaint },
+    metaFecha: { fontSize: 10, color: colors.inkFaint, marginTop: 1 },
     metaValue: { ...type.title, ...type.num, color: colors.ink, marginTop: 1 },
     pesosRow: { flexDirection: 'row', gap: 5, marginTop: 12 },
     pesoCell: { flex: 1, backgroundColor: colors.campoSoft, borderRadius: radius.sm, paddingVertical: 7, alignItems: 'center' },

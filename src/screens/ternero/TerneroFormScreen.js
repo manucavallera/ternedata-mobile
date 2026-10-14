@@ -33,6 +33,7 @@ export default function TerneroFormScreen() {
         metodo_calostrado: '',
         litros_calostrado: '',
         grado_brix: '',
+        fecha_hora_calostrado: '',
         observaciones_calostrado: '',
     });
 
@@ -92,6 +93,10 @@ export default function TerneroFormScreen() {
             showAlert('Peso al nacer es requerido', false); return;
         }
         if (!formData.fecha_nacimiento) { showAlert('Fecha de nacimiento es requerida', false); return; }
+        const fechaHoraCalostrado = formData.fecha_hora_calostrado.trim();
+        if (fechaHoraCalostrado && !/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/.test(fechaHoraCalostrado)) {
+            showAlert('Fecha y hora del calostrado: usá el formato AAAA-MM-DD HH:MM', false); return;
+        }
 
         setSubmitting(true);
         const pesoNacer = parseFloat(formData.peso_nacer);
@@ -113,6 +118,8 @@ export default function TerneroFormScreen() {
         if (formData.litros_calostrado) payload.litros_calostrado = parseFloat(formData.litros_calostrado);
         if (formData.grado_brix) payload.grado_brix = parseFloat(formData.grado_brix);
         if (formData.metodo_calostrado) payload.metodo_calostrado = formData.metodo_calostrado;
+        // Mismo formato que el datetime-local de la web
+        if (fechaHoraCalostrado) payload.fecha_hora_calostrado = fechaHoraCalostrado.replace(' ', 'T');
         if (formData.observaciones_calostrado.trim()) {
             payload.observaciones_calostrado = formData.observaciones_calostrado.trim();
         }
@@ -230,6 +237,9 @@ export default function TerneroFormScreen() {
 
                     <Text style={styles.label}>Litros calostrado</Text>
                     <TextInput style={styles.input} value={formData.litros_calostrado} onChangeText={v => set('litros_calostrado', v)} placeholder="Ej: 3.5" keyboardType="decimal-pad" />
+
+                    <Text style={styles.label}>Fecha y hora del calostrado</Text>
+                    <TextInput style={styles.input} value={formData.fecha_hora_calostrado} onChangeText={v => set('fecha_hora_calostrado', v)} placeholder="AAAA-MM-DD HH:MM" />
 
                     <Text style={styles.label}>Grado Brix</Text>
                     <TextInput style={styles.input} value={formData.grado_brix} onChangeText={v => set('grado_brix', v)} placeholder="Ej: 22" keyboardType="decimal-pad" />
