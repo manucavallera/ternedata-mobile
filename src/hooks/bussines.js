@@ -766,6 +766,36 @@ export const useBussinesMicroservicio = () => {
         }
     };
 
+    // ===== SUPER ADMIN (security): usuarios de toda la plataforma =====
+    const pedirSecurity = async (method, url, body) => {
+        try {
+            const { data, status } = await securityApi[method](url, body);
+            return { data, status };
+        } catch (error) {
+            if (error?.response?.status === 401) await on401();
+            return { status: error?.response?.status || 500, data: error?.response?.data || { message: error.message }, error: true };
+        }
+    };
+    const listarUsuariosGlobalesHook = () => pedirSecurity('get', '/users/admin/global');
+    const cambiarRolUsuarioHook = (id, rol) => pedirSecurity('put', `/users/${id}/change-role`, { rol });
+    const toggleEstadoUsuarioGlobalHook = (id) => pedirSecurity('put', `/users/${id}/toggle-status`, {});
+
+    // ===== FORRAJERÍA =====
+    const pedirBusiness = async (method, url, body) => {
+        try {
+            const { data, status } = await businessApi[method](url, body);
+            return { data, status };
+        } catch (error) {
+            if (error?.response?.status === 401) await on401();
+            return { status: error?.response?.status || 500, data: error?.response?.data || { message: error.message }, error: true };
+        }
+    };
+    const obtenerProductosForrajeriaHook = () => pedirBusiness('get', '/forrajeria/productos');
+    const crearProductoForrajeriaHook = (producto) => pedirBusiness('post', '/forrajeria/productos', producto);
+    const obtenerBajoStockForrajeriaHook = () => pedirBusiness('get', '/forrajeria/inventario/bajo-stock');
+    const registrarMovimientoStockHook = (idProducto, movimiento) =>
+        pedirBusiness('post', `/forrajeria/inventario/productos/${idProducto}/movimientos`, movimiento);
+
     return {
         crearMadreHook, obtenerMadreHook, patchMadreHook,
         crearTerneroHook, obtenerTerneroHook, patchTerneroHook,
@@ -795,5 +825,8 @@ export const useBussinesMicroservicio = () => {
         crearDietaHook, obtenerDietasRodeoHook, eliminarDietaHook,
         obtenerSnapshotHook, obtenerDiasConCambiosHook,
         registrarSustitutoHook, obtenerSustitutoHook, eliminarSustitutoHook,
+        listarUsuariosGlobalesHook, cambiarRolUsuarioHook, toggleEstadoUsuarioGlobalHook,
+        obtenerProductosForrajeriaHook, crearProductoForrajeriaHook,
+        obtenerBajoStockForrajeriaHook, registrarMovimientoStockHook,
     };
 };

@@ -26,6 +26,7 @@ import CalendarioScreen from '../screens/calendario/CalendarioScreen';
 import MasScreen from '../screens/mas/MasScreen';
 import AyudaScreen from '../screens/ayuda/AyudaScreen';
 import PerfilScreen from '../screens/auth/PerfilScreen';
+import ForrajeriaScreen from '../screens/forrajeria/ForrajeriaScreen';
 
 const Tab = createBottomTabNavigator();
 const TerneroStack = createNativeStackNavigator();
@@ -95,6 +96,7 @@ function MasNavigator() {
             <MasStack.Screen name="Admin" component={AdminScreen} />
             <MasStack.Screen name="Ayuda" component={AyudaScreen} />
             <MasStack.Screen name="Perfil" component={PerfilScreen} />
+            <MasStack.Screen name="Forrajeria" component={ForrajeriaScreen} />
         </MasStack.Navigator>
     );
 }

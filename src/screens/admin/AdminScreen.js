@@ -14,7 +14,10 @@ import { colors, shadow, radius, space } from '../../theme';
 
 const ROLES = [['operario', '👷 Operario'], ['veterinario', '🩺 Veterinario'], ['admin', '👑 Administrador']];
 
+const ROLES_GLOBALES = [...ROLES, ['super_admin', '⭐ Super admin']];
+
 const ROL_COLOR = {
+    super_admin: '#9B2C2C',
     admin: colors.campoDark,
     veterinario: '#2C5282',
     operario: colors.campo,
@@ -29,9 +32,11 @@ export default function AdminScreen() {
         obtenerUsuariosHook, obtenerEstadisticasUsuariosHook, crearUsuarioHook,
         actualizarUsuarioHook, eliminarUsuarioHook, toggleEstadoUsuarioHook,
         obtenerEstablecimientosUsuarioHook, sincronizarEstablecimientosUsuarioHook,
+        listarUsuariosGlobalesHook, cambiarRolUsuarioHook, toggleEstadoUsuarioGlobalHook,
     } = useBussinesMicroservicio();
+    const esSuperAdmin = userPayload?.rol === 'super_admin';
 
-    const [tab, setTab] = useState('establecimientos'); // 'establecimientos' | 'usuarios'
+    const [tab, setTab] = useState('establecimientos'); // 'establecimientos' | 'usuarios' | 'global'
     const [establecimientos, setEstablecimientos] = useState([]);
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
@@ -48,6 +53,13 @@ export default function AdminScreen() {
         name: '', email: '', password: '', rol: 'operario', telefono: '', estado: 'activo', id_establecimiento: '',
     });
     const [estAsignados, setEstAsignados] = useState([]);
+
+    // Usuarios globales (solo super_admin)
+    const [usuariosGlobales, setUsuariosGlobales] = useState([]);
+    const [loadingGlobal, setLoadingGlobal] = useState(false);
+    const [filtroRolGlobal, setFiltroRolGlobal] = useState('todos');
+    const [filtroEstadoGlobal, setFiltroEstadoGlobal] = useState('todos');
+    const [modalRol, setModalRol] = useState({ open: false, user: null, rol: '' });
 
     const alertTimer = useRef(null);
     const showAlert = (message, success = true) => {
@@ -76,7 +88,53 @@ export default function AdminScreen() {
 
     useEffect(() => { setLoading(true); cargar(); }, []);
 
-    const onRefresh = async () => { setRefreshing(true); await cargar(); setRefreshing(false); };
+    const cargarGlobales = async () => {
+        setLoadingGlobal(true);
+        const res = await listarUsuariosGlobalesHook();
+        if (res?.status === 200) setUsuariosGlobales(Array.isArray(res.data) ? res.data : []);
+        else showAlert(res?.data?.message || 'No se pudo cargar el panel global', false);
+        setLoadingGlobal(false);
+    };
+
+    useEffect(() => { if (tab === 'global' && esSuperAdmin) cargarGlobales(); }, [tab]);
+
+    const onRefresh = async () => {
+        setRefreshing(true);
+        await (tab === 'global' ? cargarGlobales() : cargar());
+        setRefreshing(false);
+    };
+
+    const guardarRolGlobal = () => {
+        const { user, rol } = modalRol;
+        if (!rol || rol === user.rol) { setModalRol({ open: false, user: null, rol: '' }); return; }
+        confirmar('Cambiar rol', `¿Cambiar el rol de ${user.email} a ${rol}?`, [
+            { text: 'Cancelar', style: 'cancel' },
+            {
+                text: 'Cambiar', onPress: async () => {
+                    const res = await cambiarRolUsuarioHook(user.id, rol);
+                    if (res?.status >= 200 && res?.status < 300) {
+                        showAlert('Rol actualizado');
+                        setModalRol({ open: false, user: null, rol: '' });
+                        await cargarGlobales();
+                    } else showAlert(res?.data?.message || 'No se pudo cambiar el rol', false);
+                }
+            },
+        ]);
+    };
+
+    const toggleEstadoGlobal = (user) => {
+        const accion = user.estado === 'activo' ? 'Desactivar' : 'Activar';
+        confirmar(`${accion} usuario`, `¿${accion} a ${user.email}?`, [
+            { text: 'Cancelar', style: 'cancel' },
+            {
+                text: accion, style: 'destructive', onPress: async () => {
+                    const res = await toggleEstadoUsuarioGlobalHook(user.id);
+                    if (res?.status >= 200 && res?.status < 300) { showAlert('Estado actualizado'); await cargarGlobales(); }
+                    else showAlert(res?.data?.message || 'No se pudo cambiar el estado', false);
+                }
+            },
+        ]);
+    };
 
     // El acceso a los establecimientos viaja en el token: tras borrar uno, el backend
     // pasa al usuario a otro campo, así que hay que renovar token y perfil.
@@ -268,6 +326,38 @@ export default function AdminScreen() {
         );
     };
 
+    const renderUsuarioGlobal = ({ item }) => {
+        const activo = item.estado === 'activo';
+        const campos = (item.establecimientosAsignados || []).map(e => e.nombre || `#${e.id}`).join(', ') || item.establecimiento || '—';
+        return (
+            <View style={[styles.card, !activo && styles.cardInactivo]}>
+                <View style={styles.cardHeader}>
+                    <Text style={styles.cardTitle}>{item.name || 'Sin nombre'}</Text>
+                    <View style={[styles.badge, { backgroundColor: ROL_COLOR[item.rol] || colors.neutro }]}>
+                        <Text style={styles.badgeText}>{item.rol}</Text>
+                    </View>
+                </View>
+                <Text style={styles.row}>✉️ {item.email}</Text>
+                <Text style={styles.row}>🏠 {campos}</Text>
+                <Text style={[styles.row, { color: activo ? colors.vivo : colors.muerto, fontWeight: '700' }]}>
+                    {activo ? '✅ Activo' : '❌ Inactivo'}
+                </Text>
+                <View style={styles.actions}>
+                    <TouchableOpacity style={styles.btnAccion} onPress={() => setModalRol({ open: true, user: item, rol: item.rol })}>
+                        <Text style={styles.btnAccionText}>🔑 Cambiar rol</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={[styles.btnAccion, activo ? styles.btnWarn : styles.btnSuccess]} onPress={() => toggleEstadoGlobal(item)}>
+                        <Text style={[styles.btnAccionText, { color: '#fff' }]}>{activo ? 'Desactivar' : 'Activar'}</Text>
+                    </TouchableOpacity>
+                </View>
+            </View>
+        );
+    };
+
+    const usuariosGlobalesFiltrados = usuariosGlobales.filter(u =>
+        (filtroRolGlobal === 'todos' || u.rol === filtroRolGlobal) &&
+        (filtroEstadoGlobal === 'todos' || u.estado === filtroEstadoGlobal));
+
     const renderEst = ({ item }) => {
         const activo = item.estado === 'activo';
         return (
@@ -311,7 +401,9 @@ export default function AdminScreen() {
             <View style={styles.header}>
                 <Text style={styles.headerTitle}>🛠️ Administración</Text>
                 <Text style={styles.headerSub}>
-                    {tab === 'establecimientos' ? `${establecimientos.length} establecimientos` : `${usuarios.length} usuarios`}
+                    {tab === 'establecimientos' ? `${establecimientos.length} establecimientos`
+                        : tab === 'usuarios' ? `${usuarios.length} usuarios`
+                        : `${usuariosGlobalesFiltrados.length} de ${usuariosGlobales.length} usuarios de la plataforma`}
                 </Text>
             </View>
 
@@ -322,6 +414,11 @@ export default function AdminScreen() {
                 <TouchableOpacity style={[styles.tab, tab === 'usuarios' && styles.tabActive]} onPress={() => setTab('usuarios')}>
                     <Text style={[styles.tabText, tab === 'usuarios' && styles.tabTextActive]}>👥 Usuarios</Text>
                 </TouchableOpacity>
+                {esSuperAdmin && (
+                    <TouchableOpacity style={[styles.tab, tab === 'global' && styles.tabActive]} onPress={() => setTab('global')}>
+                        <Text style={[styles.tabText, tab === 'global' && styles.tabTextActive]}>🌐 Global</Text>
+                    </TouchableOpacity>
+                )}
             </View>
 
             {alert.show && (
@@ -330,7 +427,36 @@ export default function AdminScreen() {
                 </View>
             )}
 
-            {loading ? <ActivityIndicator size="large" color={colors.campo} style={styles.loader} /> : tab === 'establecimientos' ? (
+            {tab === 'global' ? (
+                loadingGlobal && !refreshing ? <ActivityIndicator size="large" color={colors.campo} style={styles.loader} /> : (
+                    <FlatList
+                        data={usuariosGlobalesFiltrados}
+                        keyExtractor={item => String(item.id)}
+                        renderItem={renderUsuarioGlobal}
+                        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+                        ListEmptyComponent={<Text style={styles.empty}>Sin usuarios</Text>}
+                        contentContainerStyle={styles.list}
+                        ListHeaderComponent={
+                            <View style={{ marginBottom: 12 }}>
+                                <View style={styles.chipsWrap}>
+                                    {[['todos', 'Todos los roles'], ...ROLES_GLOBALES].map(([val, lbl]) => (
+                                        <TouchableOpacity key={val} style={[styles.chipSel, filtroRolGlobal === val && styles.chipSelActive]} onPress={() => setFiltroRolGlobal(val)}>
+                                            <Text style={[styles.chipSelText, filtroRolGlobal === val && styles.chipSelTextActive]}>{lbl}</Text>
+                                        </TouchableOpacity>
+                                    ))}
+                                </View>
+                                <View style={styles.chipsWrap}>
+                                    {[['todos', 'Todos los estados'], ['activo', 'Activos'], ['inactivo', 'Inactivos']].map(([val, lbl]) => (
+                                        <TouchableOpacity key={val} style={[styles.chipSel, filtroEstadoGlobal === val && styles.chipSelActive]} onPress={() => setFiltroEstadoGlobal(val)}>
+                                            <Text style={[styles.chipSelText, filtroEstadoGlobal === val && styles.chipSelTextActive]}>{lbl}</Text>
+                                        </TouchableOpacity>
+                                    ))}
+                                </View>
+                            </View>
+                        }
+                    />
+                )
+            ) : loading ? <ActivityIndicator size="large" color={colors.campo} style={styles.loader} /> : tab === 'establecimientos' ? (
                 <FlatList
                     data={establecimientos}
                     keyExtractor={item => String(item.id_establecimiento)}
@@ -368,9 +494,35 @@ export default function AdminScreen() {
                 />
             )}
 
-            <TouchableOpacity style={styles.fab} onPress={tab === 'establecimientos' ? abrirCrear : abrirCrearUsuario}>
-                <Text style={styles.fabText}>{tab === 'establecimientos' ? '+ Nuevo' : '+ Usuario'}</Text>
-            </TouchableOpacity>
+            {tab !== 'global' && (
+                <TouchableOpacity style={styles.fab} onPress={tab === 'establecimientos' ? abrirCrear : abrirCrearUsuario}>
+                    <Text style={styles.fabText}>{tab === 'establecimientos' ? '+ Nuevo' : '+ Usuario'}</Text>
+                </TouchableOpacity>
+            )}
+
+            <Modal visible={modalRol.open} animationType="slide" transparent>
+                <View style={styles.modalOverlay}>
+                    <View style={styles.modalCard}>
+                        <Text style={styles.modalTitle}>Cambiar rol</Text>
+                        <Text style={styles.row}>{modalRol.user?.name} · {modalRol.user?.email}</Text>
+                        <View style={styles.chipsWrap}>
+                            {ROLES_GLOBALES.map(([val, lbl]) => (
+                                <TouchableOpacity key={val} style={[styles.chipSel, modalRol.rol === val && styles.chipSelActive]} onPress={() => setModalRol(m => ({ ...m, rol: val }))}>
+                                    <Text style={[styles.chipSelText, modalRol.rol === val && styles.chipSelTextActive]}>{lbl}</Text>
+                                </TouchableOpacity>
+                            ))}
+                        </View>
+                        <View style={styles.modalActions}>
+                            <TouchableOpacity style={styles.btnCancelar} onPress={() => setModalRol({ open: false, user: null, rol: '' })}>
+                                <Text style={styles.btnCancelarText}>Cancelar</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={styles.btnGuardar} onPress={guardarRolGlobal}>
+                                <Text style={styles.btnGuardarText}>Guardar</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </View>
+            </Modal>
 
             <Modal visible={modal.open} animationType="slide" transparent>
                 <View style={styles.modalOverlay}>
