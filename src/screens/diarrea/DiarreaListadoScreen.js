@@ -1,8 +1,7 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import {
     View, Text, FlatList, TextInput, TouchableOpacity,
-    StyleSheet, ActivityIndicator, RefreshControl, Modal, ScrollView, Alert,
-} from 'react-native';
+    StyleSheet, ActivityIndicator, RefreshControl, Modal, ScrollView, } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
@@ -11,6 +10,7 @@ import businessApi from '../../api/bussines-api';
 import { format, parseISO } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { colors, shadow, radius, space } from '../../theme';
+import { confirmar } from '../../utils/confirmar';
 
 const SEVERIDADES = ['', 'Leve', 'Moderada', 'Severa', 'Crítica'];
 
@@ -45,9 +45,12 @@ export default function DiarreaListadoScreen() {
     const [alert, setAlert] = useState({ show: false, message: '', success: false });
     const [saving, setSaving] = useState(false);
 
+    const alertTimer = useRef(null);
     const showAlert = (message, success = true) => {
         setAlert({ show: true, message, success });
-        setTimeout(() => setAlert({ show: false, message: '', success: false }), 4000);
+        // Un aviso nuevo reinicia el contador: si no, el timer del anterior lo borra antes de tiempo
+        clearTimeout(alertTimer.current);
+        alertTimer.current = setTimeout(() => setAlert({ show: false, message: '', success: false }), 4000);
     };
 
     const cargarDiarreas = useCallback(async (search = '', severidad = '') => {
@@ -108,7 +111,7 @@ export default function DiarreaListadoScreen() {
     };
 
     const confirmarEliminar = (diarrea) => {
-        Alert.alert(
+        confirmar(
             'Eliminar episodio',
             `¿Eliminar el episodio de diarrea del ternero RP ${diarrea.ternero?.rp_ternero ?? '—'}? No se puede deshacer.`,
             [

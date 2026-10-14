@@ -1,8 +1,7 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import {
     View, Text, FlatList, TouchableOpacity, StyleSheet,
-    ActivityIndicator, RefreshControl, Modal, TextInput, Alert,
-} from 'react-native';
+    ActivityIndicator, RefreshControl, Modal, TextInput, } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
@@ -11,6 +10,7 @@ import businessApi from '../../api/bussines-api';
 import { format, parseISO } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { colors, space, radius, shadow, type } from '../../theme';
+import { confirmar } from '../../utils/confirmar';
 
 const MESES = ['ENE', 'FEB', 'MAR', 'ABR', 'MAY', 'JUN', 'JUL', 'AGO', 'SEP', 'OCT', 'NOV', 'DIC'];
 
@@ -43,9 +43,12 @@ export default function EventoListadoScreen() {
     const [alert, setAlert] = useState({ show: false, message: '', success: false });
     const [saving, setSaving] = useState(false);
 
+    const alertTimer = useRef(null);
     const showAlert = (message, success = true) => {
         setAlert({ show: true, message, success });
-        setTimeout(() => setAlert({ show: false, message: '', success: false }), 4000);
+        // Un aviso nuevo reinicia el contador: si no, el timer del anterior lo borra antes de tiempo
+        clearTimeout(alertTimer.current);
+        alertTimer.current = setTimeout(() => setAlert({ show: false, message: '', success: false }), 4000);
     };
 
     const cargarEventos = useCallback(async () => {
@@ -86,7 +89,7 @@ export default function EventoListadoScreen() {
     };
 
     const confirmarEliminar = (evento) => {
-        Alert.alert('Eliminar evento', `¿Eliminar el evento del ${formatFecha(evento.fecha_evento)}? No se puede deshacer.`, [
+        confirmar('Eliminar evento', `¿Eliminar el evento del ${formatFecha(evento.fecha_evento)}? No se puede deshacer.`, [
             { text: 'Cancelar', style: 'cancel' },
             { text: 'Eliminar', style: 'destructive', onPress: () => eliminarEvento(evento) },
         ]);

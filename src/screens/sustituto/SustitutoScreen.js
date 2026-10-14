@@ -1,12 +1,12 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import {
     View, Text, TextInput, TouchableOpacity, ScrollView,
-    StyleSheet, ActivityIndicator, RefreshControl, Alert,
-} from 'react-native';
+    StyleSheet, ActivityIndicator, RefreshControl, } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useBussinesMicroservicio } from '../../hooks/bussines';
 import { colors, shadow, radius, space } from '../../theme';
+import { confirmar } from '../../utils/confirmar';
 
 const hoyISO = () => new Date().toISOString().slice(0, 10);
 
@@ -60,9 +60,12 @@ export default function SustitutoScreen() {
     const [guardando, setGuardando] = useState(false);
     const [alert, setAlert] = useState({ show: false, message: '', success: false });
 
+    const alertTimer = useRef(null);
     const showAlert = (message, success = true) => {
         setAlert({ show: true, message, success });
-        setTimeout(() => setAlert({ show: false, message: '', success: false }), 4000);
+        // Un aviso nuevo reinicia el contador: si no, el timer del anterior lo borra antes de tiempo
+        clearTimeout(alertTimer.current);
+        alertTimer.current = setTimeout(() => setAlert({ show: false, message: '', success: false }), 4000);
     };
 
     const cargar = useCallback(async () => {
@@ -116,7 +119,7 @@ export default function SustitutoScreen() {
     };
 
     const eliminar = (registro) => {
-        Alert.alert('Eliminar cálculo', `¿Borrar el cálculo del ${registro.fecha}?`, [
+        confirmar('Eliminar cálculo', `¿Borrar el cálculo del ${registro.fecha}?`, [
             { text: 'Cancelar', style: 'cancel' },
             {
                 text: 'Eliminar', style: 'destructive', onPress: async () => {

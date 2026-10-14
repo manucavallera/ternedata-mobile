@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
     View, Text, TextInput, TouchableOpacity, ScrollView,
     StyleSheet, ActivityIndicator, Modal, FlatList,
@@ -52,9 +52,12 @@ export default function MadreFormScreen() {
 
     const set = (key, val) => setFormData(f => ({ ...f, [key]: val }));
 
+    const alertTimer = useRef(null);
     const showAlert = (message, success) => {
         setAlert({ show: true, message, success });
-        setTimeout(() => setAlert({ show: false, message: '', success: false }), 5000);
+        // Un aviso nuevo reinicia el contador: si no, el timer del anterior lo borra antes de tiempo
+        clearTimeout(alertTimer.current);
+        alertTimer.current = setTimeout(() => setAlert({ show: false, message: '', success: false }), 5000);
     };
 
     const handleSubmit = async () => {

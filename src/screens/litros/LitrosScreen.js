@@ -1,13 +1,13 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import {
     View, Text, TextInput, TouchableOpacity, ScrollView,
-    StyleSheet, ActivityIndicator, RefreshControl, Alert,
-} from 'react-native';
+    StyleSheet, ActivityIndicator, RefreshControl, } from 'react-native';
 import { useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useBussinesMicroservicio } from '../../hooks/bussines';
 import { colors, shadow, radius, space } from '../../theme';
+import { confirmar } from '../../utils/confirmar';
 
 const hoyISO = () => new Date().toISOString().slice(0, 10);
 
@@ -46,9 +46,12 @@ export default function LitrosScreen() {
     // Solo el admin mirando otro campo manda el id; el usuario normal va con su JWT.
     const idEstab = userPayload?.rol === 'admin' && establecimientoActual ? establecimientoActual : null;
 
+    const alertTimer = useRef(null);
     const showAlert = (message, success = true) => {
         setAlert({ show: true, message, success });
-        setTimeout(() => setAlert({ show: false, message: '', success: false }), 4000);
+        // Un aviso nuevo reinicia el contador: si no, el timer del anterior lo borra antes de tiempo
+        clearTimeout(alertTimer.current);
+        alertTimer.current = setTimeout(() => setAlert({ show: false, message: '', success: false }), 4000);
     };
 
     const cargar = useCallback(async () => {
@@ -103,7 +106,7 @@ export default function LitrosScreen() {
     };
 
     const eliminar = (registro) => {
-        Alert.alert(
+        confirmar(
             'Eliminar registro',
             `¿Borrar los litros del ${formatFecha(registro.fecha)}?`,
             [

@@ -1,11 +1,12 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import {
     View, Text, FlatList, TouchableOpacity, TextInput,
-    StyleSheet, ActivityIndicator, RefreshControl, Modal, Alert,
+    StyleSheet, ActivityIndicator, RefreshControl, Modal,
 } from 'react-native';
 import { useSelector } from 'react-redux';
 import { useBussinesMicroservicio } from '../../hooks/bussines';
 import { colors, shadow, radius, space, type as t } from '../../theme';
+import { confirmar } from '../../utils/confirmar';
 
 const ROL_COLOR = {
     dueno: colors.campo,
@@ -43,9 +44,12 @@ export default function EquipoScreen() {
     const [invLoading, setInvLoading] = useState(false);
     const [invResult, setInvResult] = useState(null);
 
+    const alertTimer = useRef(null);
     const showAlert = (message, success = true) => {
         setAlert({ show: true, message, success });
-        setTimeout(() => setAlert({ show: false, message: '', success: false }), 4000);
+        // Un aviso nuevo reinicia el contador: si no, el timer del anterior lo borra antes de tiempo
+        clearTimeout(alertTimer.current);
+        alertTimer.current = setTimeout(() => setAlert({ show: false, message: '', success: false }), 4000);
     };
 
     const cargar = useCallback(async () => {
@@ -93,7 +97,7 @@ export default function EquipoScreen() {
     };
 
     const revocar = (inv) => {
-        Alert.alert('Revocar invitación', `¿Revocar la invitación de ${inv.email || 'este usuario'}?`, [
+        confirmar('Revocar invitación', `¿Revocar la invitación de ${inv.email || 'este usuario'}?`, [
             { text: 'Cancelar', style: 'cancel' },
             {
                 text: 'Revocar', style: 'destructive', onPress: async () => {
@@ -108,7 +112,7 @@ export default function EquipoScreen() {
     };
 
     const eliminarMiembro = (m) => {
-        Alert.alert('Quitar del equipo', `¿Quitar a ${m.nombre || m.email} del equipo?`, [
+        confirmar('Quitar del equipo', `¿Quitar a ${m.nombre || m.email} del equipo?`, [
             { text: 'Cancelar', style: 'cancel' },
             {
                 text: 'Quitar', style: 'destructive', onPress: async () => {
