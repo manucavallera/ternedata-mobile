@@ -20,8 +20,10 @@ export default function RodeoAsignarScreen() {
     } = useBussinesMicroservicio();
 
     const [tab, setTab] = useState('terneros');
-    const [terneros, setTerneros] = useState([]);
-    const [madres, setMadres] = useState([]);
+    // Igual que la web: animales sin rodeo para asignar, o los de este rodeo para desasignar
+    const [filtro, setFiltro] = useState('disponibles'); // 'disponibles' | 'rodeo'
+    const [terneros, setTerneros] = useState({ disponibles: [], rodeo: [] });
+    const [madres, setMadres] = useState({ disponibles: [], rodeo: [] });
     const [seleccion, setSeleccion] = useState([]);
     const [search, setSearch] = useState('');
     const [loading, setLoading] = useState(true);
@@ -42,15 +44,21 @@ export default function RodeoAsignarScreen() {
         setLoading(true);
         let q = 'page=1&limit=500';
         if (idEst) q += `&id_establecimiento=${idEst}`;
-        const [resT, resM] = await Promise.all([obtenerTerneroHook(q), obtenerMadreHook(q)]);
-        setTerneros(resT?.data?.data || []);
-        setMadres(resM?.data?.data || []);
+        const [tDisp, tRodeo, mDisp, mRodeo] = await Promise.all([
+            obtenerTerneroHook(`${q}&sin_rodeo=true&estado=Vivo`),
+            obtenerTerneroHook(`${q}&id_rodeo=${rodeo.id_rodeo}&estado=Vivo`),
+            obtenerMadreHook(`${q}&sin_rodeo=true`),
+            obtenerMadreHook(`${q}&id_rodeo=${rodeo.id_rodeo}`),
+        ]);
+        setTerneros({ disponibles: tDisp?.data?.data || [], rodeo: tRodeo?.data?.data || [] });
+        setMadres({ disponibles: mDisp?.data?.data || [], rodeo: mRodeo?.data?.data || [] });
         setLoading(false);
     };
 
     useEffect(() => { cargar(); }, []);
 
     const cambiarTab = (t) => { setTab(t); setSeleccion([]); setSearch(''); };
+    const cambiarFiltro = (f) => { setFiltro(f); setSeleccion([]); };
 
     const toggleSel = (id) => {
         setSeleccion(s => s.includes(id) ? s.filter(x => x !== id) : [...s, id]);
@@ -77,22 +85,29 @@ export default function RodeoAsignarScreen() {
         setWorking(false);
     };
 
-    const lista = tab === 'terneros' ? terneros : madres;
+    const grupo = tab === 'terneros' ? terneros : madres;
+    const lista = grupo[filtro];
     const idKey = tab === 'terneros' ? 'id_ternero' : 'id_madre';
-    const listaFiltrada = lista.filter(x => !search || x.nombre?.toLowerCase().includes(search.toLowerCase()) || String(x[idKey]).includes(search));
+    const rpKey = tab === 'terneros' ? 'rp_ternero' : 'rp_madre';
+    const listaFiltrada = lista.filter(x => !search || x.nombre?.toLowerCase().includes(search.toLowerCase()) || String(x[rpKey] ?? x[idKey]).includes(search));
 
     const renderItem = ({ item }) => {
         const id = item[idKey];
         const sel = seleccion.includes(id);
-        const enRodeo = item.id_rodeo === rodeo?.id_rodeo;
         return (
             <TouchableOpacity style={[styles.item, sel && styles.itemSel]} onPress={() => toggleSel(id)}>
                 <View style={[styles.checkbox, sel && styles.checkboxSel]}>
                     {sel ? <Text style={styles.checkmark}>✓</Text> : null}
                 </View>
                 <View style={{ flex: 1 }}>
-                    <Text style={styles.itemTitle}>#{id} — {item.nombre || 'Sin nombre'}</Text>
-                    {enRodeo ? <Text style={styles.enRodeo}>● En este rodeo</Text> : null}
+                    <Text style={styles.itemTitle}>RP {item[rpKey] ?? id} — {item.nombre || 'Sin nombre'}</Text>
+                    {tab === 'terneros' ? (
+                        <Text style={styles.itemSub}>
+                            ⚖️ {item.ultimo_peso ?? item.peso_nacer ?? '—'} kg
+                            {item.dias_desde_nacimiento != null ? ` · 📅 ${item.dias_desde_nacimiento} días` : ''}
+                            {item.madre?.rp_madre != null ? ` · 🐄 Madre RP ${item.madre.rp_madre}` : ''}
+                        </Text>
+                    ) : null}
                 </View>
             </TouchableOpacity>
         );
@@ -123,14 +138,23 @@ export default function RodeoAsignarScreen() {
                 </TouchableOpacity>
             </View>
 
-            <TextInput style={styles.search} placeholder="Buscar..." value={search} onChangeText={setSearch} />
+            <View style={styles.filtros}>
+                <TouchableOpacity style={[styles.filtro, filtro === 'disponibles' && styles.filtroActive]} onPress={() => cambiarFiltro('disponibles')}>
+                    <Text style={[styles.filtroText, filtro === 'disponibles' && styles.filtroTextActive]}>Sin rodeo ({grupo.disponibles.length})</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={[styles.filtro, filtro === 'rodeo' && styles.filtroActive]} onPress={() => cambiarFiltro('rodeo')}>
+                    <Text style={[styles.filtroText, filtro === 'rodeo' && styles.filtroTextActive]}>En este rodeo ({grupo.rodeo.length})</Text>
+                </TouchableOpacity>
+            </View>
+
+            <TextInput style={styles.search} placeholder="Buscar por RP o nombre..." value={search} onChangeText={setSearch} />
 
             {loading ? <ActivityIndicator size="large" color={colors.campo} style={styles.loader} /> : (
                 <FlatList
                     data={listaFiltrada}
                     keyExtractor={item => String(item[idKey])}
                     renderItem={renderItem}
-                    ListEmptyComponent={<Text style={styles.empty}>Sin resultados</Text>}
+                    ListEmptyComponent={<Text style={styles.empty}>{filtro === 'disponibles' ? 'No hay animales sin rodeo' : 'No hay animales en este rodeo'}</Text>}
                     contentContainerStyle={styles.list}
                 />
             )}
@@ -138,12 +162,15 @@ export default function RodeoAsignarScreen() {
             <View style={styles.footer}>
                 <Text style={styles.selCount}>{seleccion.length} seleccionados</Text>
                 <View style={styles.footerBtns}>
-                    <TouchableOpacity style={[styles.btnDesasignar, working && styles.btnDisabled]} onPress={() => accion(false)} disabled={working}>
-                        <Text style={styles.btnDesasignarText}>Desasignar</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={[styles.btnAsignar, working && styles.btnDisabled]} onPress={() => accion(true)} disabled={working}>
-                        {working ? <ActivityIndicator color="#fff" /> : <Text style={styles.btnAsignarText}>Asignar</Text>}
-                    </TouchableOpacity>
+                    {filtro === 'rodeo' ? (
+                        <TouchableOpacity style={[styles.btnDesasignar, working && styles.btnDisabled]} onPress={() => accion(false)} disabled={working}>
+                            {working ? <ActivityIndicator color={colors.muerto} /> : <Text style={styles.btnDesasignarText}>Quitar del rodeo</Text>}
+                        </TouchableOpacity>
+                    ) : (
+                        <TouchableOpacity style={[styles.btnAsignar, working && styles.btnDisabled]} onPress={() => accion(true)} disabled={working}>
+                            {working ? <ActivityIndicator color="#fff" /> : <Text style={styles.btnAsignarText}>Asignar al rodeo</Text>}
+                        </TouchableOpacity>
+                    )}
                 </View>
             </View>
         </View>
@@ -175,7 +202,12 @@ const styles = StyleSheet.create({
     checkboxSel: { backgroundColor: colors.campo, borderColor: colors.campo },
     checkmark: { color: colors.white, fontWeight: '800', fontSize: 14 },
     itemTitle: { fontSize: 14, color: colors.ink, fontWeight: '600' },
-    enRodeo: { fontSize: 11, color: colors.campo, marginTop: 2, fontWeight: '600' },
+    itemSub: { fontSize: 12, color: colors.inkSoft, marginTop: 2 },
+    filtros: { flexDirection: 'row', marginHorizontal: space.md, marginBottom: 8, gap: space.sm },
+    filtro: { flex: 1, borderRadius: 999, paddingVertical: 6, alignItems: 'center', borderWidth: 1, borderColor: colors.line, backgroundColor: colors.surface },
+    filtroActive: { borderColor: colors.campo, backgroundColor: colors.campoSoft },
+    filtroText: { fontSize: 12, color: colors.inkSoft, fontWeight: '600' },
+    filtroTextActive: { color: colors.campoDark },
     footer: { backgroundColor: colors.surface, padding: space.md, borderTopWidth: 1, borderTopColor: colors.line },
     selCount: { fontSize: 12, color: colors.inkSoft, marginBottom: 8, textAlign: 'center' },
     footerBtns: { flexDirection: 'row', gap: 10 },
