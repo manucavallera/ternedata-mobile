@@ -423,8 +423,8 @@ export const useBussinesMicroservicio = () => {
             const { data, config, headers, status, statusText, request } = await businessApi.delete(`/establecimientos/${id}`);
             return { data, config, headers, status, statusText, request };
         } catch (error) {
-            if (error.response?.status === 401) await on401();
-            return error.response?.status || error;
+            if (error?.response?.status === 401) await on401();
+            return { status: error?.response?.status || 500, data: error?.response?.data || { message: error.message }, error: true };
         }
     };
 

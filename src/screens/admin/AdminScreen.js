@@ -3,8 +3,12 @@ import {
     View, Text, FlatList, TouchableOpacity, TextInput,
     StyleSheet, ActivityIndicator, RefreshControl, Modal, Alert, ScrollView,
 } from 'react-native';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useBussinesMicroservicio } from '../../hooks/bussines';
+import securityApi from '../../api/security-api';
+import { setAuthPayload, setUserData, setEstablecimientoActual } from '../../store/auth/authSlice';
+import { setToken } from '../../utils/storage';
 import { colors, shadow, radius, space } from '../../theme';
 
 const ROLES = [['operario', '👷 Operario'], ['veterinario', '🩺 Veterinario'], ['admin', '👑 Administrador']];
@@ -16,6 +20,7 @@ const ROL_COLOR = {
 };
 
 export default function AdminScreen() {
+    const dispatch = useDispatch();
     const { userPayload } = useSelector(state => state.auth);
     const {
         obtenerEstablecimientosHook, crearEstablecimientoHook, actualizarEstablecimientoHook,
@@ -69,6 +74,22 @@ export default function AdminScreen() {
 
     const onRefresh = async () => { setRefreshing(true); await cargar(); setRefreshing(false); };
 
+    // El acceso a los establecimientos viaja en el token: tras borrar uno, el backend
+    // pasa al usuario a otro campo, así que hay que renovar token y perfil.
+    const renovarSesion = async () => {
+        try {
+            const { data } = await securityApi.post('/auth/refresh');
+            if (!data?.token || !data?.user) return;
+            await setToken(data.token);
+            await AsyncStorage.setItem('userSelected', JSON.stringify(data.user));
+            dispatch(setAuthPayload(data));
+            dispatch(setUserData(data.user));
+            dispatch(setEstablecimientoActual(data.user.id_establecimiento || null));
+        } catch {
+            // se mantiene la sesión actual
+        }
+    };
+
     const abrirCrear = () => {
         setFormData({ nombre: '', ubicacion: '', telefono: '', responsable: '', notas: '' });
         setModal({ open: true, mode: 'crear', est: null });
@@ -93,6 +114,8 @@ export default function AdminScreen() {
             const uid = userPayload?.id || userPayload?.sub || userPayload?.userId;
             if (nuevoId && userPayload?.rol === 'admin' && uid) {
                 await asignarEstablecimientoUsuarioHook(uid, nuevoId);
+                // El acceso al campo nuevo viaja en el token: renovarlo para usarlo sin volver a loguearse
+                await renovarSesion();
             }
         } else {
             res = await actualizarEstablecimientoHook(modal.est.id_establecimiento, payload);
@@ -119,8 +142,8 @@ export default function AdminScreen() {
             {
                 text: 'Eliminar', style: 'destructive', onPress: async () => {
                     const res = await eliminarEstablecimientoHook(est.id_establecimiento);
-                    if (res?.status === 200 || res?.status === 201) { showAlert('Establecimiento eliminado'); await cargar(); }
-                    else showAlert('No se pudo eliminar', false);
+                    if (res?.status === 200 || res?.status === 201) { showAlert('Establecimiento eliminado'); await renovarSesion(); await cargar(); }
+                    else showAlert(res?.data?.message || 'No se pudo eliminar', false);
                 }
             },
         ]);
@@ -270,7 +293,7 @@ export default function AdminScreen() {
         );
     };
 
-    if (userPayload?.rol !== 'admin') {
+    if (!['admin', 'super_admin'].includes(userPayload?.rol)) {
         return (
             <View style={styles.container}>
                 <View style={styles.header}><Text style={styles.headerTitle}>🛠️ Admin</Text></View>
