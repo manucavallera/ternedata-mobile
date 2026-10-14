@@ -1,8 +1,7 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import {
     View, Text, FlatList, TextInput, TouchableOpacity,
-    StyleSheet, ActivityIndicator, RefreshControl, ScrollView, Modal, Alert,
-} from 'react-native';
+    StyleSheet, ActivityIndicator, RefreshControl, ScrollView, Modal, } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
@@ -12,6 +11,7 @@ import { format, parseISO } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { colors, space, radius, shadow, type } from '../../theme';
 import Caravana from '../../components/Caravana';
+import { confirmar } from '../../utils/confirmar';
 
 // turno: enum DB en minúscula con ñ ('mañana'/'tarde'); se muestra capitalizado.
 const TURNOS = [
@@ -47,9 +47,12 @@ export default function TratamientoListadoScreen() {
     const [alert, setAlert] = useState({ show: false, message: '', success: false });
     const [saving, setSaving] = useState(false);
 
+    const alertTimer = useRef(null);
     const showAlert = (message, success = true) => {
         setAlert({ show: true, message, success });
-        setTimeout(() => setAlert({ show: false, message: '', success: false }), 4000);
+        // Un aviso nuevo reinicia el contador: si no, el timer del anterior lo borra antes de tiempo
+        clearTimeout(alertTimer.current);
+        alertTimer.current = setTimeout(() => setAlert({ show: false, message: '', success: false }), 4000);
     };
 
     const cargarTratamientos = useCallback(async (enfermedad = '', turno = '') => {
@@ -105,7 +108,7 @@ export default function TratamientoListadoScreen() {
     };
 
     const confirmarEliminar = (t) => {
-        Alert.alert('Eliminar tratamiento', `¿Eliminar "${t.nombre || 'tratamiento'}"? No se puede deshacer.`, [
+        confirmar('Eliminar tratamiento', `¿Eliminar "${t.nombre || 'tratamiento'}"? No se puede deshacer.`, [
             { text: 'Cancelar', style: 'cancel' },
             { text: 'Eliminar', style: 'destructive', onPress: () => eliminarTratamiento(t) },
         ]);

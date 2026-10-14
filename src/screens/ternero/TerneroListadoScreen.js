@@ -1,8 +1,7 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import {
     View, Text, FlatList, TextInput, TouchableOpacity,
-    StyleSheet, ActivityIndicator, RefreshControl, Modal, ScrollView, Alert,
-} from 'react-native';
+    StyleSheet, ActivityIndicator, RefreshControl, Modal, ScrollView, } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
@@ -12,6 +11,7 @@ import { format, parseISO } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { colors, space, radius, shadow, type, estadoColor } from '../../theme';
 import Caravana from '../../components/Caravana';
+import { confirmar } from '../../utils/confirmar';
 
 const ESTADOS = ['', 'Vivo', 'Muerto', 'Vendido'];
 
@@ -77,9 +77,12 @@ export default function TerneroListadoScreen() {
     const [alert, setAlert] = useState({ show: false, message: '', success: false });
     const [saving, setSaving] = useState(false);
 
+    const alertTimer = useRef(null);
     const showAlert = (message, success = true) => {
         setAlert({ show: true, message, success });
-        setTimeout(() => setAlert({ show: false, message: '', success: false }), 4000);
+        // Un aviso nuevo reinicia el contador: si no, el timer del anterior lo borra antes de tiempo
+        clearTimeout(alertTimer.current);
+        alertTimer.current = setTimeout(() => setAlert({ show: false, message: '', success: false }), 4000);
     };
 
     const cargarTerneros = useCallback(async (search = '', estado = '') => {
@@ -142,7 +145,7 @@ export default function TerneroListadoScreen() {
     };
 
     const confirmarEliminar = (ternero) => {
-        Alert.alert(
+        confirmar(
             'Eliminar ternero',
             `¿Eliminar el ternero RP ${ternero.rp_ternero ?? ternero.id_ternero}? No se puede deshacer.`,
             [

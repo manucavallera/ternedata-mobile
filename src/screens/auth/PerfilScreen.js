@@ -1,13 +1,14 @@
 import { useState, useEffect } from 'react';
 import {
     View, Text, TextInput, TouchableOpacity,
-    StyleSheet, ActivityIndicator, ScrollView, Alert, Linking, Platform,
+    StyleSheet, ActivityIndicator, ScrollView, Linking, Platform,
 } from 'react-native';
 import { useSelector } from 'react-redux';
 import { useAuthSession } from '../../hooks/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import businessApi from '../../api/bussines-api';
 import { colors, space, radius, shadow, type } from '../../theme';
+import { confirmar } from '../../utils/confirmar';
 
 export default function PerfilScreen() {
     const { userPayload } = useSelector(state => state.auth);
@@ -100,7 +101,7 @@ export default function PerfilScreen() {
             if (window.confirm('¿Seguro que querés cerrar sesión?')) logoutHook();
             return;
         }
-        Alert.alert('Cerrar sesión', '¿Seguro que querés salir?', [
+        confirmar('Cerrar sesión', '¿Seguro que querés salir?', [
             { text: 'Cancelar', style: 'cancel' },
             { text: 'Salir', style: 'destructive', onPress: logoutHook },
         ]);

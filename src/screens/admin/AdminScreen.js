@@ -1,7 +1,7 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import {
     View, Text, FlatList, TouchableOpacity, TextInput,
-    StyleSheet, ActivityIndicator, RefreshControl, Modal, Alert, ScrollView,
+    StyleSheet, ActivityIndicator, RefreshControl, Modal, ScrollView,
 } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -9,6 +9,7 @@ import { useBussinesMicroservicio } from '../../hooks/bussines';
 import securityApi from '../../api/security-api';
 import { setAuthPayload, setUserData, setEstablecimientoActual } from '../../store/auth/authSlice';
 import { setToken } from '../../utils/storage';
+import { confirmar } from '../../utils/confirmar';
 import { colors, shadow, radius, space } from '../../theme';
 
 const ROLES = [['operario', '👷 Operario'], ['veterinario', '🩺 Veterinario'], ['admin', '👑 Administrador']];
@@ -48,9 +49,12 @@ export default function AdminScreen() {
     });
     const [estAsignados, setEstAsignados] = useState([]);
 
+    const alertTimer = useRef(null);
     const showAlert = (message, success = true) => {
         setAlert({ show: true, message, success });
-        setTimeout(() => setAlert({ show: false, message: '', success: false }), 4000);
+        // Un aviso nuevo reinicia el contador: si no, el timer del anterior lo borra antes de tiempo
+        clearTimeout(alertTimer.current);
+        alertTimer.current = setTimeout(() => setAlert({ show: false, message: '', success: false }), 4000);
     };
 
     const cargar = useCallback(async () => {
@@ -137,7 +141,7 @@ export default function AdminScreen() {
     };
 
     const eliminar = (est) => {
-        Alert.alert('Eliminar establecimiento', `¿Eliminar "${est.nombre}"? Esta acción no se puede deshacer.`, [
+        confirmar('Eliminar establecimiento', `¿Eliminar "${est.nombre}"? Esta acción no se puede deshacer.`, [
             { text: 'Cancelar', style: 'cancel' },
             {
                 text: 'Eliminar', style: 'destructive', onPress: async () => {
@@ -220,7 +224,7 @@ export default function AdminScreen() {
     };
 
     const eliminarUsuario = (user) => {
-        Alert.alert('Eliminar usuario', `¿Eliminar a ${user.name || user.email}? No se puede deshacer.`, [
+        confirmar('Eliminar usuario', `¿Eliminar a ${user.name || user.email}? No se puede deshacer.`, [
             { text: 'Cancelar', style: 'cancel' },
             {
                 text: 'Eliminar', style: 'destructive', onPress: async () => {

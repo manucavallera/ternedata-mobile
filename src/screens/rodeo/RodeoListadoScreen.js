@@ -1,12 +1,12 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import {
     View, Text, FlatList, TouchableOpacity,
-    StyleSheet, ActivityIndicator, RefreshControl, Modal, TextInput, ScrollView, Alert,
-} from 'react-native';
+    StyleSheet, ActivityIndicator, RefreshControl, Modal, TextInput, ScrollView, } from 'react-native';
 import { useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 import { useBussinesMicroservicio } from '../../hooks/bussines';
 import { colors, shadow, radius, space } from '../../theme';
+import { confirmar } from '../../utils/confirmar';
 
 const TIPOS = [
     { value: 'cria', label: '🍼 Cría', color: '#22c55e' },
@@ -55,9 +55,12 @@ export default function RodeoListadoScreen() {
         ingredientes: [{ nombre: '', kg: '' }],
     });
 
+    const alertTimer = useRef(null);
     const showAlert = (message, success = true) => {
         setAlert({ show: true, message, success });
-        setTimeout(() => setAlert({ show: false, message: '', success: false }), 4000);
+        // Un aviso nuevo reinicia el contador: si no, el timer del anterior lo borra antes de tiempo
+        clearTimeout(alertTimer.current);
+        alertTimer.current = setTimeout(() => setAlert({ show: false, message: '', success: false }), 4000);
     };
 
     const idEst = userPayload?.id_establecimiento || establecimientoActual;
@@ -210,7 +213,7 @@ export default function RodeoListadoScreen() {
     };
 
     const borrarDieta = (dieta) => {
-        Alert.alert('Eliminar dieta', dieta.nombre || 'Se borra esta dieta del rodeo.', [
+        confirmar('Eliminar dieta', dieta.nombre || 'Se borra esta dieta del rodeo.', [
             { text: 'Cancelar', style: 'cancel' },
             {
                 text: 'Eliminar', style: 'destructive', onPress: async () => {

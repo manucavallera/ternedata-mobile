@@ -1,6 +1,7 @@
 import { useDispatch } from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import businessApi from '../api/bussines-api';
+import securityApi from '../api/security-api';
 import { setAuthPayload, setStatus, setUserData } from '../store/auth/authSlice';
 
 const handleUnauthorized = async (dispatch) => {
@@ -533,7 +534,7 @@ export const useBussinesMicroservicio = () => {
 
     const asignarEstablecimientoUsuarioHook = async (userId, establecimientoId) => {
         try {
-            const { data, config, headers, status, statusText, request } = await businessApi.post('/users/assign-establishment', { userId, establecimientoId });
+            const { data, config, headers, status, statusText, request } = await securityApi.post('/users/assign-establishment', { userId, establecimientoId });
             return { data, config, headers, status, statusText, request };
         } catch (error) {
             if (error?.response?.status === 401) await on401();

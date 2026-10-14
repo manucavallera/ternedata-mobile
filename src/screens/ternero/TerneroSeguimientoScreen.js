@@ -1,11 +1,12 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, useRef } from 'react';
 import {
-    ActivityIndicator, Alert, ScrollView, StyleSheet, Text, TextInput,
+    ActivityIndicator, ScrollView, StyleSheet, Text, TextInput,
     TouchableOpacity, View,
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { colors, radius, shadow, space, type } from '../../theme';
 import { useBussinesMicroservicio } from '../../hooks/bussines';
+import { confirmar } from '../../utils/confirmar';
 
 const today = () => new Date().toISOString().slice(0, 10);
 const dateKey = (value) => value ? String(value).slice(0, 10) : '';
@@ -67,9 +68,12 @@ export default function TerneroSeguimientoScreen() {
     const [pesoForm, setPesoForm] = useState({ fecha: today(), peso: '', observaciones: '' });
     const [calostroForm, setCalostroForm] = useState(initialCalostro(today()));
 
+    const alertTimer = useRef(null);
     const showAlert = (message, success = false) => {
         setAlert({ show: true, message, success });
-        setTimeout(() => setAlert({ show: false, message: '', success: false }), 4000);
+        // Un aviso nuevo reinicia el contador: si no, el timer del anterior lo borra antes de tiempo
+        clearTimeout(alertTimer.current);
+        alertTimer.current = setTimeout(() => setAlert({ show: false, message: '', success: false }), 4000);
     };
 
     const cargar = async () => {
@@ -157,7 +161,7 @@ export default function TerneroSeguimientoScreen() {
         setFormType(item.tipo === 'peso' ? 'peso' : 'calostro');
     };
 
-    const eliminar = (item) => Alert.alert('Eliminar registro', 'No se puede deshacer.', [
+    const eliminar = (item) => confirmar('Eliminar registro', 'No se puede deshacer.', [
         { text: 'Cancelar', style: 'cancel' },
         { text: 'Eliminar', style: 'destructive', onPress: async () => {
             const res = item.tipo === 'peso'
