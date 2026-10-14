@@ -7,6 +7,7 @@ import { useBussinesMicroservicio } from '../../hooks/bussines';
 import { colors, shadow, radius, space } from '../../theme';
 
 const OPCIONES = [
+    { screen: 'Forrajeria', icon: '🌾', label: 'Forrajería', desc: 'Catálogo y control de stock', color: '#8A6D1F', soloForrajeria: true },
     { screen: 'DiarreaListado', icon: '🥼', label: 'Diarrea', desc: 'Episodios y seguimiento', color: colors.muerto },
     { screen: 'ResumenSalud', icon: '❤️', label: 'Resumen de Salud', desc: 'Estado sanitario del rodeo', color: colors.vendido },
     { screen: 'Litros', icon: '🥛', label: 'Litros de leche', desc: 'Producción diaria y vacas en ordeñe', color: '#0E7490' },
@@ -37,7 +38,15 @@ export default function MasScreen() {
     }, []);
 
     const puedeAdministrar = userPayload?.rol === 'admin' || userPayload?.rol === 'super_admin';
-    const opciones = OPCIONES.filter(op => !op.soloAdmin || puedeAdministrar);
+    const actual = establecimientos.find(e => Number(e.id_establecimiento) === Number(establecimientoActual));
+    const enForrajeria = actual?.tipo_organizacion === 'forrajeria';
+    const opciones = OPCIONES.filter(op => (!op.soloAdmin || puedeAdministrar) && (!op.soloForrajeria || enForrajeria));
+
+    // Igual que la web: al elegir una forrajería se va directo a su pantalla
+    const elegirEstablecimiento = (est) => {
+        dispatch(setEstablecimientoActual(est.id_establecimiento));
+        if (est.tipo_organizacion === 'forrajeria') navigation.navigate('Forrajeria');
+    };
     return (
         <View style={styles.container}>
             <View style={styles.header}>
@@ -53,8 +62,10 @@ export default function MasScreen() {
                         const seleccionado = Number(establecimientoActual) === Number(id);
                         return (
                             <TouchableOpacity key={id} style={[styles.estOption, seleccionado && styles.estSelected]}
-                                onPress={() => dispatch(setEstablecimientoActual(id))}>
-                                <Text style={[styles.estName, seleccionado && styles.estNameSelected]}>{est.nombre}</Text>
+                                onPress={() => elegirEstablecimiento(est)}>
+                                <Text style={[styles.estName, seleccionado && styles.estNameSelected]}>
+                                    {est.tipo_organizacion === 'forrajeria' ? '🌾' : '🐄'} {est.nombre}
+                                </Text>
                                 <Text style={styles.estMark}>{seleccionado ? '✓' : ''}</Text>
                             </TouchableOpacity>
                         );
