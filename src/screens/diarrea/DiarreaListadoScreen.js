@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import {
     View, Text, FlatList, TextInput, TouchableOpacity,
     StyleSheet, ActivityIndicator, RefreshControl, Modal, ScrollView, } from 'react-native';
@@ -11,6 +11,8 @@ import { format, parseISO } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { colors, shadow, radius, space } from '../../theme';
 import { confirmar } from '../../utils/confirmar';
+import { useRecargarAlEnfocar } from '../../hooks/useRecargarAlEnfocar';
+import { exigirRespuesta } from '../../utils/exigirRespuesta';
 
 const SEVERIDADES = ['', 'Leve', 'Moderada', 'Severa', 'Crítica'];
 
@@ -60,7 +62,7 @@ export default function DiarreaListadoScreen() {
             if (userPayload?.rol === 'admin' && establecimientoActual) q = `id_establecimiento=${establecimientoActual}&`;
             q += 'page=1&limit=500';
             if (severidad) q += `&severidad=${encodeURIComponent(severidad)}`;
-            const res = await obtenerDiarreaTerneroHook(q);
+            const res = exigirRespuesta(await obtenerDiarreaTerneroHook(q));
             let lista = res?.data?.data || res?.data || [];
             if (!Array.isArray(lista)) lista = [];
             if (search) {
@@ -80,7 +82,7 @@ export default function DiarreaListadoScreen() {
         }
     }, [establecimientoActual, userPayload]);
 
-    useEffect(() => { cargarDiarreas(); }, [establecimientoActual]);
+    useRecargarAlEnfocar(() => cargarDiarreas(searchInput, filtroSeveridad), [establecimientoActual]);
 
     const onRefresh = async () => {
         setRefreshing(true);
