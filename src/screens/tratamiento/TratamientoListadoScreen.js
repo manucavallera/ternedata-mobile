@@ -13,6 +13,7 @@ import { colors, space, radius, shadow, type } from '../../theme';
 import Caravana from '../../components/Caravana';
 import { confirmar } from '../../utils/confirmar';
 import { useRecargarAlEnfocar } from '../../hooks/useRecargarAlEnfocar';
+import { exigirRespuesta } from '../../utils/exigirRespuesta';
 
 // turno: enum DB en minúscula con ñ ('mañana'/'tarde'); se muestra capitalizado.
 const TURNOS = [
@@ -66,11 +67,11 @@ export default function TratamientoListadoScreen() {
             if (enfermedad) params.push(`tipo_enfermedad=${encodeURIComponent(enfermedad)}`);
             if (turno) params.push(`turno=${encodeURIComponent(turno)}`);
             const full = [q, ...params].filter(Boolean).join('&');
-            const res = await obtenerTratamientoHook(full);
+            const res = exigirRespuesta(await obtenerTratamientoHook(full));
             const payload = res?.data;
             setTratamientos(Array.isArray(payload) ? payload : (payload?.data || []));
         } catch {
-            // silencioso
+            showAlert('Error al cargar tratamientos', false);
         } finally {
             setLoading(false);
         }

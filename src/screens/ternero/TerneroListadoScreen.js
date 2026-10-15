@@ -13,6 +13,7 @@ import { colors, space, radius, shadow, type, estadoColor } from '../../theme';
 import Caravana from '../../components/Caravana';
 import { confirmar } from '../../utils/confirmar';
 import { useRecargarAlEnfocar } from '../../hooks/useRecargarAlEnfocar';
+import { exigirRespuesta } from '../../utils/exigirRespuesta';
 
 const ESTADOS = ['', 'Vivo', 'Muerto', 'Vendido'];
 
@@ -97,7 +98,7 @@ export default function TerneroListadoScreen() {
             if (search) q += `&search=${encodeURIComponent(search)}`;
             if (estado) q += `&estado=${encodeURIComponent(estado)}`;
 
-            const res = await obtenerTerneroHook(q);
+            const res = exigirRespuesta(await obtenerTerneroHook(q));
             setTerneros(res?.data?.data || []);
             setTotal(res?.data?.total || 0);
         } catch {

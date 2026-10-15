@@ -113,3 +113,19 @@ module.exports.sembrarAnimales = sembrarAnimales;
 // El Modal de react-native-web termina su animación de cierre después del clic: lo que se
 // escribe antes se pierde. Una persona nunca es tan rápida; el test espera lo mismo que ella.
 module.exports.esperarCierreDeModal = (page) => page.waitForTimeout(800);
+
+// Los mails de verificación y de reset llevan un JWT firmado por security: se arma igual para no
+// depender de la casilla.
+const fs = require('fs');
+const crypto = require('crypto');
+const leerSecreto = () => {
+  if (process.env.JWT_SECRET) return process.env.JWT_SECRET;
+  const env = fs.readFileSync(__dirname + '/../../ms-nestjs-security/.env', 'utf8');
+  return env.match(/^JWT_SECRET=(.*)$/m)[1].trim();
+};
+module.exports.firmarJwt = (payload) => {
+  const b64 = (o) => Buffer.from(JSON.stringify(o)).toString('base64url');
+  const ahora = Math.floor(Date.now() / 1000);
+  const cuerpo = `${b64({ alg: 'HS256', typ: 'JWT' })}.${b64({ ...payload, iat: ahora, exp: ahora + 3600 })}`;
+  return `${cuerpo}.${crypto.createHmac('sha256', leerSecreto()).update(cuerpo).digest('base64url')}`;
+};

@@ -1,4 +1,4 @@
-const { test, expect, irA, aceptarConfirmaciones, esperarEscritura } = require('./fixtures');
+const { test, expect, irA, aceptarConfirmaciones, esperarEscritura, sembrarAnimales } = require('./fixtures');
 
 const abrirMas = async (page, item) => {
   await irA(page, 'Más');
@@ -49,14 +49,20 @@ test('sustituto: faltan precios y avisa', async ({ page, sesion }) => {
   await expect(page.getByText('Completá precio sustituto, precio leche y cotización del dólar')).toBeVisible();
 });
 
-test('resumen de salud y calendario cargan sin error', async ({ page, sesion }) => {
-  const errores = [];
-  page.on('pageerror', (e) => errores.push(e.message));
-  await abrirMas(page, 'Resumen de Salud');
-  await expect(page.getByText('← Volver').last()).toBeVisible().catch(() => {});
-  await page.goBack().catch(() => {});
-  await irA(page, 'Más');
-  await page.getByText('Calendario histórico', { exact: true }).click();
-  await page.waitForTimeout(1500);
-  expect(errores).toEqual([]);
-});
+// Pantallas de solo lectura: abrirlas con datos reales no debe romper la app.
+for (const [item, encabezado] of [
+  ['Resumen de Salud', '❤️ Resumen de Salud'],
+  ['Calendario histórico', '📅 Calendario histórico'],
+  ['Ayuda', '❓ Ayuda'],
+]) {
+  test(`${item}: abre y carga sin errores`, async ({ page, request, sesion }) => {
+    const errores = [];
+    page.on('pageerror', (e) => errores.push(e.message));
+    await sembrarAnimales(request, sesion);
+    await page.reload();
+    await abrirMas(page, item);
+    await expect(page.getByText(encabezado)).toBeVisible();
+    await page.waitForTimeout(1000);
+    expect(errores).toEqual([]);
+  });
+}

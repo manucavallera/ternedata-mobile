@@ -12,6 +12,7 @@ import { es } from 'date-fns/locale';
 import { colors, shadow, radius, space } from '../../theme';
 import { confirmar } from '../../utils/confirmar';
 import { useRecargarAlEnfocar } from '../../hooks/useRecargarAlEnfocar';
+import { exigirRespuesta } from '../../utils/exigirRespuesta';
 
 const SEVERIDADES = ['', 'Leve', 'Moderada', 'Severa', 'Crítica'];
 
@@ -61,7 +62,7 @@ export default function DiarreaListadoScreen() {
             if (userPayload?.rol === 'admin' && establecimientoActual) q = `id_establecimiento=${establecimientoActual}&`;
             q += 'page=1&limit=500';
             if (severidad) q += `&severidad=${encodeURIComponent(severidad)}`;
-            const res = await obtenerDiarreaTerneroHook(q);
+            const res = exigirRespuesta(await obtenerDiarreaTerneroHook(q));
             let lista = res?.data?.data || res?.data || [];
             if (!Array.isArray(lista)) lista = [];
             if (search) {

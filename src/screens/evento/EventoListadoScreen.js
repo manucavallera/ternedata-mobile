@@ -12,6 +12,7 @@ import { es } from 'date-fns/locale';
 import { colors, space, radius, shadow, type } from '../../theme';
 import { confirmar } from '../../utils/confirmar';
 import { useRecargarAlEnfocar } from '../../hooks/useRecargarAlEnfocar';
+import { exigirRespuesta } from '../../utils/exigirRespuesta';
 
 const MESES = ['ENE', 'FEB', 'MAR', 'ABR', 'MAY', 'JUN', 'JUL', 'AGO', 'SEP', 'OCT', 'NOV', 'DIC'];
 
@@ -57,7 +58,7 @@ export default function EventoListadoScreen() {
         try {
             let q = '';
             if (userPayload?.rol === 'admin' && establecimientoActual) q = `id_establecimiento=${establecimientoActual}`;
-            const res = await obtenerEventoHook(q);
+            const res = exigirRespuesta(await obtenerEventoHook(q));
             const payload = res?.data;
             setEventos(Array.isArray(payload) ? payload : (payload?.data || []));
         } catch {

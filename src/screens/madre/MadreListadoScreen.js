@@ -13,6 +13,7 @@ import { colors, space, radius, shadow, type, estadoColor } from '../../theme';
 import Caravana from '../../components/Caravana';
 import { confirmar } from '../../utils/confirmar';
 import { useRecargarAlEnfocar } from '../../hooks/useRecargarAlEnfocar';
+import { exigirRespuesta } from '../../utils/exigirRespuesta';
 
 const ESTADOS = ['', 'Seca', 'En Tambo'];
 
@@ -60,7 +61,7 @@ export default function MadreListadoScreen() {
             q += 'page=1&limit=500';
             if (search) q += `&search=${encodeURIComponent(search)}`;
             if (estado) q += `&estado=${encodeURIComponent(estado)}`;
-            const res = await obtenerMadreHook(q);
+            const res = exigirRespuesta(await obtenerMadreHook(q));
             setMadres(res?.data?.data || []);
             setTotal(res?.data?.total || 0);
         } catch {
