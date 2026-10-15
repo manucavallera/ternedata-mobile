@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import {
     View, Text, FlatList, TouchableOpacity,
     StyleSheet, ActivityIndicator, RefreshControl, Modal, TextInput, ScrollView, } from 'react-native';
@@ -7,6 +7,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useBussinesMicroservicio } from '../../hooks/bussines';
 import { colors, shadow, radius, space } from '../../theme';
 import { confirmar } from '../../utils/confirmar';
+import { useRecargarAlEnfocar } from '../../hooks/useRecargarAlEnfocar';
 
 const TIPOS = [
     { value: 'cria', label: '🍼 Cría', color: '#22c55e' },
@@ -81,7 +82,7 @@ export default function RodeoListadoScreen() {
         }
     }, [establecimientoActual, userPayload]);
 
-    useEffect(() => { cargarRodeos(); }, [establecimientoActual]);
+    useRecargarAlEnfocar(() => cargarRodeos(), [establecimientoActual]);
 
     const onRefresh = async () => { setRefreshing(true); await cargarRodeos(); setRefreshing(false); };
 

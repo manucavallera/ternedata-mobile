@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import {
     View, Text, FlatList, TextInput, TouchableOpacity,
     StyleSheet, ActivityIndicator, RefreshControl, ScrollView, Modal, } from 'react-native';
@@ -12,6 +12,7 @@ import { es } from 'date-fns/locale';
 import { colors, space, radius, shadow, type } from '../../theme';
 import Caravana from '../../components/Caravana';
 import { confirmar } from '../../utils/confirmar';
+import { useRecargarAlEnfocar } from '../../hooks/useRecargarAlEnfocar';
 
 // turno: enum DB en minúscula con ñ ('mañana'/'tarde'); se muestra capitalizado.
 const TURNOS = [
@@ -75,7 +76,7 @@ export default function TratamientoListadoScreen() {
         }
     }, [establecimientoActual, userPayload]);
 
-    useEffect(() => { cargarTratamientos(); }, [establecimientoActual]);
+    useRecargarAlEnfocar(() => cargarTratamientos(busquedaEnf, filtroTurno), [establecimientoActual]);
 
     const onRefresh = async () => {
         setRefreshing(true);

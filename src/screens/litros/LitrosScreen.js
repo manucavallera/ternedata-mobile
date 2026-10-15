@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import {
     View, Text, TextInput, TouchableOpacity, ScrollView,
     StyleSheet, ActivityIndicator, RefreshControl, } from 'react-native';
@@ -8,6 +8,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useBussinesMicroservicio } from '../../hooks/bussines';
 import { colors, shadow, radius, space } from '../../theme';
 import { confirmar } from '../../utils/confirmar';
+import { useRecargarAlEnfocar } from '../../hooks/useRecargarAlEnfocar';
 
 const hoyISO = () => new Date().toISOString().slice(0, 10);
 
@@ -73,7 +74,7 @@ export default function LitrosScreen() {
         }
     }, [idEstab]);
 
-    useEffect(() => { cargar(); }, [establecimientoActual]);
+    useRecargarAlEnfocar(() => cargar(), [establecimientoActual]);
 
     const onRefresh = async () => { setRefreshing(true); await cargar(); setRefreshing(false); };
 

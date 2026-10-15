@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import {
     View, Text, FlatList, TextInput, TouchableOpacity,
     StyleSheet, ActivityIndicator, RefreshControl, Modal, ScrollView, } from 'react-native';
@@ -11,6 +11,7 @@ import { format, parseISO } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { colors, shadow, radius, space } from '../../theme';
 import { confirmar } from '../../utils/confirmar';
+import { useRecargarAlEnfocar } from '../../hooks/useRecargarAlEnfocar';
 
 const SEVERIDADES = ['', 'Leve', 'Moderada', 'Severa', 'Crítica'];
 
@@ -80,7 +81,7 @@ export default function DiarreaListadoScreen() {
         }
     }, [establecimientoActual, userPayload]);
 
-    useEffect(() => { cargarDiarreas(); }, [establecimientoActual]);
+    useRecargarAlEnfocar(() => cargarDiarreas(searchInput, filtroSeveridad), [establecimientoActual]);
 
     const onRefresh = async () => {
         setRefreshing(true);

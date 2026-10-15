@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import {
     View, Text, FlatList, TouchableOpacity, StyleSheet,
     ActivityIndicator, RefreshControl, Modal, TextInput, } from 'react-native';
@@ -11,6 +11,7 @@ import { format, parseISO } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { colors, space, radius, shadow, type } from '../../theme';
 import { confirmar } from '../../utils/confirmar';
+import { useRecargarAlEnfocar } from '../../hooks/useRecargarAlEnfocar';
 
 const MESES = ['ENE', 'FEB', 'MAR', 'ABR', 'MAY', 'JUN', 'JUL', 'AGO', 'SEP', 'OCT', 'NOV', 'DIC'];
 
@@ -66,7 +67,7 @@ export default function EventoListadoScreen() {
         }
     }, [establecimientoActual, userPayload]);
 
-    useEffect(() => { cargarEventos(); }, [establecimientoActual]);
+    useRecargarAlEnfocar(() => cargarEventos(), [establecimientoActual]);
 
     const onRefresh = async () => { setRefreshing(true); await cargarEventos(); setRefreshing(false); };
 

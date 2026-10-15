@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import {
     View, Text, FlatList, TextInput, TouchableOpacity,
     StyleSheet, ActivityIndicator, RefreshControl, Modal, ScrollView, } from 'react-native';
@@ -12,6 +12,7 @@ import { es } from 'date-fns/locale';
 import { colors, space, radius, shadow, type, estadoColor } from '../../theme';
 import Caravana from '../../components/Caravana';
 import { confirmar } from '../../utils/confirmar';
+import { useRecargarAlEnfocar } from '../../hooks/useRecargarAlEnfocar';
 
 const ESTADOS = ['', 'Vivo', 'Muerto', 'Vendido'];
 
@@ -106,7 +107,7 @@ export default function TerneroListadoScreen() {
         }
     }, [establecimientoActual, userPayload]);
 
-    useEffect(() => { cargarTerneros(); }, [establecimientoActual]);
+    useRecargarAlEnfocar(() => cargarTerneros(searchInput, filtroEstado), [establecimientoActual]);
 
     const onRefresh = async () => {
         setRefreshing(true);

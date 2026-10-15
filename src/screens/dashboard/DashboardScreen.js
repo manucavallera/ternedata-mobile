@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 import {
     View, Text, ScrollView, TouchableOpacity,
     StyleSheet, ActivityIndicator, RefreshControl,
@@ -6,6 +6,7 @@ import {
 import { useSelector } from 'react-redux';
 import { useBussinesMicroservicio } from '../../hooks/bussines';
 import { colors, shadow, radius, space } from '../../theme';
+import { useRecargarAlEnfocar } from '../../hooks/useRecargarAlEnfocar';
 
 // ── KPI Card ─────────────────────────────────────────────────
 function KPICard({ icono, valor, titulo, subtitulo, colorValor, alerta }) {
@@ -82,7 +83,7 @@ export default function DashboardScreen() {
         }
     }, [establecimientoActual, userPayload?.rol]);
 
-    useEffect(() => { setLoading(true); cargar(); }, [establecimientoActual]);
+    useRecargarAlEnfocar(() => cargar(), [establecimientoActual]);
 
     const onRefresh = async () => { setRefreshing(true); await cargar(); setRefreshing(false); };
 

@@ -27,7 +27,13 @@
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "test:e2e": "playwright test",
+    "build:e2e": "TD_ENTORNO=desarrollo TD_BUSINESS_URL=http://localhost:3010 TD_SECURITY_URL=http://localhost:3011 CI=1 expo export --platform web --output-dir dist"
   },
-  "private": true
+  "private": true,
+  "devDependencies": {
+    "@playwright/test": "^1.64.1",
+    "pg": "^8.23.1"
+  }
 }
