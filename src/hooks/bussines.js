@@ -792,6 +792,9 @@ export const useBussinesMicroservicio = () => {
     };
     const obtenerProductosForrajeriaHook = () => pedirBusiness('get', '/forrajeria/productos');
     const crearProductoForrajeriaHook = (producto) => pedirBusiness('post', '/forrajeria/productos', producto);
+    const actualizarProductoForrajeriaHook = (idProducto, cambios) =>
+        pedirBusiness('patch', `/forrajeria/productos/${idProducto}`, cambios);
+    const cargarCatalogoBaseForrajeriaHook = () => pedirBusiness('post', '/forrajeria/catalogo-base', {});
     const obtenerBajoStockForrajeriaHook = () => pedirBusiness('get', '/forrajeria/inventario/bajo-stock');
     const registrarMovimientoStockHook = (idProducto, movimiento) =>
         pedirBusiness('post', `/forrajeria/inventario/productos/${idProducto}/movimientos`, movimiento);
@@ -827,6 +830,7 @@ export const useBussinesMicroservicio = () => {
         registrarSustitutoHook, obtenerSustitutoHook, eliminarSustitutoHook,
         listarUsuariosGlobalesHook, cambiarRolUsuarioHook, toggleEstadoUsuarioGlobalHook,
         obtenerProductosForrajeriaHook, crearProductoForrajeriaHook,
+        actualizarProductoForrajeriaHook, cargarCatalogoBaseForrajeriaHook,
         obtenerBajoStockForrajeriaHook, registrarMovimientoStockHook,
     };
 };
