@@ -32,3 +32,9 @@ Variables (todas opcionales): `PWA_URL`, `BUSINESS_URL`, `SECURITY_URL`, `TEST_D
 
 Mails reales, WhatsApp, y el comportamiento nativo de Android (botón atrás, red intermitente, sesión al
 cerrar la app). Eso se prueba en un teléfono con el APK.
+
+## CI
+
+`.github/workflows/e2e.yml` corre la suite en cada PR y en cada push a `master`: levanta Postgres 16,
+clona `Ternedata2` (rama `main`) para los backends, aplica `tests/db/schema.sql` y las migraciones,
+exporta la PWA y corre Playwright. Si falla, sube las trazas como artefacto `playwright-trazas`.

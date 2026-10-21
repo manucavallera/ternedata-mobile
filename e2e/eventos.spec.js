@@ -28,6 +28,8 @@ test('evento: registrar con ternero y madre, editar y eliminar', async ({ page, 
   const edicion = esperarEscritura(page, '/eventos');
   await page.getByText('Guardar', { exact: true }).last().click();
   expect(200).toBe((await edicion).status());
+  // Hasta que termina de cerrarse, el modal sigue en el DOM con el mismo texto.
+  await expect(page.getByPlaceholder('Descripción del evento')).toHaveCount(0);
   await expect(page.getByText('Vacunación PWA editada')).toBeVisible();
 
   const baja = esperarEscritura(page, '/eventos');

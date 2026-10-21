@@ -1,0 +1,89 @@
+name: E2E PWA
+
+on:
+  pull_request:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+jobs:
+  e2e:
+    name: Playwright (PWA + backends locales)
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: ganaderia_test
+        ports: ['5434:5432']
+        options: >-
+          --health-cmd pg_isready --health-interval 5s
+          --health-timeout 5s --health-retries 10
+    env:
+      # Valores solo para CI: la base es efímera y el mail no sale
+      ENTORNO_ENV: produccion
+      DB_HOST_PRODUCCION: localhost
+      DB_PORT_PRODUCCION: 5434
+      DB_USERNAME_PRODUCCION: postgres
+      DB_PASSWORD_PRODUCCION: postgres
+      DB_NAME_PRODUCCION: ganaderia_test
+      JWT_SECRET: secreto-solo-para-ci
+      BOT_API_KEY: bot-key-solo-para-ci
+      MAIL_USER: noenviar@invalid.local
+      MAIL_PASS: x
+      FRONTEND_URL: http://localhost:8081
+      THROTTLE_LIMIT: 10000
+      TEST_DB_URL: postgres://postgres:postgres@localhost:5434/ganaderia_test
+      BUSINESS_URL: http://localhost:3010
+      SECURITY_URL: http://localhost:3011
+    steps:
+      - uses: actions/checkout@v4
+      # Los backends viven en el repo Ternedata2 (público).
+      - uses: actions/checkout@v4
+        with:
+          repository: manucavallera/Ternedata2
+          ref: main
+          path: backend
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            backend/ms-nestjs-bussines/package-lock.json
+            backend/ms-nestjs-security/package-lock.json
+      - name: Esquema de la base y migraciones
+        run: |
+          psql "$TEST_DB_URL" -v ON_ERROR_STOP=1 -qf backend/tests/db/schema.sql
+          cd backend/ms-nestjs-bussines && npm ci && npm run typeorm:run-migrations
+      - name: Compilar backends
+        run: |
+          (cd backend/ms-nestjs-security && npm ci && npm run build)
+          (cd backend/ms-nestjs-bussines && npm run build)
+      - name: Levantar backends
+        run: |
+          (cd backend/ms-nestjs-security && PORT_PRODUCCION=3011 nohup node dist/main > ../../security.log 2>&1 &)
+          (cd backend/ms-nestjs-bussines && PORT_PRODUCCION=3010 nohup node dist/main > ../../business.log 2>&1 &)
+          for i in $(seq 60); do
+            curl -s -o /dev/null localhost:3011 && curl -s -o /dev/null localhost:3010 && exit 0
+            sleep 2
+          done
+          echo "Los backends no arrancaron"; exit 1
+      - name: Exportar la PWA
+        run: npm ci && npm run build:e2e
+      - name: Instalar Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Tests e2e
+        run: npm run test:e2e
+      - name: Logs de los backends
+        if: failure()
+        run: tail -n 200 security.log business.log
+      - name: Trazas de Playwright
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-trazas
+          path: test-results/
+          retention-days: 7
