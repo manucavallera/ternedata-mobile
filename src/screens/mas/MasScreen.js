@@ -7,7 +7,7 @@ import { useBussinesMicroservicio } from '../../hooks/bussines';
 import { colors, shadow, radius, space } from '../../theme';
 
 const OPCIONES = [
-    { screen: 'Forrajeria', icon: '🌾', label: 'Forrajería', desc: 'Catálogo y control de stock', color: '#8A6D1F', soloForrajeria: true },
+    { screen: 'Forrajeria', icon: '🌾', label: 'Forrajería', desc: 'Pedidos, clientes y stock', color: '#8A6D1F', soloForrajeria: true },
     { screen: 'DiarreaListado', icon: '🥼', label: 'Diarrea', desc: 'Episodios y seguimiento', color: colors.muerto },
     { screen: 'ResumenSalud', icon: '❤️', label: 'Resumen de Salud', desc: 'Estado sanitario del rodeo', color: colors.vendido },
     { screen: 'Litros', icon: '🥛', label: 'Litros de leche', desc: 'Producción diaria y vacas en ordeñe', color: '#0E7490' },

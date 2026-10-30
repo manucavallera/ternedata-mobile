@@ -271,7 +271,7 @@ export default function ForrajeriaScreen() {
                     <Text style={styles.backBtn}>← Volver</Text>
                 </TouchableOpacity>
                 <Text style={styles.headerTitle}>🌾 Forrajería</Text>
-                <Text style={styles.headerSub}>Catálogo y control de stock</Text>
+                <Text style={styles.headerSub}>Pedidos, clientes, catálogo y stock</Text>
             </View>
 
             {alert.show && (
@@ -286,6 +286,16 @@ export default function ForrajeriaScreen() {
                     keyboardShouldPersistTaps="handled"
                     refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
                 >
+                    <View style={styles.tiles}>
+                        <TouchableOpacity style={styles.tile} onPress={() => navigation.navigate('ForrajeriaPedidos')}>
+                            <Text style={styles.tileValue}>🧾</Text>
+                            <Text style={styles.tileLabel}>Pedidos</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.tile} onPress={() => navigation.navigate('ForrajeriaClientes')}>
+                            <Text style={styles.tileValue}>👥</Text>
+                            <Text style={styles.tileLabel}>Clientes</Text>
+                        </TouchableOpacity>
+                    </View>
                     <View style={styles.tiles}>
                         <View style={styles.tile}>
                             <Text style={styles.tileValue}>{activos.length}</Text>
