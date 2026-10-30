@@ -798,6 +798,19 @@ export const useBussinesMicroservicio = () => {
     const obtenerBajoStockForrajeriaHook = () => pedirBusiness('get', '/forrajeria/inventario/bajo-stock');
     const registrarMovimientoStockHook = (idProducto, movimiento) =>
         pedirBusiness('post', `/forrajeria/inventario/productos/${idProducto}/movimientos`, movimiento);
+    // Pedidos, clientes y cuenta corriente (mismos endpoints que la web).
+    const obtenerPedidosForrajeriaHook = (params = {}) => pedirBusiness('get', '/forrajeria/pedidos', { params });
+    const crearPedidoForrajeriaHook = (pedido) => pedirBusiness('post', '/forrajeria/pedidos', pedido);
+    const cambiarEstadoPedidoForrajeriaHook = (idPedido, estado) =>
+        pedirBusiness('patch', `/forrajeria/pedidos/${idPedido}/estado`, { estado });
+    const obtenerClientesForrajeriaHook = () => pedirBusiness('get', '/forrajeria/contactos', { params: { tipo: 'cliente' } });
+    const crearContactoForrajeriaHook = (contacto) => pedirBusiness('post', '/forrajeria/contactos', contacto);
+    const actualizarContactoForrajeriaHook = (idContacto, cambios) =>
+        pedirBusiness('patch', `/forrajeria/contactos/${idContacto}`, cambios);
+    const obtenerSaldosForrajeriaHook = () => pedirBusiness('get', '/forrajeria/cuentas/saldos');
+    const obtenerCuentaClienteForrajeriaHook = (idContacto) => pedirBusiness('get', `/forrajeria/cuentas/clientes/${idContacto}`);
+    const registrarPagoClienteForrajeriaHook = (idContacto, pago) =>
+        pedirBusiness('post', `/forrajeria/cuentas/clientes/${idContacto}/pagos`, pago);
 
     return {
         crearMadreHook, obtenerMadreHook, patchMadreHook,
@@ -832,5 +845,8 @@ export const useBussinesMicroservicio = () => {
         obtenerProductosForrajeriaHook, crearProductoForrajeriaHook,
         actualizarProductoForrajeriaHook, cargarCatalogoBaseForrajeriaHook,
         obtenerBajoStockForrajeriaHook, registrarMovimientoStockHook,
+        obtenerPedidosForrajeriaHook, crearPedidoForrajeriaHook, cambiarEstadoPedidoForrajeriaHook,
+        obtenerClientesForrajeriaHook, crearContactoForrajeriaHook, actualizarContactoForrajeriaHook,
+        obtenerSaldosForrajeriaHook, obtenerCuentaClienteForrajeriaHook, registrarPagoClienteForrajeriaHook,
     };
 };

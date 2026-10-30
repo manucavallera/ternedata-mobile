@@ -27,6 +27,10 @@ import MasScreen from '../screens/mas/MasScreen';
 import AyudaScreen from '../screens/ayuda/AyudaScreen';
 import PerfilScreen from '../screens/auth/PerfilScreen';
 import ForrajeriaScreen from '../screens/forrajeria/ForrajeriaScreen';
+import PedidosScreen from '../screens/forrajeria/PedidosScreen';
+import PedidoNuevoScreen from '../screens/forrajeria/PedidoNuevoScreen';
+import ClientesScreen from '../screens/forrajeria/ClientesScreen';
+import ClienteScreen from '../screens/forrajeria/ClienteScreen';
 
 const Tab = createBottomTabNavigator();
 const TerneroStack = createNativeStackNavigator();
@@ -97,6 +101,10 @@ function MasNavigator() {
             <MasStack.Screen name="Ayuda" component={AyudaScreen} />
             <MasStack.Screen name="Perfil" component={PerfilScreen} />
             <MasStack.Screen name="Forrajeria" component={ForrajeriaScreen} />
+            <MasStack.Screen name="ForrajeriaPedidos" component={PedidosScreen} />
+            <MasStack.Screen name="ForrajeriaPedidoNuevo" component={PedidoNuevoScreen} />
+            <MasStack.Screen name="ForrajeriaClientes" component={ClientesScreen} />
+            <MasStack.Screen name="ForrajeriaCliente" component={ClienteScreen} />
         </MasStack.Navigator>
     );
 }
