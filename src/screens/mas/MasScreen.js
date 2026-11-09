@@ -8,6 +8,7 @@ import { colors, shadow, radius, space } from '../../theme';
 
 const OPCIONES = [
     { screen: 'Forrajeria', icon: '🌾', label: 'Forrajería', desc: 'Pedidos, clientes y stock', color: '#8A6D1F', soloForrajeria: true },
+    { screen: 'Tambo', icon: '🐄', label: 'Rodeo lechero', desc: 'Inseminación, tacto, secado y control lechero', color: '#0F766E', soloGanaderia: true },
     { screen: 'DiarreaListado', icon: '🥼', label: 'Diarrea', desc: 'Episodios y seguimiento', color: colors.muerto },
     { screen: 'ResumenSalud', icon: '❤️', label: 'Resumen de Salud', desc: 'Estado sanitario del rodeo', color: colors.vendido },
     { screen: 'Litros', icon: '🥛', label: 'Litros de leche', desc: 'Producción diaria y vacas en ordeñe', color: '#0E7490' },
@@ -40,7 +41,7 @@ export default function MasScreen() {
     const puedeAdministrar = userPayload?.rol === 'admin' || userPayload?.rol === 'super_admin';
     const actual = establecimientos.find(e => Number(e.id_establecimiento) === Number(establecimientoActual));
     const enForrajeria = actual?.tipo_organizacion === 'forrajeria';
-    const opciones = OPCIONES.filter(op => (!op.soloAdmin || puedeAdministrar) && (!op.soloForrajeria || enForrajeria));
+    const opciones = OPCIONES.filter(op => (!op.soloAdmin || puedeAdministrar) && (!op.soloForrajeria || enForrajeria) && (!op.soloGanaderia || !enForrajeria));
 
     // Igual que la web: al elegir una forrajería se va directo a su pantalla
     const elegirEstablecimiento = (est) => {

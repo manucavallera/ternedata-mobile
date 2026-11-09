@@ -790,6 +790,15 @@ export const useBussinesMicroservicio = () => {
             return { status: error?.response?.status || 500, data: error?.response?.data || { message: error.message }, error: true };
         }
     };
+    // Tambo: rodeo lechero, eventos reproductivos y control lechero por vaca.
+    const obtenerRodeoTamboHook = () => pedirBusiness('get', '/tambo/rodeo');
+    const obtenerPendientesTamboHook = () => pedirBusiness('get', '/tambo/pendientes');
+    const obtenerResumenTamboHook = () => pedirBusiness('get', '/tambo/resumen');
+    const obtenerEventosTamboHook = (idMadre) => pedirBusiness('get', `/tambo/eventos?id_madre=${idMadre}`);
+    const crearEventoTamboHook = (evento) => pedirBusiness('post', '/tambo/eventos', evento);
+    const eliminarEventoTamboHook = (idEvento) => pedirBusiness('delete', `/tambo/eventos/${idEvento}`);
+    const obtenerControlTamboHook = (fecha) => pedirBusiness('get', `/tambo/controles?fecha=${fecha}`);
+    const guardarControlTamboHook = (control) => pedirBusiness('post', '/tambo/controles', control);
     const obtenerProductosForrajeriaHook = () => pedirBusiness('get', '/forrajeria/productos');
     const crearProductoForrajeriaHook = (producto) => pedirBusiness('post', '/forrajeria/productos', producto);
     const actualizarProductoForrajeriaHook = (idProducto, cambios) =>
@@ -848,5 +857,8 @@ export const useBussinesMicroservicio = () => {
         obtenerPedidosForrajeriaHook, crearPedidoForrajeriaHook, cambiarEstadoPedidoForrajeriaHook,
         obtenerClientesForrajeriaHook, crearContactoForrajeriaHook, actualizarContactoForrajeriaHook,
         obtenerSaldosForrajeriaHook, obtenerCuentaClienteForrajeriaHook, registrarPagoClienteForrajeriaHook,
+        obtenerRodeoTamboHook, obtenerPendientesTamboHook, obtenerResumenTamboHook,
+        obtenerEventosTamboHook, crearEventoTamboHook, eliminarEventoTamboHook,
+        obtenerControlTamboHook, guardarControlTamboHook,
     };
 };
