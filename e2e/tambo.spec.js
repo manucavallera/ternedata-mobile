@@ -5,7 +5,7 @@ const ver = (locator) => locator.filter({ visible: true });
 
 const haceDias = (n) => new Date(Date.now() - 3 * 3600e3 - n * 86400e3).toISOString().slice(0, 10);
 
-// Vaca En Tambo que parió hace 60 días: aparece en "Sin inseminar".
+// Vaca En Tambo que parió hace 60 días: está "OK" (apta para inseminar).
 const sembrarVaca = async (request, cuenta) => {
   const login = await request.post(`${SECURITY_URL}/auth/login`, { data: { email: cuenta.email, password: cuenta.password } });
   const headers = { Authorization: `Bearer ${(await login.json()).token}` };
@@ -34,12 +34,13 @@ test('tambo: inseminar desde pendientes y tactar desde la vaca', async ({ page, 
   await page.reload();
   await abrirTambo(page);
 
-  // Pendiente "Sin inseminar" con la vaca: se carga la inseminación desde ahí.
-  await ver(page.getByText('Sin inseminar', { exact: true })).click();
+  // Vaca "OK": aparece en "OK para inseminar" y se carga la inseminación desde ahí.
+  await expect(ver(page.getByText('OK', { exact: true }))).toBeVisible();
+  await ver(page.getByText('OK para inseminar', { exact: true })).click();
   await expect(ver(page.getByText(new RegExp(`RP ${rp} · parió hace 60 días`)))).toBeVisible();
   await ver(page.getByText('Cargar evento para estas vacas')).click();
   await expect(ver(page.getByPlaceholder('Ej: 325, 328, 331'))).toHaveValue(String(rp));
-  await ver(page.getByPlaceholder('Nombre del toro o pajuela')).fill('Faraón');
+  await ver(page.getByPlaceholder('Pajuela usada')).fill('Faraón');
   const insem = esperarEscritura(page, '/tambo/eventos');
   await ver(page.getByText('Guardar', { exact: true })).click();
   const resp = await insem;
@@ -54,7 +55,9 @@ test('tambo: inseminar desde pendientes y tactar desde la vaca', async ({ page, 
   const tacto = esperarEscritura(page, '/tambo/eventos');
   await ver(page.getByText('Guardar', { exact: true })).click();
   expect([200, 201]).toContain((await tacto).status());
-  await expect(ver(page.getByText('Vacía', { exact: true }))).toBeVisible();
+  // Vacía y pasada la espera: vuelve a estar OK para inseminar.
+  await expect(ver(page.getByText('OK', { exact: true }))).toBeVisible();
+  await expect(ver(page.getByText('Inseminada', { exact: true }))).toHaveCount(0);
 });
 
 test('tambo: caravana que no está en el rodeo no se guarda', async ({ page, request, sesion }) => {
