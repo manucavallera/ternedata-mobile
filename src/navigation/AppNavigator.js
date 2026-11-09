@@ -31,6 +31,9 @@ import PedidosScreen from '../screens/forrajeria/PedidosScreen';
 import PedidoNuevoScreen from '../screens/forrajeria/PedidoNuevoScreen';
 import ClientesScreen from '../screens/forrajeria/ClientesScreen';
 import ClienteScreen from '../screens/forrajeria/ClienteScreen';
+import TamboScreen from '../screens/tambo/TamboScreen';
+import TamboEventoScreen from '../screens/tambo/TamboEventoScreen';
+import TamboControlScreen from '../screens/tambo/TamboControlScreen';
 
 const Tab = createBottomTabNavigator();
 const TerneroStack = createNativeStackNavigator();
@@ -105,6 +108,9 @@ function MasNavigator() {
             <MasStack.Screen name="ForrajeriaPedidoNuevo" component={PedidoNuevoScreen} />
             <MasStack.Screen name="ForrajeriaClientes" component={ClientesScreen} />
             <MasStack.Screen name="ForrajeriaCliente" component={ClienteScreen} />
+            <MasStack.Screen name="Tambo" component={TamboScreen} />
+            <MasStack.Screen name="TamboEvento" component={TamboEventoScreen} />
+            <MasStack.Screen name="TamboControl" component={TamboControlScreen} />
         </MasStack.Navigator>
     );
 }

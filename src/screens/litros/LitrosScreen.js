@@ -17,6 +17,7 @@ const FORM_INICIAL = {
     litros_vendido: '',
     litros_terneros: '',
     cantidad_vacas: '',
+    vacas_en_tratamiento: '',
     observaciones: '',
 };
 
@@ -93,6 +94,8 @@ export default function LitrosScreen() {
             observaciones: form.observaciones || undefined,
         };
         if (form.cantidad_vacas !== '') payload.cantidad_vacas = parseInt(form.cantidad_vacas, 10);
+        const enTratamiento = parseInt(form.vacas_en_tratamiento, 10);
+        if (enTratamiento > 0) payload.vacas_en_tratamiento = enTratamiento;
         if (idEstab) payload.id_establecimiento = parseInt(idEstab);
 
         const res = await registrarLitrosHook(payload);
@@ -209,6 +212,15 @@ export default function LitrosScreen() {
                             value={form.cantidad_vacas}
                             onChangeText={v => set('cantidad_vacas', v)}
                             placeholder={stats?.cantidad_vacas != null ? `Rodeo: ${stats.cantidad_vacas}` : 'Ej: 71'}
+                            keyboardType="numeric"
+                        />
+
+                        <Text style={styles.label}>Vacas en tratamiento (opcional)</Text>
+                        <TextInput
+                            style={styles.input}
+                            value={form.vacas_en_tratamiento}
+                            onChangeText={v => set('vacas_en_tratamiento', v)}
+                            placeholder="Leche que se descarta"
                             keyboardType="numeric"
                         />
 
