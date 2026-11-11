@@ -120,8 +120,8 @@ export default function TamboEventoScreen() {
 
                     {form.tipo === 'inseminacion' && (
                         <>
-                            <Text style={styles.label}>Toro o pajuela (opcional)</Text>
-                            <TextInput style={styles.input} value={form.toro} onChangeText={(v) => set('toro', v)} maxLength={100} placeholder="Nombre del toro o pajuela" />
+                            <Text style={styles.label}>Pajuela (opcional)</Text>
+                            <TextInput style={styles.input} value={form.toro} onChangeText={(v) => set('toro', v)} maxLength={100} placeholder="Pajuela usada" />
                         </>
                     )}
 

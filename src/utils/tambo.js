@@ -5,6 +5,7 @@ export const CATEGORIAS = ['En Tambo', 'Seca', 'Preparto', 'Vaquillona'];
 
 export const ESTADOS = {
     parida: { texto: 'Parida', color: '#115E59', bg: '#CCFBF1' },
+    ok: { texto: 'OK', color: '#3F6212', bg: '#ECFCCB' },
     inseminada: { texto: 'Inseminada', color: '#075985', bg: '#E0F2FE' },
     preñada: { texto: 'Preñada', color: '#166534', bg: '#DCFCE7' },
     vacia: { texto: 'Vacía', color: '#991B1B', bg: '#FEE2E2' },
@@ -12,7 +13,8 @@ export const ESTADOS = {
     sin_dato: { texto: 'Sin dato', color: '#4B5563', bg: '#F3F4F6' },
 };
 
-export const estadoDe = (v) => ESTADOS[v?.estado_reproductivo] || ESTADOS.sin_dato;
+// "OK" si ya está apta para inseminar (lo calcula el backend).
+export const estadoDe = (v) => ESTADOS[v?.ok ? 'ok' : v?.estado_reproductivo] || ESTADOS.sin_dato;
 
 export const TIPOS_EVENTO = [
     { valor: 'inseminacion', texto: 'Inseminación' },
@@ -31,7 +33,8 @@ export const textoTipo = (tipo) => TIPOS_EVENTO.find((t) => t.valor === tipo)?.t
 export const PENDIENTES = [
     { clave: 'reemparche', texto: 'Reemparche', evento: 'parche', detalle: (d) => `parche hace ${d} días` },
     { clave: 'a_tactar', texto: 'A tactar', evento: 'tacto', detalle: (d) => `inseminada hace ${d} días` },
-    { clave: 'sin_inseminar', texto: 'Sin inseminar', evento: 'inseminacion', detalle: (d) => `parió hace ${d} días` },
+    { clave: 'a_reconfirmar', texto: 'A reconfirmar preñez', evento: 'tacto', detalle: (d) => `${d} días de preñez` },
+    { clave: 'sin_inseminar', texto: 'OK para inseminar', evento: 'inseminacion', detalle: (d) => `parió hace ${d} días` },
     { clave: 'a_secar', texto: 'A secar', evento: 'secado', detalle: (d) => faltan(d) },
     { clave: 'a_preparto', texto: 'A pasar a preparto', evento: 'preparto', detalle: (d) => faltan(d) },
     { clave: 'parto_proximo', texto: 'Parto próximo', evento: 'parto', detalle: (d) => faltan(d) },
