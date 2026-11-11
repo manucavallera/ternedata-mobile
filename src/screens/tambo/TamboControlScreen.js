@@ -138,8 +138,9 @@ const styles = StyleSheet.create({
     filaTitulo: { flexDirection: 'row', gap: 8, paddingBottom: 6 },
     titulo: { fontSize: 12, fontWeight: '800', color: colors.inkSoft },
     fila: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 4 },
-    colRp: { flex: 1.2, fontSize: 14, fontWeight: '700', color: colors.ink },
-    colLitros: { flex: 1, textAlign: 'center' },
+    // minWidth 0: en la PWA el <input> tiene un ancho propio y sin esto empuja la caravana fuera de la fila.
+    colRp: { flex: 1.2, minWidth: 0, fontSize: 14, fontWeight: '700', color: colors.ink },
+    colLitros: { flex: 1, minWidth: 0, textAlign: 'center' },
     empty: { color: colors.inkFaint, fontSize: 13, paddingVertical: 10, textAlign: 'center' },
     btnGuardar: { backgroundColor: colors.campo, borderRadius: radius.sm, padding: 13, alignItems: 'center', marginTop: 16 },
     btnGuardarText: { color: colors.white, fontWeight: '700', fontSize: 15 },

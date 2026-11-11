@@ -75,6 +75,10 @@ test('tambo: control lechero del día', async ({ page, request, sesion }) => {
   await page.reload();
   await abrirTambo(page);
   await ver(page.getByText('🥛 Control lechero')).click();
+  // En el teléfono se ve la caravana y la columna de la tarde entra en la pantalla.
+  await expect(ver(page.getByText(`RP ${rp}`, { exact: true }))).toBeVisible();
+  const tarde = await ver(page.getByLabel(`Tarde RP ${rp}`)).boundingBox();
+  expect(tarde.x + tarde.width).toBeLessThanOrEqual(page.viewportSize().width);
   await ver(page.getByLabel(`Mañana RP ${rp}`)).fill('14,5');
   await ver(page.getByLabel(`Tarde RP ${rp}`)).fill('12');
   await expect(ver(page.getByText(/1 vacas · 26,5 L/))).toBeVisible();
